@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
   Link2,
@@ -17,6 +19,9 @@ import {
   ExternalLink,
   Save,
   User,
+  Shield,
+  Crown,
+  Users,
 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -25,6 +30,7 @@ type Link = Tables<"links">;
 
 const Admin = () => {
   const { user, loading: authLoading, signOut } = useAuth();
+  const { role, isAdmin, isModerator, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -214,7 +220,7 @@ const Admin = () => {
     navigate("/");
   };
 
-  if (authLoading || loading) {
+  if (authLoading || loading || roleLoading) {
     return (
       <div className="min-h-screen gradient-bg flex items-center justify-center">
         <div className="glass-strong rounded-3xl p-8 animate-pulse">
@@ -223,6 +229,13 @@ const Admin = () => {
       </div>
     );
   }
+
+  const roleIcon = isAdmin ? Crown : isModerator ? Shield : User;
+  const roleColor = isAdmin 
+    ? "bg-destructive text-destructive-foreground" 
+    : isModerator 
+    ? "bg-primary text-primary-foreground" 
+    : "bg-secondary text-secondary-foreground";
 
   return (
     <div className="min-h-screen gradient-bg">
@@ -237,6 +250,21 @@ const Admin = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <Badge className={`${roleColor} rounded-lg`}>
+              {React.createElement(roleIcon, { className: "h-3 w-3 mr-1" })}
+              {role}
+            </Badge>
+            {isAdmin && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/admin/users")}
+                className="rounded-xl"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Usuários
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
