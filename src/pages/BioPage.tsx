@@ -1,0 +1,147 @@
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import ProfileHeader from "@/components/ProfileHeader";
+import LinkCard from "@/components/LinkCard";
+import { Link2 } from "lucide-react";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Profile = Tables<"profiles">;
+type Link = Tables<"links">;
+
+const BioPage = () => {
+  const { username } = useParams<{ username: string }>();
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [links, setLinks] = useState<Link[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (username) {
+      fetchProfile();
+    }
+  }, [username]);
+
+  const fetchProfile = async () => {
+    try {
+      // Fetch profile by username
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("username", username?.toLowerCase())
+        .single();
+
+      if (profileError || !profileData) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+
+      setProfile(profileData);
+
+      // Fetch active links
+      const { data: linksData } = await supabase
+        .from("links")
+        .select("*")
+        .eq("user_id", profileData.user_id)
+        .eq("is_active", true)
+        .order("position", { ascending: true });
+
+      setLinks(linksData || []);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      setNotFound(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen gradient-bg flex items-center justify-center">
+        <div className="animate-pulse text-center">
+          <div className="h-24 w-24 rounded-full bg-card/50 mx-auto mb-4" />
+          <div className="h-6 w-32 bg-card/50 rounded-lg mx-auto mb-2" />
+          <div className="h-4 w-24 bg-card/50 rounded-lg mx-auto" />
+        </div>
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className="min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div className="text-center animate-fade-in">
+          <div className="glass-strong rounded-3xl p-8 max-w-md mx-auto">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted mx-auto mb-4">
+              <Link2 className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h1 className="font-display text-2xl font-bold mb-2">
+              Página não encontrada
+            </h1>
+            <p className="text-muted-foreground mb-6">
+              O usuário @{username} não existe ou não tem uma página pública.
+            </p>
+            <button
+              onClick={() => navigate("/")}
+              className="text-primary hover:underline"
+            >
+              Voltar ao início
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen gradient-bg">
+      <div className="container mx-auto px-4 py-12 max-w-md">
+        {/* Profile Header */}
+        {profile && (
+          <ProfileHeader
+            displayName={profile.display_name || profile.username}
+            username={profile.username}
+            bio={profile.bio || undefined}
+            avatarUrl={profile.avatar_url || undefined}
+          />
+        )}
+
+        {/* Links */}
+        <div className="mt-8 space-y-4">
+          {links.length === 0 ? (
+            <div className="text-center py-8 animate-fade-in">
+              <p className="text-muted-foreground">
+                Nenhum link disponível ainda.
+              </p>
+            </div>
+          ) : (
+            links.map((link, index) => (
+              <LinkCard
+                key={link.id}
+                title={link.title}
+                url={link.url}
+                icon={link.icon || undefined}
+                delay={index * 100}
+              />
+            ))
+          )}
+        </div>
+
+        {/* Footer */}
+        <footer className="mt-12 text-center animate-fade-in">
+          <button
+            onClick={() => navigate("/auth")}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors glass rounded-full px-4 py-2"
+          >
+            <Link2 className="h-4 w-4" />
+            Crie seu Link na Bio
+          </button>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+export default BioPage;
