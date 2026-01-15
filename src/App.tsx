@@ -4,9 +4,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { RoleGuard } from "@/components/RoleGuard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import AdminUsers from "./pages/AdminUsers";
 import BioPage from "./pages/BioPage";
 import NotFound from "./pages/NotFound";
 
@@ -23,6 +25,14 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
+            <Route
+              path="/admin/users"
+              element={
+                <RoleGuard allowedRoles={["admin"]}>
+                  <AdminUsers />
+                </RoleGuard>
+              }
+            />
             <Route path="/:username" element={<BioPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
