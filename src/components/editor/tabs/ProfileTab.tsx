@@ -5,13 +5,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Camera, Loader2, ImageIcon, X, ArrowUp, Minus, ArrowDown } from "lucide-react";
+import { Camera, Loader2, ImageIcon, X, Crop } from "lucide-react";
 import { EditorProfile } from "@/hooks/useEditorState";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { templates } from "@/data/templates";
+import { BannerCropModal } from "@/components/editor/BannerCropModal";
 
 interface ProfileTabProps {
   profile: EditorProfile;
@@ -28,6 +28,10 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+  
+  // Crop modal state
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
 
   const template = templates.find((t) => t.slug === profile.templateSlug);
   const hasBanner = template?.hasBanner || false;
@@ -80,18 +84,34 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
     }
   };
 
-  const handleBannerUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBannerSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !user) return;
+    if (!file) return;
 
+    // Read file and open crop modal
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageToCrop(reader.result as string);
+      setCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
+    
+    // Reset input so same file can be selected again
+    event.target.value = "";
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    if (!user) return;
+
+    setCropModalOpen(false);
     setIsUploadingBanner(true);
+
     try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${user.id}/banner.${fileExt}`;
+      const fileName = `${user.id}/banner.jpg`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, croppedBlob, { upsert: true, contentType: "image/jpeg" });
 
       if (uploadError) throw uploadError;
 
@@ -113,6 +133,7 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
       });
     } finally {
       setIsUploadingBanner(false);
+      setImageToCrop(null);
     }
   };
 
@@ -124,18 +145,25 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
     });
   };
 
+  const handleEditBanner = () => {
+    if (profile.bannerUrl) {
+      setImageToCrop(profile.bannerUrl);
+      setCropModalOpen(true);
+    }
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Perfil</CardTitle>
-        <CardDescription>
-          Configure suas informações pessoais que aparecerão na sua página.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Banner Upload - Only show if template has banner */}
-        {hasBanner && (
-          <div className="space-y-4">
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Perfil</CardTitle>
+          <CardDescription>
+            Configure suas informações pessoais que aparecerão na sua página.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Banner Upload - Only show if template has banner */}
+          {hasBanner && (
             <div className="space-y-2">
               <Label>Imagem de Capa</Label>
               <div className="relative">
@@ -145,7 +173,6 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
                       src={profile.bannerUrl}
                       alt="Banner"
                       className="w-full h-32 object-cover"
-                      style={{ objectPosition: profile.bannerPosition === "top" ? "top" : profile.bannerPosition === "bottom" ? "bottom" : "center" }}
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                       <Button
@@ -159,7 +186,16 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
                         ) : (
                           <Camera className="h-4 w-4" />
                         )}
-                        <span className="ml-2">Alterar</span>
+                        <span className="ml-2">Nova</span>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={handleEditBanner}
+                        disabled={isUploadingBanner}
+                      >
+                        <Crop className="h-4 w-4" />
+                        <span className="ml-2">Ajustar</span>
                       </Button>
                       <Button
                         size="sm"
@@ -191,129 +227,108 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={handleBannerUpload}
+                  onChange={handleBannerSelect}
                 />
               </div>
             </div>
+          )}
 
-            {/* Banner Position Control */}
-            {profile.bannerUrl && (
-              <div className="space-y-2">
-                <Label>Posição da imagem</Label>
-                <RadioGroup
-                  value={profile.bannerPosition}
-                  onValueChange={(value) => onUpdate({ bannerPosition: value as "top" | "center" | "bottom" })}
-                  className="flex gap-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="top" id="position-top" />
-                    <Label htmlFor="position-top" className="flex items-center gap-1 cursor-pointer font-normal">
-                      <ArrowUp className="h-4 w-4" />
-                      Topo
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="center" id="position-center" />
-                    <Label htmlFor="position-center" className="flex items-center gap-1 cursor-pointer font-normal">
-                      <Minus className="h-4 w-4" />
-                      Centro
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="bottom" id="position-bottom" />
-                    <Label htmlFor="position-bottom" className="flex items-center gap-1 cursor-pointer font-normal">
-                      <ArrowDown className="h-4 w-4" />
-                      Baixo
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-            )}
+          {/* Avatar Upload */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative">
+              <Avatar className="w-24 h-24">
+                <AvatarImage src={profile.avatarUrl || undefined} />
+                <AvatarFallback>
+                  {profile.displayName?.charAt(0) || profile.username?.charAt(0) || "?"}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                size="icon"
+                variant="secondary"
+                className="absolute bottom-0 right-0 rounded-full h-8 w-8"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+              >
+                {isUploading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Camera className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+            />
+            <p className="text-sm text-muted-foreground">
+              Clique no ícone para alterar sua foto
+            </p>
           </div>
-        )}
 
-        {/* Avatar Upload */}
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-            <Avatar className="w-24 h-24">
-              <AvatarImage src={profile.avatarUrl || undefined} />
-              <AvatarFallback>
-                {profile.displayName?.charAt(0) || profile.username?.charAt(0) || "?"}
-              </AvatarFallback>
-            </Avatar>
-            <Button
-              size="icon"
-              variant="secondary"
-              className="absolute bottom-0 right-0 rounded-full h-8 w-8"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-            >
-              {isUploading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Camera className="h-4 w-4" />
-              )}
-            </Button>
+          {/* Username */}
+          <div className="space-y-2">
+            <Label htmlFor="username">@usuário</Label>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">@</span>
+              <Input
+                id="username"
+                ref={usernameRef}
+                value={profile.username}
+                onChange={(e) => onUpdate({ username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "") })}
+                placeholder="seunome"
+                className="flex-1"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Este será o link da sua página: lovable.app/{profile.username || "seunome"}
+            </p>
           </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleAvatarUpload}
-          />
-          <p className="text-sm text-muted-foreground">
-            Clique no ícone para alterar sua foto
-          </p>
-        </div>
 
-        {/* Username */}
-        <div className="space-y-2">
-          <Label htmlFor="username">@usuário</Label>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">@</span>
+          {/* Display Name */}
+          <div className="space-y-2">
+            <Label htmlFor="displayName">Nome de exibição</Label>
             <Input
-              id="username"
-              ref={usernameRef}
-              value={profile.username}
-              onChange={(e) => onUpdate({ username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "") })}
-              placeholder="seunome"
-              className="flex-1"
+              id="displayName"
+              value={profile.displayName}
+              onChange={(e) => onUpdate({ displayName: e.target.value })}
+              placeholder="Seu Nome"
             />
           </div>
-          <p className="text-xs text-muted-foreground">
-            Este será o link da sua página: lovable.app/{profile.username || "seunome"}
-          </p>
-        </div>
 
-        {/* Display Name */}
-        <div className="space-y-2">
-          <Label htmlFor="displayName">Nome de exibição</Label>
-          <Input
-            id="displayName"
-            value={profile.displayName}
-            onChange={(e) => onUpdate({ displayName: e.target.value })}
-            placeholder="Seu Nome"
-          />
-        </div>
+          {/* Bio */}
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio</Label>
+            <Textarea
+              id="bio"
+              ref={bioRef}
+              value={profile.bio}
+              onChange={(e) => onUpdate({ bio: e.target.value })}
+              placeholder="Uma breve descrição sobre você..."
+              rows={3}
+              maxLength={160}
+            />
+            <p className="text-xs text-muted-foreground text-right">
+              {profile.bio?.length || 0}/160 caracteres
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Bio */}
-        <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
-          <Textarea
-            id="bio"
-            ref={bioRef}
-            value={profile.bio}
-            onChange={(e) => onUpdate({ bio: e.target.value })}
-            placeholder="Uma breve descrição sobre você..."
-            rows={3}
-            maxLength={160}
-          />
-          <p className="text-xs text-muted-foreground text-right">
-            {profile.bio?.length || 0}/160 caracteres
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+      {/* Crop Modal */}
+      {imageToCrop && (
+        <BannerCropModal
+          open={cropModalOpen}
+          onOpenChange={(open) => {
+            setCropModalOpen(open);
+            if (!open) setImageToCrop(null);
+          }}
+          imageSrc={imageToCrop}
+          onCropComplete={handleCropComplete}
+        />
+      )}
+    </>
   );
 }

@@ -113,7 +113,6 @@ const BioPage = () => {
                 src={profile.banner_url}
                 alt="Banner"
                 className="w-full h-full object-cover"
-                style={{ objectPosition: profile.banner_position === "top" ? "top" : profile.banner_position === "bottom" ? "bottom" : "center" }}
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
