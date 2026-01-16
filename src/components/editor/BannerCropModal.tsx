@@ -17,9 +17,10 @@ interface BannerCropModalProps {
   onCropComplete: (croppedImageBlob: Blob, offsetY: number) => void;
 }
 
-const ASPECT_RATIO = 16 / 9;
-const OUTPUT_WIDTH = 800;
-const OUTPUT_HEIGHT = OUTPUT_WIDTH / ASPECT_RATIO;
+// Match preview dimensions exactly: 320x160 = 2:1 aspect ratio
+const ASPECT_RATIO = 2;
+const OUTPUT_WIDTH = 640;
+const OUTPUT_HEIGHT = 320;
 
 export function BannerCropModal({
   open,
