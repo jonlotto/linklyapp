@@ -53,12 +53,6 @@ export default function Editor() {
     }
   };
 
-  // Update template when navigating from admin
-  useEffect(() => {
-    if (templateSlug && profile.templateSlug !== templateSlug && !isLoading) {
-      updateProfile({ templateSlug });
-    }
-  }, [templateSlug, profile.templateSlug, updateProfile, isLoading]);
 
   if (authLoading || isLoading) {
     return (
