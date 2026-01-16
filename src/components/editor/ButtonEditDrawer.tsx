@@ -66,6 +66,7 @@ export function ButtonEditDrawer({
   // Button type (link or whatsapp)
   const [buttonType, setButtonType] = useState<"link" | "whatsapp">("link");
   const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [whatsappMessage, setWhatsappMessage] = useState("");
   
   // Button customization
   const [buttonBorderRadius, setButtonBorderRadius] = useState("rounded-xl");
@@ -86,12 +87,22 @@ export function ButtonEditDrawer({
       // Detect if it's a WhatsApp link
       if (initialData.url?.startsWith("https://wa.me/")) {
         setButtonType("whatsapp");
-        setWhatsappNumber(initialData.url.replace("https://wa.me/", ""));
+        try {
+          const waUrl = new URL(initialData.url);
+          const pathNumber = waUrl.pathname.replace("/", "");
+          const message = waUrl.searchParams.get("text") || "";
+          setWhatsappNumber(pathNumber);
+          setWhatsappMessage(message);
+        } catch {
+          setWhatsappNumber(initialData.url.replace("https://wa.me/", "").split("?")[0]);
+          setWhatsappMessage("");
+        }
         setUrl("");
       } else {
         setButtonType("link");
         setUrl(initialData.url);
         setWhatsappNumber("");
+        setWhatsappMessage("");
       }
     } else {
       setTitle("");
@@ -100,6 +111,7 @@ export function ButtonEditDrawer({
       setStyle("filled");
       setButtonType("link");
       setWhatsappNumber("");
+      setWhatsappMessage("");
       setButtonBorderRadius("rounded-xl");
       setUseCustomColors(false);
       setButtonBgColor("#000000");
@@ -145,9 +157,16 @@ export function ButtonEditDrawer({
       return;
     }
 
-    const finalUrl = buttonType === "whatsapp" 
-      ? `https://wa.me/${whatsappNumber.replace(/\D/g, "")}` 
-      : url.trim();
+    let finalUrl: string;
+    if (buttonType === "whatsapp") {
+      const cleanNumber = whatsappNumber.replace(/\D/g, "");
+      finalUrl = `https://wa.me/${cleanNumber}`;
+      if (whatsappMessage.trim()) {
+        finalUrl += `?text=${encodeURIComponent(whatsappMessage.trim())}`;
+      }
+    } else {
+      finalUrl = url.trim();
+    }
 
     onSave({
       title: title.trim(),
@@ -237,24 +256,38 @@ export function ButtonEditDrawer({
                 )}
               </div>
             ) : (
-              <div className="space-y-2">
-                <Label htmlFor="whatsapp">Número do WhatsApp *</Label>
-                <Input
-                  id="whatsapp"
-                  type="tel"
-                  value={whatsappNumber}
-                  onChange={(e) => {
-                    setWhatsappNumber(e.target.value.replace(/\D/g, ""));
-                    setErrors((prev) => ({ ...prev, whatsapp: undefined }));
-                  }}
-                  placeholder="5511999999999"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Digite com código do país e DDD (ex: 5511999999999)
-                </p>
-                {errors.whatsapp && (
-                  <p className="text-xs text-destructive">{errors.whatsapp}</p>
-                )}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp">Número do WhatsApp *</Label>
+                  <Input
+                    id="whatsapp"
+                    type="tel"
+                    value={whatsappNumber}
+                    onChange={(e) => {
+                      setWhatsappNumber(e.target.value.replace(/\D/g, ""));
+                      setErrors((prev) => ({ ...prev, whatsapp: undefined }));
+                    }}
+                    placeholder="5511999999999"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Digite com código do país e DDD (ex: 5511999999999)
+                  </p>
+                  {errors.whatsapp && (
+                    <p className="text-xs text-destructive">{errors.whatsapp}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp-message">Mensagem pré-definida (opcional)</Label>
+                  <Input
+                    id="whatsapp-message"
+                    value={whatsappMessage}
+                    onChange={(e) => setWhatsappMessage(e.target.value)}
+                    placeholder="Olá! Vim pelo seu link..."
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Texto que aparece automaticamente ao abrir a conversa
+                  </p>
+                </div>
               </div>
             )}
 
