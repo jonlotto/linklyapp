@@ -1,0 +1,321 @@
+import { useState, useEffect, useCallback, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+
+export interface EditorLink {
+  id: string;
+  title: string;
+  url: string;
+  icon: string | null;
+  linkType: "button" | "social";
+  style: "filled" | "outline";
+  isActive: boolean;
+  order: number;
+}
+
+export interface EditorProfile {
+  templateSlug: string;
+  avatarUrl: string | null;
+  username: string;
+  displayName: string;
+  bio: string;
+}
+
+export interface EditorState {
+  profile: EditorProfile;
+  links: EditorLink[];
+  isDirty: boolean;
+  isSaving: boolean;
+  lastSaved: Date | null;
+  isLoading: boolean;
+}
+
+const DEBOUNCE_DELAY = 800;
+
+export function useEditorState(initialTemplateSlug?: string) {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null);
+
+  const [state, setState] = useState<EditorState>({
+    profile: {
+      templateSlug: initialTemplateSlug || "starter",
+      avatarUrl: null,
+      username: "",
+      displayName: "",
+      bio: "",
+    },
+    links: [],
+    isDirty: false,
+    isSaving: false,
+    lastSaved: null,
+    isLoading: true,
+  });
+
+  // Load data from Supabase
+  useEffect(() => {
+    if (!user) return;
+
+    const loadData = async () => {
+      setState((prev) => ({ ...prev, isLoading: true }));
+
+      try {
+        // Load profile
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (profileError) throw profileError;
+
+        // Load links
+        const { data: links, error: linksError } = await supabase
+          .from("links")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("position", { ascending: true });
+
+        if (linksError) throw linksError;
+
+        setState((prev) => ({
+          ...prev,
+          profile: {
+            templateSlug: profile?.template_slug || initialTemplateSlug || "starter",
+            avatarUrl: profile?.avatar_url || null,
+            username: profile?.username || "",
+            displayName: profile?.display_name || "",
+            bio: profile?.bio || "",
+          },
+          links: (links || []).map((link) => ({
+            id: link.id,
+            title: link.title,
+            url: link.url,
+            icon: link.icon,
+            linkType: (link.link_type as "button" | "social") || "button",
+            style: (link.style as "filled" | "outline") || "filled",
+            isActive: link.is_active,
+            order: link.position,
+          })),
+          isLoading: false,
+        }));
+      } catch (error) {
+        console.error("Error loading data:", error);
+        toast({
+          title: "Erro ao carregar dados",
+          description: "Não foi possível carregar seus dados.",
+          variant: "destructive",
+        });
+        setState((prev) => ({ ...prev, isLoading: false }));
+      }
+    };
+
+    loadData();
+  }, [user, initialTemplateSlug, toast]);
+
+  // Auto-save with debounce
+  const saveData = useCallback(async () => {
+    if (!user) return;
+
+    setState((prev) => ({ ...prev, isSaving: true }));
+
+    try {
+      // Save profile
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          template_slug: state.profile.templateSlug,
+          avatar_url: state.profile.avatarUrl,
+          username: state.profile.username,
+          display_name: state.profile.displayName,
+          bio: state.profile.bio,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", user.id);
+
+      if (profileError) throw profileError;
+
+      // Save links - delete removed, update existing, insert new
+      const existingIds = state.links.filter((l) => !l.id.startsWith("temp-")).map((l) => l.id);
+      
+      // Delete links not in current state
+      if (existingIds.length > 0) {
+        await supabase
+          .from("links")
+          .delete()
+          .eq("user_id", user.id)
+          .not("id", "in", `(${existingIds.join(",")})`);
+      } else {
+        await supabase.from("links").delete().eq("user_id", user.id);
+      }
+
+      // Upsert all current links
+      for (const link of state.links) {
+        const linkData = {
+          user_id: user.id,
+          title: link.title,
+          url: link.url,
+          icon: link.icon,
+          link_type: link.linkType,
+          style: link.style,
+          is_active: link.isActive,
+          position: link.order,
+        };
+
+        if (link.id.startsWith("temp-")) {
+          // Insert new link
+          const { data: newLink } = await supabase
+            .from("links")
+            .insert(linkData)
+            .select()
+            .single();
+
+          if (newLink) {
+            setState((prev) => ({
+              ...prev,
+              links: prev.links.map((l) =>
+                l.id === link.id ? { ...l, id: newLink.id } : l
+              ),
+            }));
+          }
+        } else {
+          // Update existing link
+          await supabase
+            .from("links")
+            .update(linkData)
+            .eq("id", link.id);
+        }
+      }
+
+      setState((prev) => ({
+        ...prev,
+        isDirty: false,
+        isSaving: false,
+        lastSaved: new Date(),
+      }));
+    } catch (error) {
+      console.error("Error saving data:", error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar suas alterações.",
+        variant: "destructive",
+      });
+      setState((prev) => ({ ...prev, isSaving: false }));
+    }
+  }, [user, state.profile, state.links, toast]);
+
+  // Trigger auto-save when dirty
+  useEffect(() => {
+    if (state.isDirty && !state.isLoading) {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      saveTimeoutRef.current = setTimeout(saveData, DEBOUNCE_DELAY);
+    }
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [state.isDirty, state.isLoading, saveData]);
+
+  // Update profile
+  const updateProfile = useCallback((updates: Partial<EditorProfile>) => {
+    setState((prev) => ({
+      ...prev,
+      profile: { ...prev.profile, ...updates },
+      isDirty: true,
+    }));
+  }, []);
+
+  // Add link
+  const addLink = useCallback((link: Omit<EditorLink, "id" | "order">) => {
+    const newLink: EditorLink = {
+      ...link,
+      id: `temp-${Date.now()}`,
+      order: state.links.length,
+    };
+    setState((prev) => ({
+      ...prev,
+      links: [...prev.links, newLink],
+      isDirty: true,
+    }));
+    return newLink.id;
+  }, [state.links.length]);
+
+  // Update link
+  const updateLink = useCallback((id: string, updates: Partial<EditorLink>) => {
+    setState((prev) => ({
+      ...prev,
+      links: prev.links.map((link) =>
+        link.id === id ? { ...link, ...updates } : link
+      ),
+      isDirty: true,
+    }));
+  }, []);
+
+  // Delete link
+  const deleteLink = useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      links: prev.links
+        .filter((link) => link.id !== id)
+        .map((link, index) => ({ ...link, order: index })),
+      isDirty: true,
+    }));
+  }, []);
+
+  // Duplicate link
+  const duplicateLink = useCallback((id: string) => {
+    const linkToDuplicate = state.links.find((l) => l.id === id);
+    if (!linkToDuplicate) return;
+
+    const newLink: EditorLink = {
+      ...linkToDuplicate,
+      id: `temp-${Date.now()}`,
+      title: `${linkToDuplicate.title} (cópia)`,
+      order: state.links.length,
+    };
+    setState((prev) => ({
+      ...prev,
+      links: [...prev.links, newLink],
+      isDirty: true,
+    }));
+  }, [state.links]);
+
+  // Reorder links
+  const reorderLinks = useCallback((newOrder: string[]) => {
+    setState((prev) => ({
+      ...prev,
+      links: newOrder.map((id, index) => {
+        const link = prev.links.find((l) => l.id === id);
+        return link ? { ...link, order: index } : prev.links[index];
+      }).filter(Boolean) as EditorLink[],
+      isDirty: true,
+    }));
+  }, []);
+
+  // Manual save
+  const save = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveData();
+  }, [saveData]);
+
+  return {
+    ...state,
+    updateProfile,
+    addLink,
+    updateLink,
+    deleteLink,
+    duplicateLink,
+    reorderLinks,
+    save,
+    selectedLinkId,
+    setSelectedLinkId,
+  };
+}
