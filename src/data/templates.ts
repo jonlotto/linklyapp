@@ -3,6 +3,7 @@ export interface Template {
   name: string;
   slug: string;
   description: string;
+  hasBanner?: boolean;
   styles: {
     background: string;
     cardBg: string;
@@ -11,6 +12,8 @@ export interface Template {
     buttonBg: string;
     buttonText: string;
     avatarBorder: string;
+    bannerHeight?: string;
+    contentBg?: string;
   };
 }
 
@@ -73,6 +76,24 @@ export const templates: Template[] = [
       buttonBg: "bg-primary hover:bg-primary/90",
       buttonText: "text-primary-foreground",
       avatarBorder: "ring-4 ring-primary/30",
+    },
+  },
+  {
+    id: "banner",
+    name: "Banner",
+    slug: "banner",
+    description: "Header com imagem de fundo e avatar sobreposto",
+    hasBanner: true,
+    styles: {
+      background: "bg-gray-50",
+      cardBg: "bg-white",
+      textColor: "text-gray-800",
+      buttonStyle: "rounded-xl",
+      buttonBg: "bg-gray-100 hover:bg-gray-200 shadow-sm",
+      buttonText: "text-gray-700",
+      avatarBorder: "ring-4 ring-white shadow-lg",
+      bannerHeight: "h-40",
+      contentBg: "bg-white",
     },
   },
 ];

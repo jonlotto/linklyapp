@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import ProfileHeader from "@/components/ProfileHeader";
 import LinkCard from "@/components/LinkCard";
 import { Link2 } from "lucide-react";
+import { templates } from "@/data/templates";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
@@ -95,54 +98,141 @@ const BioPage = () => {
     );
   }
 
+  const template = templates.find((t) => t.slug === profile?.template_slug) || templates[0];
+  const hasBanner = template.hasBanner;
+
   return (
-    <div className="min-h-screen gradient-bg">
-      <div className="container mx-auto px-4 py-12 max-w-md">
-        {/* Profile Header */}
-        {profile && (
-          <ProfileHeader
-            displayName={profile.display_name || profile.username}
-            username={profile.username}
-            bio={profile.bio || undefined}
-            avatarUrl={profile.avatar_url || undefined}
-          />
-        )}
-
-        {/* Links */}
-        <div className="mt-8 space-y-4">
-          {links.length === 0 ? (
-            <div className="text-center py-8 animate-fade-in">
-              <p className="text-muted-foreground">
-                Nenhum link disponível ainda.
-              </p>
-            </div>
-          ) : (
-            links.map((link, index) => (
-              <LinkCard
-                key={link.id}
-                title={link.title}
-                url={link.url}
-                icon={link.icon || undefined}
-                delay={index * 100}
-                buttonBgColor={link.button_bg_color || undefined}
-                buttonTextColor={link.button_text_color || undefined}
-                buttonBorderRadius={link.button_border_radius || undefined}
+    <div className={cn("min-h-screen", template.styles.background)}>
+      {hasBanner && profile ? (
+        // Banner Layout
+        <div className="min-h-screen">
+          {/* Banner Image */}
+          <div className={cn("relative w-full", template.styles.bannerHeight || "h-48")}>
+            {profile.banner_url ? (
+              <img
+                src={profile.banner_url}
+                alt="Banner"
+                className="w-full h-full object-cover"
               />
-            ))
-          )}
-        </div>
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
+            )}
+            
+            {/* Avatar overlapping banner */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-12">
+              <Avatar className={cn("w-24 h-24", template.styles.avatarBorder)}>
+                <AvatarImage src={profile.avatar_url || undefined} />
+                <AvatarFallback className={cn(template.styles.cardBg, template.styles.textColor)}>
+                  {(profile.display_name || profile.username)?.charAt(0) || "?"}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
 
-        {/* Footer */}
-        <footer className="mt-12 text-center animate-fade-in">
-          <button
-            onClick={() => navigate("/auth")}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors glass rounded-full px-4 py-2"
-          >
-            <Link2 className="h-4 w-4" />
-            Crie seu Link na Bio
-          </button>
-        </footer>
-      </div>
+          {/* Content */}
+          <div className={cn("pt-16 pb-12 px-4", template.styles.contentBg)}>
+            <div className="max-w-md mx-auto">
+              {/* Profile Info */}
+              <div className="text-center mb-8 animate-fade-in">
+                <p className={cn("text-sm mb-1", template.styles.textColor, "opacity-70")}>
+                  @{profile.username}
+                </p>
+                <h1 className={cn("text-2xl font-bold mb-2", template.styles.textColor)}>
+                  {profile.display_name || profile.username}
+                </h1>
+                {profile.bio && (
+                  <p className={cn("text-sm max-w-xs mx-auto", template.styles.textColor, "opacity-80")}>
+                    {profile.bio}
+                  </p>
+                )}
+              </div>
+
+              {/* Links */}
+              <div className="space-y-4">
+                {links.length === 0 ? (
+                  <div className="text-center py-8 animate-fade-in">
+                    <p className="text-muted-foreground">
+                      Nenhum link disponível ainda.
+                    </p>
+                  </div>
+                ) : (
+                  links.map((link, index) => (
+                    <LinkCard
+                      key={link.id}
+                      title={link.title}
+                      url={link.url}
+                      icon={link.icon || undefined}
+                      delay={index * 100}
+                      buttonBgColor={link.button_bg_color || undefined}
+                      buttonTextColor={link.button_text_color || undefined}
+                      buttonBorderRadius={link.button_border_radius || undefined}
+                    />
+                  ))
+                )}
+              </div>
+
+              {/* Footer */}
+              <footer className="mt-12 text-center animate-fade-in">
+                <button
+                  onClick={() => navigate("/auth")}
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors glass rounded-full px-4 py-2"
+                >
+                  <Link2 className="h-4 w-4" />
+                  Crie seu Link na Bio
+                </button>
+              </footer>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Standard Layout
+        <div className="container mx-auto px-4 py-12 max-w-md">
+          {/* Profile Header */}
+          {profile && (
+            <ProfileHeader
+              displayName={profile.display_name || profile.username}
+              username={profile.username}
+              bio={profile.bio || undefined}
+              avatarUrl={profile.avatar_url || undefined}
+            />
+          )}
+
+          {/* Links */}
+          <div className="mt-8 space-y-4">
+            {links.length === 0 ? (
+              <div className="text-center py-8 animate-fade-in">
+                <p className="text-muted-foreground">
+                  Nenhum link disponível ainda.
+                </p>
+              </div>
+            ) : (
+              links.map((link, index) => (
+                <LinkCard
+                  key={link.id}
+                  title={link.title}
+                  url={link.url}
+                  icon={link.icon || undefined}
+                  delay={index * 100}
+                  buttonBgColor={link.button_bg_color || undefined}
+                  buttonTextColor={link.button_text_color || undefined}
+                  buttonBorderRadius={link.button_border_radius || undefined}
+                />
+              ))
+            )}
+          </div>
+
+          {/* Footer */}
+          <footer className="mt-12 text-center animate-fade-in">
+            <button
+              onClick={() => navigate("/auth")}
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors glass rounded-full px-4 py-2"
+            >
+              <Link2 className="h-4 w-4" />
+              Crie seu Link na Bio
+            </button>
+          </footer>
+        </div>
+      )}
     </div>
   );
 };

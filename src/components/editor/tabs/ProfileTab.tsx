@@ -5,16 +5,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, ImageIcon, X } from "lucide-react";
 import { EditorProfile } from "@/hooks/useEditorState";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { templates } from "@/data/templates";
 
 interface ProfileTabProps {
   profile: EditorProfile;
   onUpdate: (updates: Partial<EditorProfile>) => void;
-  focusField?: "avatar" | "username" | "bio" | null;
+  focusField?: "avatar" | "username" | "bio" | "banner" | null;
 }
 
 export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
@@ -23,7 +24,12 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
   const usernameRef = useRef<HTMLInputElement>(null);
   const bioRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+
+  const template = templates.find((t) => t.slug === profile.templateSlug);
+  const hasBanner = template?.hasBanner || false;
 
   useEffect(() => {
     if (focusField === "username" && usernameRef.current) {
@@ -32,6 +38,8 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
       bioRef.current.focus();
     } else if (focusField === "avatar" && fileInputRef.current) {
       fileInputRef.current.click();
+    } else if (focusField === "banner" && bannerInputRef.current) {
+      bannerInputRef.current.click();
     }
   }, [focusField]);
 
@@ -71,6 +79,50 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
     }
   };
 
+  const handleBannerUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    setIsUploadingBanner(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${user.id}/banner.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
+
+      onUpdate({ bannerUrl: `${publicUrl}?t=${Date.now()}` });
+      toast({
+        title: "Banner atualizado",
+        description: "Sua imagem de capa foi alterada com sucesso.",
+      });
+    } catch (error) {
+      console.error("Error uploading banner:", error);
+      toast({
+        title: "Erro ao enviar imagem",
+        description: "Não foi possível atualizar seu banner.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingBanner(false);
+    }
+  };
+
+  const handleRemoveBanner = () => {
+    onUpdate({ bannerUrl: null });
+    toast({
+      title: "Banner removido",
+      description: "Sua imagem de capa foi removida.",
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -80,6 +132,68 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Banner Upload - Only show if template has banner */}
+        {hasBanner && (
+          <div className="space-y-2">
+            <Label>Imagem de Capa</Label>
+            <div className="relative">
+              {profile.bannerUrl ? (
+                <div className="relative rounded-xl overflow-hidden">
+                  <img
+                    src={profile.bannerUrl}
+                    alt="Banner"
+                    className="w-full h-32 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => bannerInputRef.current?.click()}
+                      disabled={isUploadingBanner}
+                    >
+                      {isUploadingBanner ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Camera className="h-4 w-4" />
+                      )}
+                      <span className="ml-2">Alterar</span>
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={handleRemoveBanner}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => bannerInputRef.current?.click()}
+                  disabled={isUploadingBanner}
+                  className="w-full h-32 border-2 border-dashed border-muted-foreground/30 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-muted/50 transition-colors"
+                >
+                  {isUploadingBanner ? (
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  ) : (
+                    <>
+                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Clique para adicionar uma imagem de capa</span>
+                    </>
+                  )}
+                </button>
+              )}
+              <input
+                ref={bannerInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleBannerUpload}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Avatar Upload */}
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
