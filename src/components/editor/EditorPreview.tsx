@@ -5,19 +5,20 @@ import { EditorProfile, EditorLink } from "@/hooks/useEditorState";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { LinkIcon } from "@/components/icons/LinkIcon";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
+const LINK_ICON_VALUE = "link-icon";
 
 const renderIcon = (icon: string | undefined) => {
   if (!icon) return null;
   if (icon === WHATSAPP_ICON_VALUE) {
-    return (
-      <span className="inline-flex mr-2">
-        <WhatsAppIcon className="w-5 h-5" title="WhatsApp" />
-      </span>
-    );
+    return <WhatsAppIcon className="w-5 h-5 shrink-0" title="WhatsApp" />;
   }
-  return <span className="mr-2">{icon}</span>;
+  if (icon === LINK_ICON_VALUE) {
+    return <LinkIcon className="w-5 h-5 shrink-0" title="Link" />;
+  }
+  return <span className="shrink-0">{icon}</span>;
 };
 
 interface EditorPreviewProps {
@@ -145,7 +146,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                       <button
                         key={link.id}
                         className={cn(
-                          "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer text-center",
+                          "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2",
                           link.buttonBorderRadius || template.styles.buttonStyle,
                           !hasCustomColors && (
                             link.style === "filled"
@@ -160,7 +161,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                         onClick={() => onClickElement?.("link", link.id)}
                       >
                         {renderIcon(link.icon)}
-                        {link.title}
+                        <span>{link.title}</span>
                       </button>
                     );
                   })}
@@ -259,7 +260,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                     <button
                       key={link.id}
                       className={cn(
-                        "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer text-center",
+                        "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2",
                         link.buttonBorderRadius || template.styles.buttonStyle,
                         !hasCustomColors && (
                           link.style === "filled"
@@ -274,7 +275,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                       onClick={() => onClickElement?.("link", link.id)}
                     >
                       {renderIcon(link.icon)}
-                      {link.title}
+                      <span>{link.title}</span>
                     </button>
                   );
                 })}
