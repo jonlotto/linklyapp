@@ -1,115 +1,83 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Link2, ArrowRight, Sparkles, Zap, Shield } from "lucide-react";
+import { templates } from "@/data/templates";
+import TemplateCard from "@/components/TemplateCard";
+import type { Template } from "@/data/templates";
 
 const Index = () => {
   const navigate = useNavigate();
 
+  const handleSelectTemplate = (template: Template) => {
+    navigate(`/auth?template=${template.slug}`);
+  };
+
   return (
-    <div className="min-h-screen gradient-bg overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10">
       {/* Decorative elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-64 h-64 bg-primary/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-accent/30 rounded-full blur-3xl" />
-      </div>
+      <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl" />
 
-      {/* Content */}
-      <div className="relative container mx-auto px-4 py-12 min-h-screen flex flex-col">
+      <div className="relative z-10">
         {/* Header */}
-        <header className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-card shadow-glow">
-              <Link2 className="h-6 w-6 text-primary" />
-            </div>
-            <span className="font-display font-bold text-xl">Link na Bio</span>
+        <header className="flex items-center justify-between p-4 md:p-6">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent" />
+            <span className="text-lg font-bold text-foreground">Link na Bio</span>
           </div>
-
           <Button
-            onClick={() => navigate("/auth")}
             variant="outline"
-            className="rounded-full glass border-none"
+            onClick={() => navigate("/auth")}
+            className="rounded-full"
           >
             Entrar
           </Button>
         </header>
 
-        {/* Hero */}
-        <main className="flex-1 flex flex-col items-center justify-center text-center py-16">
-          <div className="animate-fade-in">
-            <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 mb-8">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Simples, rápido e elegante</span>
-            </div>
-
-            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              Todos os seus links
-              <br />
-              <span className="text-gradient">em um só lugar</span>
+        {/* Main Content */}
+        <main className="container mx-auto px-4 py-8 md:py-16">
+          {/* Title Section */}
+          <div className="text-center mb-10 md:mb-16 animate-fade-in">
+            <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+              Escolha seu estilo
             </h1>
-
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-              Crie sua página de links personalizada para Instagram, TikTok, 
-              YouTube e todas as suas redes sociais. Grátis e em segundos.
+            <p className="text-muted-foreground text-base md:text-lg max-w-md mx-auto">
+              Selecione um template para começar ou crie do zero sua página de links personalizada
             </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button
-                onClick={() => navigate("/auth")}
-                size="lg"
-                className="rounded-full px-8 h-14 text-lg bg-primary hover:bg-primary/90 shadow-glow-lg transition-all duration-300 hover:scale-105"
-              >
-                Criar meu link grátis
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-              
-              <Button
-                onClick={() => navigate("/demo")}
-                variant="ghost"
-                size="lg"
-                className="rounded-full px-8 h-14 text-lg"
-              >
-                Ver exemplo
-              </Button>
-            </div>
           </div>
 
-          {/* Features */}
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full animate-slide-up opacity-0" style={{ animationDelay: "300ms" }}>
-            <div className="glass-strong rounded-3xl p-6 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 mx-auto mb-4">
-                <Zap className="h-6 w-6 text-primary" />
+          {/* Templates Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
+            {templates.map((template, index) => (
+              <div
+                key={template.id}
+                className="animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <TemplateCard
+                  template={template}
+                  onClick={handleSelectTemplate}
+                />
               </div>
-              <h3 className="font-display font-bold mb-2">Super Rápido</h3>
-              <p className="text-sm text-muted-foreground">
-                Configure sua página em menos de 1 minuto
-              </p>
-            </div>
+            ))}
+          </div>
 
-            <div className="glass-strong rounded-3xl p-6 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 mx-auto mb-4">
-                <Sparkles className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-display font-bold mb-2">Personalizável</h3>
-              <p className="text-sm text-muted-foreground">
-                Adicione quantos links quiser com emojis
-              </p>
-            </div>
-
-            <div className="glass-strong rounded-3xl p-6 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 mx-auto mb-4">
-                <Shield className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-display font-bold mb-2">Seguro</h3>
-              <p className="text-sm text-muted-foreground">
-                Seus dados protegidos e privados
-              </p>
-            </div>
+          {/* Already have account */}
+          <div className="text-center mt-12">
+            <p className="text-muted-foreground text-sm">
+              Já tem uma conta?{" "}
+              <button
+                onClick={() => navigate("/auth")}
+                className="text-primary font-medium hover:underline"
+              >
+                Faça login
+              </button>
+            </p>
           </div>
         </main>
 
         {/* Footer */}
-        <footer className="text-center text-sm text-muted-foreground">
-          <p>Feito com ❤️ para criadores de conteúdo</p>
+        <footer className="text-center py-8 text-muted-foreground text-sm">
+          <p>© 2026 Link na Bio. Todos os direitos reservados.</p>
         </footer>
       </div>
     </div>
