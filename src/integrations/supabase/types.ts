@@ -20,7 +20,9 @@ export type Database = {
           icon: string | null
           id: string
           is_active: boolean
+          link_type: string | null
           position: number
+          style: string | null
           title: string
           updated_at: string
           url: string
@@ -31,7 +33,9 @@ export type Database = {
           icon?: string | null
           id?: string
           is_active?: boolean
+          link_type?: string | null
           position?: number
+          style?: string | null
           title: string
           updated_at?: string
           url: string
@@ -42,7 +46,9 @@ export type Database = {
           icon?: string | null
           id?: string
           is_active?: boolean
+          link_type?: string | null
           position?: number
+          style?: string | null
           title?: string
           updated_at?: string
           url?: string
@@ -57,6 +63,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          template_slug: string | null
           updated_at: string
           user_id: string
           username: string
@@ -67,6 +74,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          template_slug?: string | null
           updated_at?: string
           user_id: string
           username: string
@@ -77,6 +85,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          template_slug?: string | null
           updated_at?: string
           user_id?: string
           username?: string
