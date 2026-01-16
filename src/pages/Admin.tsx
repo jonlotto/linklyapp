@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { templates, Template } from "@/data/templates";
+import TemplatePreview from "@/components/TemplatePreview";
 import {
   Link2,
   Plus,
@@ -22,6 +24,8 @@ import {
   Shield,
   Crown,
   Users,
+  Palette,
+  Check,
 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -48,6 +52,7 @@ const Admin = () => {
   const [newLinkTitle, setNewLinkTitle] = useState("");
   const [newLinkUrl, setNewLinkUrl] = useState("");
   const [newLinkIcon, setNewLinkIcon] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("starter");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -345,6 +350,42 @@ const Admin = () => {
               <Save className="h-4 w-4 mr-2" />
               {saving ? "Salvando..." : "Salvar perfil"}
             </Button>
+          </div>
+        </section>
+
+        {/* Templates Section */}
+        <section className="glass-strong rounded-3xl p-6 mb-8 animate-fade-in animation-delay-100">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary">
+              <Palette className="h-5 w-5 text-secondary-foreground" />
+            </div>
+            <h2 className="font-display text-xl font-bold">Escolha seu Template</h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {templates.map((template) => (
+              <button
+                key={template.id}
+                onClick={() => setSelectedTemplate(template.slug)}
+                className={`relative rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-[1.02] ${
+                  selectedTemplate === template.slug
+                    ? "border-primary ring-2 ring-primary/30"
+                    : "border-transparent hover:border-border"
+                }`}
+              >
+                <div className="aspect-[9/16]">
+                  <TemplatePreview template={template} />
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                  <span className="text-white text-xs font-medium">{template.name}</span>
+                </div>
+                {selectedTemplate === template.slug && (
+                  <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                    <Check className="h-3 w-3 text-primary-foreground" />
+                  </div>
+                )}
+              </button>
+            ))}
           </div>
         </section>
 
