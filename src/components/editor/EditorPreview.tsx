@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { templates } from "@/data/templates";
 import { EditorProfile, EditorLink } from "@/hooks/useEditorState";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 interface EditorPreviewProps {
   profile: EditorProfile;
@@ -26,8 +27,10 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
     <div className="flex flex-col items-center">
       {/* Phone Frame */}
       <div
-        className="relative w-[320px] h-[640px] rounded-[3rem] border-8 border-foreground/20 shadow-2xl overflow-hidden"
-        style={{ background: template.styles.background }}
+        className={cn(
+          "relative w-[320px] h-[640px] rounded-[3rem] border-8 border-foreground/20 shadow-2xl overflow-hidden",
+          template.styles.background
+        )}
       >
         {/* Notch */}
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-foreground/20 rounded-b-2xl z-10" />
@@ -40,15 +43,11 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
             onClick={() => onClickElement?.("avatar")}
           >
             <Avatar
-              className="w-24 h-24"
-              style={{ border: `3px solid ${template.styles.avatarBorder}` }}
+              className={cn("w-24 h-24", template.styles.avatarBorder)}
             >
               <AvatarImage src={profile.avatarUrl || undefined} />
               <AvatarFallback
-                style={{
-                  background: template.styles.cardBg,
-                  color: template.styles.textColor,
-                }}
+                className={cn(template.styles.cardBg, template.styles.textColor)}
               >
                 {profile.displayName?.charAt(0) || profile.username?.charAt(0) || "?"}
               </AvatarFallback>
@@ -57,8 +56,10 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
 
           {/* Username */}
           <p
-            className="text-center text-sm mb-1 cursor-pointer hover:opacity-80 transition-opacity"
-            style={{ color: template.styles.textColor }}
+            className={cn(
+              "text-center text-sm mb-1 cursor-pointer hover:opacity-80 transition-opacity",
+              template.styles.textColor
+            )}
             onClick={() => onClickElement?.("username")}
           >
             @{profile.username || "usuario"}
@@ -66,16 +67,20 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
 
           {/* Display Name */}
           <h1
-            className="text-center text-xl font-bold mb-2"
-            style={{ color: template.styles.textColor }}
+            className={cn(
+              "text-center text-xl font-bold mb-2",
+              template.styles.textColor
+            )}
           >
             {profile.displayName || "Nome de Exibição"}
           </h1>
 
           {/* Bio */}
           <p
-            className="text-center text-sm mb-6 cursor-pointer hover:opacity-80 transition-opacity"
-            style={{ color: template.styles.textColor, opacity: 0.8 }}
+            className={cn(
+              "text-center text-sm mb-6 cursor-pointer hover:opacity-80 transition-opacity opacity-80",
+              template.styles.textColor
+            )}
             onClick={() => onClickElement?.("bio")}
           >
             {profile.bio || "Sua bio aqui..."}
@@ -86,21 +91,13 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
             {buttons.map((link) => (
               <button
                 key={link.id}
-                className="w-full py-3 px-4 rounded-xl font-medium transition-all hover:scale-[1.02] cursor-pointer text-center"
-                style={{
-                  background:
-                    link.style === "filled"
-                      ? template.styles.buttonBg
-                      : "transparent",
-                  color:
-                    link.style === "filled"
-                      ? template.styles.buttonText
-                      : template.styles.buttonBg,
-                  border:
-                    link.style === "outline"
-                      ? `2px solid ${template.styles.buttonBg}`
-                      : "none",
-                }}
+                className={cn(
+                  "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer text-center",
+                  template.styles.buttonStyle,
+                  link.style === "filled"
+                    ? cn(template.styles.buttonBg, template.styles.buttonText)
+                    : cn("bg-transparent border-2", template.styles.textColor)
+                )}
                 onClick={() => onClickElement?.("link", link.id)}
               >
                 {link.icon && <span className="mr-2">{link.icon}</span>}
@@ -109,11 +106,10 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
             ))}
             {buttons.length === 0 && (
               <div
-                className="w-full py-3 px-4 rounded-xl text-center opacity-50 border-2 border-dashed"
-                style={{
-                  borderColor: template.styles.textColor,
-                  color: template.styles.textColor,
-                }}
+                className={cn(
+                  "w-full py-3 px-4 rounded-xl text-center opacity-50 border-2 border-dashed border-current",
+                  template.styles.textColor
+                )}
               >
                 Adicione seus botões
               </div>
@@ -126,11 +122,11 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               {socials.map((social) => (
                 <button
                   key={social.id}
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-xl hover:scale-110 transition-transform cursor-pointer"
-                  style={{
-                    background: template.styles.cardBg,
-                    color: template.styles.textColor,
-                  }}
+                  className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center text-xl hover:scale-110 transition-transform cursor-pointer",
+                    template.styles.cardBg,
+                    template.styles.textColor
+                  )}
                   onClick={() => onClickElement?.("link", social.id)}
                 >
                   {social.icon || "🔗"}
