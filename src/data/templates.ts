@@ -92,7 +92,7 @@ export const templates: Template[] = [
       buttonBg: "bg-gray-100 hover:bg-gray-200 shadow-sm",
       buttonText: "text-gray-700",
       avatarBorder: "ring-4 ring-white shadow-lg",
-      bannerHeight: "h-40",
+      bannerHeight: "aspect-[2/1] w-full",
       contentBg: "bg-white",
     },
   },

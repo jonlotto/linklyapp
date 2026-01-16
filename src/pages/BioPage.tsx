@@ -111,34 +111,34 @@ const BioPage = () => {
       style={backgroundStyle}
     >
       {hasBanner && profile ? (
-        // Banner Layout
-        <div className="min-h-screen">
-          {/* Banner Image */}
-          <div className={cn("relative w-full", template.styles.bannerHeight || "h-48")}>
-            {profile.banner_url ? (
-              <img
-                src={profile.banner_url}
-                alt="Banner"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
-            )}
-            
-            {/* Avatar overlapping banner */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-12">
-              <Avatar className={cn("w-24 h-24", template.styles.avatarBorder)}>
-                <AvatarImage src={profile.avatar_url || undefined} />
-                <AvatarFallback className={cn(template.styles.cardBg, template.styles.textColor)}>
-                  {(profile.display_name || profile.username)?.charAt(0) || "?"}
-                </AvatarFallback>
-              </Avatar>
+        // Banner Layout - centered container for consistent look
+        <div className="min-h-screen flex flex-col items-center">
+          <div className="w-full max-w-md">
+            {/* Banner Image - fixed 2:1 aspect ratio */}
+            <div className="relative w-full aspect-[2/1]">
+              {profile.banner_url ? (
+                <img
+                  src={profile.banner_url}
+                  alt="Banner"
+                  className="w-full h-full object-fill"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
+              )}
+              
+              {/* Avatar overlapping banner */}
+              <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-12">
+                <Avatar className={cn("w-24 h-24", template.styles.avatarBorder)}>
+                  <AvatarImage src={profile.avatar_url || undefined} />
+                  <AvatarFallback className={cn(template.styles.cardBg, template.styles.textColor)}>
+                    {(profile.display_name || profile.username)?.charAt(0) || "?"}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
             </div>
-          </div>
 
-          {/* Content */}
-          <div className={cn("pt-16 pb-12 px-4", template.styles.contentBg)}>
-            <div className="max-w-md mx-auto">
+            {/* Content */}
+            <div className={cn("pt-16 pb-12 px-4", template.styles.contentBg)}>
               {/* Profile Info */}
               <div className="text-center mb-8 animate-fade-in">
                 <p className={cn("text-sm mb-1", template.styles.textColor, "opacity-70")}>
