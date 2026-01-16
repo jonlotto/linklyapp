@@ -121,21 +121,32 @@ export function BannerCropModal({
     canvas.height = OUTPUT_HEIGHT;
 
     const { frameWidth, frameHeight } = getFrameDimensions();
-    const scaledImageHeight = (imageDimensions.height / imageDimensions.width) * frameWidth;
     
-    // Calculate which part of the image to crop
-    const visibleTopInScaled = (scaledImageHeight - frameHeight) / 2 - offsetY;
-    const visibleTopRatio = visibleTopInScaled / scaledImageHeight;
+    // Scale factor: image is scaled to fit frame width
+    const scale = frameWidth / imageDimensions.width;
+    const scaledImageHeight = imageDimensions.height * scale;
     
-    const sourceY = visibleTopRatio * imageDimensions.height;
-    const sourceHeight = (frameHeight / scaledImageHeight) * imageDimensions.height;
+    // Initial center position (without any offset)
+    const centerOffset = (scaledImageHeight - frameHeight) / 2;
+    
+    // When offsetY is positive, image moved DOWN, so we see the TOP of the image
+    // visibleTopScaled = how far from the top of the scaled image the visible area starts
+    const visibleTopScaled = centerOffset - offsetY;
+    
+    // Convert back to original image coordinates
+    const sourceY = visibleTopScaled / scale;
+    const sourceHeight = frameHeight / scale;
+    
+    // Clamp values to stay within image bounds
+    const clampedSourceY = Math.max(0, Math.min(sourceY, imageDimensions.height - sourceHeight));
+    const clampedSourceHeight = Math.min(sourceHeight, imageDimensions.height - clampedSourceY);
 
     ctx.drawImage(
       img,
       0,
-      Math.max(0, sourceY),
+      clampedSourceY,
       imageDimensions.width,
-      Math.min(sourceHeight, imageDimensions.height - sourceY),
+      clampedSourceHeight,
       0,
       0,
       OUTPUT_WIDTH,
