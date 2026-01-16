@@ -21,6 +21,7 @@ export interface EditorLink {
 export interface EditorProfile {
   templateSlug: string;
   avatarUrl: string | null;
+  bannerUrl: string | null;
   username: string;
   displayName: string;
   bio: string;
@@ -47,6 +48,7 @@ export function useEditorState(initialTemplateSlug?: string) {
     profile: {
       templateSlug: initialTemplateSlug || "starter",
       avatarUrl: null,
+      bannerUrl: null,
       username: "",
       displayName: "",
       bio: "",
@@ -100,6 +102,7 @@ export function useEditorState(initialTemplateSlug?: string) {
           profile: {
             templateSlug: finalTemplateSlug,
             avatarUrl: profile?.avatar_url || null,
+            bannerUrl: profile?.banner_url || null,
             username: profile?.username || "",
             displayName: profile?.display_name || "",
             bio: profile?.bio || "",
@@ -149,6 +152,7 @@ export function useEditorState(initialTemplateSlug?: string) {
         .update({
           template_slug: currentState.profile.templateSlug,
           avatar_url: currentState.profile.avatarUrl,
+          banner_url: currentState.profile.bannerUrl,
           username: currentState.profile.username,
           display_name: currentState.profile.displayName,
           bio: currentState.profile.bio,
