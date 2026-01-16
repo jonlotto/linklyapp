@@ -4,6 +4,17 @@ import { templates } from "@/data/templates";
 import { EditorProfile, EditorLink } from "@/hooks/useEditorState";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import whatsappIcon from "@/assets/whatsapp.svg";
+
+const WHATSAPP_ICON_VALUE = "whatsapp-icon";
+
+const renderIcon = (icon: string | undefined) => {
+  if (!icon) return null;
+  if (icon === WHATSAPP_ICON_VALUE) {
+    return <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5 inline-block mr-2" />;
+  }
+  return <span className="mr-2">{icon}</span>;
+};
 
 interface EditorPreviewProps {
   profile: EditorProfile;
@@ -138,7 +149,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                         } : undefined}
                         onClick={() => onClickElement?.("link", link.id)}
                       >
-                        {link.icon && <span className="mr-2">{link.icon}</span>}
+                        {renderIcon(link.icon)}
                         {link.title}
                       </button>
                     );
@@ -249,7 +260,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                       } : undefined}
                       onClick={() => onClickElement?.("link", link.id)}
                     >
-                      {link.icon && <span className="mr-2">{link.icon}</span>}
+                      {renderIcon(link.icon)}
                       {link.title}
                     </button>
                   );
