@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -20,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EditorLink } from "@/hooks/useEditorState";
+import { cn } from "@/lib/utils";
 
 const ICONS = [
   { value: "", label: "Nenhum" },
@@ -34,6 +36,12 @@ const ICONS = [
   { value: "🎁", label: "🎁 Promoção" },
   { value: "⭐", label: "⭐ Destaque" },
   { value: "🚀", label: "🚀 Lançamento" },
+];
+
+const BORDER_RADIUS_OPTIONS = [
+  { value: "rounded-none", label: "Quadrado", preview: "rounded-none" },
+  { value: "rounded-xl", label: "Arredondado", preview: "rounded-xl" },
+  { value: "rounded-full", label: "Pílula", preview: "rounded-full" },
 ];
 
 interface ButtonEditDrawerProps {
@@ -54,6 +62,12 @@ export function ButtonEditDrawer({
   const [icon, setIcon] = useState("");
   const [style, setStyle] = useState<"filled" | "outline">("filled");
   const [errors, setErrors] = useState<{ title?: string; url?: string }>({});
+  
+  // Button customization
+  const [buttonBorderRadius, setButtonBorderRadius] = useState("rounded-xl");
+  const [useCustomColors, setUseCustomColors] = useState(false);
+  const [buttonBgColor, setButtonBgColor] = useState("#000000");
+  const [buttonTextColor, setButtonTextColor] = useState("#ffffff");
 
   useEffect(() => {
     if (initialData) {
@@ -61,11 +75,19 @@ export function ButtonEditDrawer({
       setUrl(initialData.url);
       setIcon(initialData.icon || "");
       setStyle(initialData.style);
+      setButtonBorderRadius(initialData.buttonBorderRadius || "rounded-xl");
+      setUseCustomColors(!!initialData.buttonBgColor || !!initialData.buttonTextColor);
+      setButtonBgColor(initialData.buttonBgColor || "#000000");
+      setButtonTextColor(initialData.buttonTextColor || "#ffffff");
     } else {
       setTitle("");
       setUrl("");
       setIcon("");
       setStyle("filled");
+      setButtonBorderRadius("rounded-xl");
+      setUseCustomColors(false);
+      setButtonBgColor("#000000");
+      setButtonTextColor("#ffffff");
     }
     setErrors({});
   }, [initialData, open]);
@@ -103,13 +125,16 @@ export function ButtonEditDrawer({
       icon: icon || null,
       style,
       isActive: initialData?.isActive ?? true,
+      buttonBgColor: useCustomColors ? buttonBgColor : null,
+      buttonTextColor: useCustomColors ? buttonTextColor : null,
+      buttonBorderRadius,
     });
   };
 
   return (
     <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm">
+        <div className="mx-auto w-full max-w-sm max-h-[85vh] overflow-auto">
           <DrawerHeader>
             <DrawerTitle>
               {initialData ? "Editar Botão" : "Novo Botão"}
@@ -194,6 +219,95 @@ export function ButtonEditDrawer({
                 </div>
               </RadioGroup>
             </div>
+
+            {/* Button Format */}
+            <div className="space-y-2">
+              <Label>Formato do Botão</Label>
+              <div className="flex gap-2">
+                {BORDER_RADIUS_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setButtonBorderRadius(option.value)}
+                    className={cn(
+                      "flex-1 py-3 px-2 border-2 transition-all text-sm",
+                      option.preview,
+                      buttonBorderRadius === option.value
+                        ? "border-primary bg-primary/10"
+                        : "border-muted hover:border-muted-foreground/50"
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Colors Toggle */}
+            <div className="flex items-center justify-between">
+              <Label htmlFor="custom-colors">Usar cores personalizadas</Label>
+              <Switch
+                id="custom-colors"
+                checked={useCustomColors}
+                onCheckedChange={setUseCustomColors}
+              />
+            </div>
+
+            {/* Custom Colors */}
+            {useCustomColors && (
+              <div className="space-y-3 p-3 border rounded-lg bg-muted/30">
+                <div className="space-y-2">
+                  <Label htmlFor="bg-color">Cor de fundo</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="bg-color"
+                      type="color"
+                      value={buttonBgColor}
+                      onChange={(e) => setButtonBgColor(e.target.value)}
+                      className="w-12 h-10 p-1 cursor-pointer"
+                    />
+                    <Input
+                      value={buttonBgColor}
+                      onChange={(e) => setButtonBgColor(e.target.value)}
+                      placeholder="#000000"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="text-color">Cor do texto</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="text-color"
+                      type="color"
+                      value={buttonTextColor}
+                      onChange={(e) => setButtonTextColor(e.target.value)}
+                      className="w-12 h-10 p-1 cursor-pointer"
+                    />
+                    <Input
+                      value={buttonTextColor}
+                      onChange={(e) => setButtonTextColor(e.target.value)}
+                      placeholder="#ffffff"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+                
+                {/* Preview */}
+                <div className="pt-2">
+                  <Label className="text-xs text-muted-foreground">Preview</Label>
+                  <div
+                    className={cn("w-full py-3 px-4 text-center font-medium mt-1", buttonBorderRadius)}
+                    style={{
+                      backgroundColor: buttonBgColor,
+                      color: buttonTextColor,
+                    }}
+                  >
+                    {title || "Texto do botão"}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <DrawerFooter>

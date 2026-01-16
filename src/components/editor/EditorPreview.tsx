@@ -88,22 +88,31 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
 
           {/* Buttons */}
           <div className="space-y-3 mb-6">
-            {buttons.map((link) => (
-              <button
-                key={link.id}
-                className={cn(
-                  "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer text-center",
-                  template.styles.buttonStyle,
-                  link.style === "filled"
-                    ? cn(template.styles.buttonBg, template.styles.buttonText)
-                    : cn("bg-transparent border-2", template.styles.textColor)
-                )}
-                onClick={() => onClickElement?.("link", link.id)}
-              >
-                {link.icon && <span className="mr-2">{link.icon}</span>}
-                {link.title}
-              </button>
-            ))}
+            {buttons.map((link) => {
+              const hasCustomColors = link.buttonBgColor || link.buttonTextColor;
+              return (
+                <button
+                  key={link.id}
+                  className={cn(
+                    "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer text-center",
+                    link.buttonBorderRadius || template.styles.buttonStyle,
+                    !hasCustomColors && (
+                      link.style === "filled"
+                        ? cn(template.styles.buttonBg, template.styles.buttonText)
+                        : cn("bg-transparent border-2", template.styles.textColor)
+                    )
+                  )}
+                  style={hasCustomColors ? {
+                    backgroundColor: link.buttonBgColor || undefined,
+                    color: link.buttonTextColor || undefined,
+                  } : undefined}
+                  onClick={() => onClickElement?.("link", link.id)}
+                >
+                  {link.icon && <span className="mr-2">{link.icon}</span>}
+                  {link.title}
+                </button>
+              );
+            })}
             {buttons.length === 0 && (
               <div
                 className={cn(
