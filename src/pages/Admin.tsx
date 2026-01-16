@@ -366,7 +366,7 @@ const Admin = () => {
             {templates.map((template) => (
               <button
                 key={template.id}
-                onClick={() => setSelectedTemplate(template.slug)}
+                onClick={() => navigate(`/editor?template=${template.slug}`)}
                 className={`relative rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-[1.02] ${
                   selectedTemplate === template.slug
                     ? "border-primary ring-2 ring-primary/30"
@@ -387,6 +387,9 @@ const Admin = () => {
               </button>
             ))}
           </div>
+          <p className="text-sm text-muted-foreground mt-4 text-center">
+            Clique em um template para abrir o editor completo
+          </p>
         </section>
 
         {/* Links Section */}
