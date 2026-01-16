@@ -22,6 +22,7 @@ export interface EditorProfile {
   templateSlug: string;
   avatarUrl: string | null;
   bannerUrl: string | null;
+  bannerPosition: "top" | "center" | "bottom";
   username: string;
   displayName: string;
   bio: string;
@@ -49,6 +50,7 @@ export function useEditorState(initialTemplateSlug?: string) {
       templateSlug: initialTemplateSlug || "starter",
       avatarUrl: null,
       bannerUrl: null,
+      bannerPosition: "center",
       username: "",
       displayName: "",
       bio: "",
@@ -103,6 +105,7 @@ export function useEditorState(initialTemplateSlug?: string) {
             templateSlug: finalTemplateSlug,
             avatarUrl: profile?.avatar_url || null,
             bannerUrl: profile?.banner_url || null,
+            bannerPosition: (profile?.banner_position as "top" | "center" | "bottom") || "center",
             username: profile?.username || "",
             displayName: profile?.display_name || "",
             bio: profile?.bio || "",
@@ -153,6 +156,7 @@ export function useEditorState(initialTemplateSlug?: string) {
           template_slug: currentState.profile.templateSlug,
           avatar_url: currentState.profile.avatarUrl,
           banner_url: currentState.profile.bannerUrl,
+          banner_position: currentState.profile.bannerPosition,
           username: currentState.profile.username,
           display_name: currentState.profile.displayName,
           bio: currentState.profile.bio,

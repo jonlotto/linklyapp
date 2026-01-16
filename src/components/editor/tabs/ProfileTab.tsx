@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Camera, Loader2, ImageIcon, X } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Camera, Loader2, ImageIcon, X, ArrowUp, Minus, ArrowDown } from "lucide-react";
 import { EditorProfile } from "@/hooks/useEditorState";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -134,63 +135,100 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
       <CardContent className="space-y-6">
         {/* Banner Upload - Only show if template has banner */}
         {hasBanner && (
-          <div className="space-y-2">
-            <Label>Imagem de Capa</Label>
-            <div className="relative">
-              {profile.bannerUrl ? (
-                <div className="relative rounded-xl overflow-hidden">
-                  <img
-                    src={profile.bannerUrl}
-                    alt="Banner"
-                    className="w-full h-32 object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => bannerInputRef.current?.click()}
-                      disabled={isUploadingBanner}
-                    >
-                      {isUploadingBanner ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Camera className="h-4 w-4" />
-                      )}
-                      <span className="ml-2">Alterar</span>
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={handleRemoveBanner}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Imagem de Capa</Label>
+              <div className="relative">
+                {profile.bannerUrl ? (
+                  <div className="relative rounded-xl overflow-hidden">
+                    <img
+                      src={profile.bannerUrl}
+                      alt="Banner"
+                      className="w-full h-32 object-cover"
+                      style={{ objectPosition: profile.bannerPosition === "top" ? "top" : profile.bannerPosition === "bottom" ? "bottom" : "center" }}
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => bannerInputRef.current?.click()}
+                        disabled={isUploadingBanner}
+                      >
+                        {isUploadingBanner ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Camera className="h-4 w-4" />
+                        )}
+                        <span className="ml-2">Alterar</span>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={handleRemoveBanner}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => bannerInputRef.current?.click()}
-                  disabled={isUploadingBanner}
-                  className="w-full h-32 border-2 border-dashed border-muted-foreground/30 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-muted/50 transition-colors"
-                >
-                  {isUploadingBanner ? (
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  ) : (
-                    <>
-                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Clique para adicionar uma imagem de capa</span>
-                    </>
-                  )}
-                </button>
-              )}
-              <input
-                ref={bannerInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleBannerUpload}
-              />
+                ) : (
+                  <button
+                    onClick={() => bannerInputRef.current?.click()}
+                    disabled={isUploadingBanner}
+                    className="w-full h-32 border-2 border-dashed border-muted-foreground/30 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-muted/50 transition-colors"
+                  >
+                    {isUploadingBanner ? (
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    ) : (
+                      <>
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Clique para adicionar uma imagem de capa</span>
+                      </>
+                    )}
+                  </button>
+                )}
+                <input
+                  ref={bannerInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleBannerUpload}
+                />
+              </div>
             </div>
+
+            {/* Banner Position Control */}
+            {profile.bannerUrl && (
+              <div className="space-y-2">
+                <Label>Posição da imagem</Label>
+                <RadioGroup
+                  value={profile.bannerPosition}
+                  onValueChange={(value) => onUpdate({ bannerPosition: value as "top" | "center" | "bottom" })}
+                  className="flex gap-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="top" id="position-top" />
+                    <Label htmlFor="position-top" className="flex items-center gap-1 cursor-pointer font-normal">
+                      <ArrowUp className="h-4 w-4" />
+                      Topo
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="center" id="position-center" />
+                    <Label htmlFor="position-center" className="flex items-center gap-1 cursor-pointer font-normal">
+                      <Minus className="h-4 w-4" />
+                      Centro
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="bottom" id="position-bottom" />
+                    <Label htmlFor="position-bottom" className="flex items-center gap-1 cursor-pointer font-normal">
+                      <ArrowDown className="h-4 w-4" />
+                      Baixo
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            )}
           </div>
         )}
 
