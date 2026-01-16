@@ -19,6 +19,9 @@ import { GripVertical, Pencil, Copy, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { EditorLink } from "@/hooks/useEditorState";
+import whatsappIcon from "@/assets/whatsapp.svg";
+
+const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 
 interface DraggableListProps {
   items: EditorLink[];
@@ -84,7 +87,11 @@ function SortableItem({
 
       {/* Icon */}
       {item.icon && (
-        <span className="text-xl">{item.icon}</span>
+        item.icon === WHATSAPP_ICON_VALUE ? (
+          <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5" />
+        ) : (
+          <span className="text-xl">{item.icon}</span>
+        )
       )}
 
       {/* Content */}
