@@ -61,7 +61,11 @@ export function ButtonEditDrawer({
   const [url, setUrl] = useState("");
   const [icon, setIcon] = useState("");
   const [style, setStyle] = useState<"filled" | "outline">("filled");
-  const [errors, setErrors] = useState<{ title?: string; url?: string }>({});
+  const [errors, setErrors] = useState<{ title?: string; url?: string; whatsapp?: string }>({});
+  
+  // Button type (link or whatsapp)
+  const [buttonType, setButtonType] = useState<"link" | "whatsapp">("link");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
   
   // Button customization
   const [buttonBorderRadius, setButtonBorderRadius] = useState("rounded-xl");
@@ -72,18 +76,30 @@ export function ButtonEditDrawer({
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
-      setUrl(initialData.url);
       setIcon(initialData.icon || "");
       setStyle(initialData.style);
       setButtonBorderRadius(initialData.buttonBorderRadius || "rounded-xl");
       setUseCustomColors(!!initialData.buttonBgColor || !!initialData.buttonTextColor);
       setButtonBgColor(initialData.buttonBgColor || "#000000");
       setButtonTextColor(initialData.buttonTextColor || "#ffffff");
+      
+      // Detect if it's a WhatsApp link
+      if (initialData.url?.startsWith("https://wa.me/")) {
+        setButtonType("whatsapp");
+        setWhatsappNumber(initialData.url.replace("https://wa.me/", ""));
+        setUrl("");
+      } else {
+        setButtonType("link");
+        setUrl(initialData.url);
+        setWhatsappNumber("");
+      }
     } else {
       setTitle("");
       setUrl("");
       setIcon("");
       setStyle("filled");
+      setButtonType("link");
+      setWhatsappNumber("");
       setButtonBorderRadius("rounded-xl");
       setUseCustomColors(false);
       setButtonBgColor("#000000");
@@ -102,16 +118,26 @@ export function ButtonEditDrawer({
   };
 
   const handleSave = () => {
-    const newErrors: { title?: string; url?: string } = {};
+    const newErrors: { title?: string; url?: string; whatsapp?: string } = {};
 
     if (!title.trim()) {
       newErrors.title = "O título é obrigatório";
     }
 
-    if (!url.trim()) {
-      newErrors.url = "O link é obrigatório";
-    } else if (!validateUrl(url)) {
-      newErrors.url = "Digite uma URL válida (ex: https://exemplo.com)";
+    if (buttonType === "link") {
+      if (!url.trim()) {
+        newErrors.url = "O link é obrigatório";
+      } else if (!validateUrl(url)) {
+        newErrors.url = "Digite uma URL válida (ex: https://exemplo.com)";
+      }
+    } else {
+      // WhatsApp validation
+      const cleanNumber = whatsappNumber.replace(/\D/g, "");
+      if (!cleanNumber) {
+        newErrors.whatsapp = "O número é obrigatório";
+      } else if (cleanNumber.length < 10) {
+        newErrors.whatsapp = "Digite um número válido com DDD";
+      }
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -119,9 +145,13 @@ export function ButtonEditDrawer({
       return;
     }
 
+    const finalUrl = buttonType === "whatsapp" 
+      ? `https://wa.me/${whatsappNumber.replace(/\D/g, "")}` 
+      : url.trim();
+
     onSave({
       title: title.trim(),
-      url: url.trim(),
+      url: finalUrl,
       icon: icon || null,
       style,
       isActive: initialData?.isActive ?? true,
@@ -162,23 +192,71 @@ export function ButtonEditDrawer({
               )}
             </div>
 
-            {/* URL */}
+            {/* Button Type */}
             <div className="space-y-2">
-              <Label htmlFor="url">Link (URL) *</Label>
-              <Input
-                id="url"
-                type="url"
-                value={url}
-                onChange={(e) => {
-                  setUrl(e.target.value);
-                  setErrors((prev) => ({ ...prev, url: undefined }));
+              <Label>Tipo</Label>
+              <RadioGroup
+                value={buttonType}
+                onValueChange={(v) => {
+                  setButtonType(v as "link" | "whatsapp");
+                  setErrors({});
                 }}
-                placeholder="https://exemplo.com"
-              />
-              {errors.url && (
-                <p className="text-xs text-destructive">{errors.url}</p>
-              )}
+                className="flex gap-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="link" id="type-link" />
+                  <Label htmlFor="type-link" className="font-normal cursor-pointer">
+                    Link
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="whatsapp" id="type-whatsapp" />
+                  <Label htmlFor="type-whatsapp" className="font-normal cursor-pointer">
+                    WhatsApp
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
+
+            {/* URL or WhatsApp */}
+            {buttonType === "link" ? (
+              <div className="space-y-2">
+                <Label htmlFor="url">Link (URL) *</Label>
+                <Input
+                  id="url"
+                  type="url"
+                  value={url}
+                  onChange={(e) => {
+                    setUrl(e.target.value);
+                    setErrors((prev) => ({ ...prev, url: undefined }));
+                  }}
+                  placeholder="https://exemplo.com"
+                />
+                {errors.url && (
+                  <p className="text-xs text-destructive">{errors.url}</p>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp">Número do WhatsApp *</Label>
+                <Input
+                  id="whatsapp"
+                  type="tel"
+                  value={whatsappNumber}
+                  onChange={(e) => {
+                    setWhatsappNumber(e.target.value.replace(/\D/g, ""));
+                    setErrors((prev) => ({ ...prev, whatsapp: undefined }));
+                  }}
+                  placeholder="5511999999999"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Digite com código do país e DDD (ex: 5511999999999)
+                </p>
+                {errors.whatsapp && (
+                  <p className="text-xs text-destructive">{errors.whatsapp}</p>
+                )}
+              </div>
+            )}
 
             {/* Icon */}
             <div className="space-y-2">
