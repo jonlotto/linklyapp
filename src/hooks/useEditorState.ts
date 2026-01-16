@@ -54,6 +54,12 @@ export function useEditorState(initialTemplateSlug?: string) {
     isLoading: true,
   });
 
+  // Ref to always have current state for saveData callback
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
   // Load data from Supabase
   useEffect(() => {
     if (!user) return;
@@ -80,10 +86,15 @@ export function useEditorState(initialTemplateSlug?: string) {
 
         if (linksError) throw linksError;
 
+        // Prioritize URL template over database value
+        const dbTemplateSlug = profile?.template_slug || "starter";
+        const finalTemplateSlug = initialTemplateSlug || dbTemplateSlug;
+        const templateChanged = initialTemplateSlug && initialTemplateSlug !== dbTemplateSlug;
+
         setState((prev) => ({
           ...prev,
           profile: {
-            templateSlug: profile?.template_slug || initialTemplateSlug || "starter",
+            templateSlug: finalTemplateSlug,
             avatarUrl: profile?.avatar_url || null,
             username: profile?.username || "",
             displayName: profile?.display_name || "",
@@ -100,6 +111,7 @@ export function useEditorState(initialTemplateSlug?: string) {
             order: link.position,
           })),
           isLoading: false,
+          isDirty: templateChanged || false,
         }));
       } catch (error) {
         console.error("Error loading data:", error);
@@ -115,9 +127,11 @@ export function useEditorState(initialTemplateSlug?: string) {
     loadData();
   }, [user, initialTemplateSlug, toast]);
 
-  // Auto-save with debounce
+  // Auto-save with debounce - use ref to avoid stale closure
   const saveData = useCallback(async () => {
     if (!user) return;
+
+    const currentState = stateRef.current;
 
     setState((prev) => ({ ...prev, isSaving: true }));
 
@@ -126,11 +140,11 @@ export function useEditorState(initialTemplateSlug?: string) {
       const { error: profileError } = await supabase
         .from("profiles")
         .update({
-          template_slug: state.profile.templateSlug,
-          avatar_url: state.profile.avatarUrl,
-          username: state.profile.username,
-          display_name: state.profile.displayName,
-          bio: state.profile.bio,
+          template_slug: currentState.profile.templateSlug,
+          avatar_url: currentState.profile.avatarUrl,
+          username: currentState.profile.username,
+          display_name: currentState.profile.displayName,
+          bio: currentState.profile.bio,
           updated_at: new Date().toISOString(),
         })
         .eq("user_id", user.id);
@@ -138,7 +152,7 @@ export function useEditorState(initialTemplateSlug?: string) {
       if (profileError) throw profileError;
 
       // Save links - delete removed, update existing, insert new
-      const existingIds = state.links.filter((l) => !l.id.startsWith("temp-")).map((l) => l.id);
+      const existingIds = currentState.links.filter((l) => !l.id.startsWith("temp-")).map((l) => l.id);
       
       // Delete links not in current state
       if (existingIds.length > 0) {
@@ -152,7 +166,7 @@ export function useEditorState(initialTemplateSlug?: string) {
       }
 
       // Upsert all current links
-      for (const link of state.links) {
+      for (const link of currentState.links) {
         const linkData = {
           user_id: user.id,
           title: link.title,
@@ -204,7 +218,7 @@ export function useEditorState(initialTemplateSlug?: string) {
       });
       setState((prev) => ({ ...prev, isSaving: false }));
     }
-  }, [user, state.profile, state.links, toast]);
+  }, [user, toast]);
 
   // Trigger auto-save when dirty
   useEffect(() => {

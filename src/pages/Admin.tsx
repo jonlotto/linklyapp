@@ -83,6 +83,7 @@ const Admin = () => {
       setDisplayName(profileData.display_name || "");
       setUsername(profileData.username || "");
       setBio(profileData.bio || "");
+      setSelectedTemplate(profileData.template_slug || "starter");
 
       // Fetch links
       const { data: linksData, error: linksError } = await supabase
