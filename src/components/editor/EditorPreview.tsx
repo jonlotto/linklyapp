@@ -4,14 +4,18 @@ import { templates } from "@/data/templates";
 import { EditorProfile, EditorLink } from "@/hooks/useEditorState";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import whatsappIcon from "@/assets/whatsapp.svg";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 
 const renderIcon = (icon: string | undefined) => {
   if (!icon) return null;
   if (icon === WHATSAPP_ICON_VALUE) {
-    return <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5 inline-block mr-2" />;
+    return (
+      <span className="inline-flex mr-2">
+        <WhatsAppIcon className="w-5 h-5" title="WhatsApp" />
+      </span>
+    );
   }
   return <span className="mr-2">{icon}</span>;
 };

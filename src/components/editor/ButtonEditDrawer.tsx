@@ -22,13 +22,13 @@ import {
 } from "@/components/ui/select";
 import { EditorLink } from "@/hooks/useEditorState";
 import { cn } from "@/lib/utils";
-import whatsappIcon from "@/assets/whatsapp.svg";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 
 const ICONS = [
   { value: "", label: "Nenhum", icon: null },
-  { value: WHATSAPP_ICON_VALUE, label: "WhatsApp", icon: whatsappIcon },
+  { value: WHATSAPP_ICON_VALUE, label: "WhatsApp", icon: null },
   { value: "🔗", label: "🔗 Link", icon: null },
   { value: "🌐", label: "🌐 Web", icon: null },
   { value: "📧", label: "📧 Email", icon: null },
@@ -308,28 +308,26 @@ export function ButtonEditDrawer({
                   <SelectValue placeholder="Selecione um ícone">
                     {icon && (
                       <span className="flex items-center gap-2">
-                        {ICONS.find(i => i.value === icon)?.icon ? (
-                          <img 
-                            src={ICONS.find(i => i.value === icon)?.icon!} 
-                            alt="" 
-                            className="w-4 h-4"
-                          />
+                        {icon === WHATSAPP_ICON_VALUE ? (
+                          <WhatsAppIcon className="w-4 h-4" title="WhatsApp" />
                         ) : null}
-                        {ICONS.find(i => i.value === icon)?.label}
+                        {ICONS.find((i) => i.value === icon)?.label}
                       </span>
                     )}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
-                  {ICONS.map((i) => (
-                    <SelectItem key={i.value || "none"} value={i.value || "none"}>
-                      <span className="flex items-center gap-2">
-                        {i.icon && <img src={i.icon} alt="" className="w-4 h-4" />}
-                        {i.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
+                  <SelectContent>
+                    {ICONS.map((i) => (
+                      <SelectItem key={i.value || "none"} value={i.value || "none"}>
+                        <span className="flex items-center gap-2">
+                          {i.value === WHATSAPP_ICON_VALUE ? (
+                            <WhatsAppIcon className="w-4 h-4" title="WhatsApp" />
+                          ) : null}
+                          {i.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
               </Select>
             </div>
 
