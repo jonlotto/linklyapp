@@ -101,8 +101,15 @@ const BioPage = () => {
   const template = templates.find((t) => t.slug === profile?.template_slug) || templates[0];
   const hasBanner = template.hasBanner;
 
+  // Build background style with global color override
+  const globalBgColor = profile?.global_background_color;
+  const backgroundStyle = globalBgColor ? { backgroundColor: globalBgColor } : undefined;
+
   return (
-    <div className={cn("min-h-screen", template.styles.background)}>
+    <div 
+      className={cn("min-h-screen", !globalBgColor && template.styles.background)}
+      style={backgroundStyle}
+    >
       {hasBanner && profile ? (
         // Banner Layout
         <div className="min-h-screen">
@@ -163,8 +170,8 @@ const BioPage = () => {
                       url={link.url}
                       icon={link.icon || undefined}
                       delay={index * 100}
-                      buttonBgColor={link.button_bg_color || undefined}
-                      buttonTextColor={link.button_text_color || undefined}
+                      buttonBgColor={link.button_bg_color || profile?.global_button_bg_color || undefined}
+                      buttonTextColor={link.button_text_color || profile?.global_button_text_color || undefined}
                       buttonBorderRadius={link.button_border_radius || undefined}
                     />
                   ))
@@ -213,8 +220,8 @@ const BioPage = () => {
                   url={link.url}
                   icon={link.icon || undefined}
                   delay={index * 100}
-                  buttonBgColor={link.button_bg_color || undefined}
-                  buttonTextColor={link.button_text_color || undefined}
+                  buttonBgColor={link.button_bg_color || profile?.global_button_bg_color || undefined}
+                  buttonTextColor={link.button_text_color || profile?.global_button_text_color || undefined}
                   buttonBorderRadius={link.button_border_radius || undefined}
                 />
               ))

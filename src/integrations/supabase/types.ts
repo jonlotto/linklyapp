@@ -72,6 +72,9 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string | null
+          global_background_color: string | null
+          global_button_bg_color: string | null
+          global_button_text_color: string | null
           id: string
           template_slug: string | null
           updated_at: string
@@ -84,6 +87,9 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          global_background_color?: string | null
+          global_button_bg_color?: string | null
+          global_button_text_color?: string | null
           id?: string
           template_slug?: string | null
           updated_at?: string
@@ -96,6 +102,9 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          global_background_color?: string | null
+          global_button_bg_color?: string | null
+          global_button_text_color?: string | null
           id?: string
           template_slug?: string | null
           updated_at?: string

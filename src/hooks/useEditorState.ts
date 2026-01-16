@@ -25,6 +25,10 @@ export interface EditorProfile {
   username: string;
   displayName: string;
   bio: string;
+  // Global customization
+  globalButtonBgColor: string | null;
+  globalButtonTextColor: string | null;
+  globalBackgroundColor: string | null;
 }
 
 export interface EditorState {
@@ -52,6 +56,9 @@ export function useEditorState(initialTemplateSlug?: string) {
       username: "",
       displayName: "",
       bio: "",
+      globalButtonBgColor: null,
+      globalButtonTextColor: null,
+      globalBackgroundColor: null,
     },
     links: [],
     isDirty: false,
@@ -106,6 +113,9 @@ export function useEditorState(initialTemplateSlug?: string) {
             username: profile?.username || "",
             displayName: profile?.display_name || "",
             bio: profile?.bio || "",
+            globalButtonBgColor: profile?.global_button_bg_color || null,
+            globalButtonTextColor: profile?.global_button_text_color || null,
+            globalBackgroundColor: profile?.global_background_color || null,
           },
           links: (links || []).map((link) => ({
             id: link.id,
@@ -156,6 +166,9 @@ export function useEditorState(initialTemplateSlug?: string) {
           username: currentState.profile.username,
           display_name: currentState.profile.displayName,
           bio: currentState.profile.bio,
+          global_button_bg_color: currentState.profile.globalButtonBgColor,
+          global_button_text_color: currentState.profile.globalButtonTextColor,
+          global_background_color: currentState.profile.globalBackgroundColor,
           updated_at: new Date().toISOString(),
         })
         .eq("user_id", user.id);

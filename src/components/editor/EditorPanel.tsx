@@ -1,9 +1,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Link2, Share2, Settings } from "lucide-react";
+import { User, Link2, Share2, Settings, Palette } from "lucide-react";
 import { ProfileTab } from "./tabs/ProfileTab";
 import { ButtonsTab } from "./tabs/ButtonsTab";
 import { SocialsTab } from "./tabs/SocialsTab";
 import { ConfigTab } from "./tabs/ConfigTab";
+import { CustomizeTab } from "./tabs/CustomizeTab";
 import { EditorProfile, EditorLink } from "@/hooks/useEditorState";
 import { Badge } from "@/components/ui/badge";
 
@@ -68,7 +69,7 @@ export function EditorPanel({
 
       {/* Tabs */}
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="profile" className="flex items-center gap-1.5">
             <User className="h-4 w-4" />
             <span className="hidden sm:inline">Perfil</span>
@@ -80,6 +81,10 @@ export function EditorPanel({
           <TabsTrigger value="socials" className="flex items-center gap-1.5">
             <Share2 className="h-4 w-4" />
             <span className="hidden sm:inline">Ícones</span>
+          </TabsTrigger>
+          <TabsTrigger value="customize" className="flex items-center gap-1.5">
+            <Palette className="h-4 w-4" />
+            <span className="hidden sm:inline">Personalizar</span>
           </TabsTrigger>
           <TabsTrigger value="config" className="flex items-center gap-1.5">
             <Settings className="h-4 w-4" />
@@ -121,6 +126,13 @@ export function EditorPanel({
               const buttonIds = buttons.map((b) => b.id);
               onReorderLinks([...buttonIds, ...ids]);
             }}
+          />
+        </TabsContent>
+
+        <TabsContent value="customize" className="mt-4">
+          <CustomizeTab
+            profile={profile}
+            onUpdate={onUpdateProfile}
           />
         </TabsContent>
 
