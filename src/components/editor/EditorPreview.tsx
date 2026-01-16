@@ -66,17 +66,14 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               <div className="relative">
                 {/* Banner Image */}
                 <div
-                  className={cn(
-                    "w-full cursor-pointer relative",
-                    template.styles.bannerHeight || "h-40"
-                  )}
+                  className="w-full cursor-pointer relative aspect-[2/1]"
                   onClick={() => onClickElement?.("banner")}
                 >
                   {profile.bannerUrl ? (
                     <img
                       src={profile.bannerUrl}
                       alt="Banner"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-fill"
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center">
