@@ -56,6 +56,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                       src={profile.bannerUrl}
                       alt="Banner"
                       className="w-full h-full object-cover"
+                      style={{ objectPosition: profile.bannerPosition === "top" ? "top" : profile.bannerPosition === "bottom" ? "bottom" : "center" }}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center">
