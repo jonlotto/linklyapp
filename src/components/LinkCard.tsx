@@ -1,6 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
-import whatsappIcon from "@/assets/whatsapp.svg";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 
@@ -48,7 +48,7 @@ const LinkCard = ({
         <div className="flex items-center gap-3">
           {icon && (
             isWhatsAppIcon ? (
-              <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5" />
+              <WhatsAppIcon className="w-5 h-5" title="WhatsApp" />
             ) : (
               <span className="text-xl">{icon}</span>
             )
