@@ -40,14 +40,20 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
 
   const hasBanner = template.hasBanner;
 
+  // Build background style with global color override
+  const backgroundStyle = profile.globalBackgroundColor 
+    ? { backgroundColor: profile.globalBackgroundColor } 
+    : undefined;
+
   return (
     <div className="flex flex-col items-center">
       {/* Phone Frame */}
       <div
         className={cn(
           "relative w-[320px] h-[640px] rounded-[3rem] border-8 border-foreground/20 shadow-2xl overflow-hidden",
-          template.styles.background
+          !profile.globalBackgroundColor && template.styles.background
         )}
+        style={backgroundStyle}
       >
         {/* Notch */}
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-foreground/20 rounded-b-2xl z-10" />
@@ -134,7 +140,10 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 {/* Buttons */}
                 <div className="space-y-3 mb-6">
                   {buttons.map((link) => {
-                    const hasCustomColors = link.buttonBgColor || link.buttonTextColor;
+                    // Priority: individual color > global color > template default
+                    const bgColor = link.buttonBgColor || profile.globalButtonBgColor;
+                    const textColor = link.buttonTextColor || profile.globalButtonTextColor;
+                    const hasCustomColors = bgColor || textColor;
                     return (
                       <button
                         key={link.id}
@@ -148,8 +157,8 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                           )
                         )}
                         style={hasCustomColors ? {
-                          backgroundColor: link.buttonBgColor || undefined,
-                          color: link.buttonTextColor || undefined,
+                          backgroundColor: bgColor || undefined,
+                          color: textColor || undefined,
                         } : undefined}
                         onClick={() => onClickElement?.("link", link.id)}
                       >
@@ -245,7 +254,10 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               {/* Buttons */}
               <div className="space-y-3 mb-6">
                 {buttons.map((link) => {
-                  const hasCustomColors = link.buttonBgColor || link.buttonTextColor;
+                  // Priority: individual color > global color > template default
+                  const bgColor = link.buttonBgColor || profile.globalButtonBgColor;
+                  const textColor = link.buttonTextColor || profile.globalButtonTextColor;
+                  const hasCustomColors = bgColor || textColor;
                   return (
                     <button
                       key={link.id}
@@ -259,8 +271,8 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                         )
                       )}
                       style={hasCustomColors ? {
-                        backgroundColor: link.buttonBgColor || undefined,
-                        color: link.buttonTextColor || undefined,
+                        backgroundColor: bgColor || undefined,
+                        color: textColor || undefined,
                       } : undefined}
                       onClick={() => onClickElement?.("link", link.id)}
                     >
