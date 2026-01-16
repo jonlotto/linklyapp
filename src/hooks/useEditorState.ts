@@ -22,6 +22,8 @@ export interface EditorProfile {
   templateSlug: string;
   avatarUrl: string | null;
   bannerUrl: string | null;
+  bannerOriginalUrl: string | null;
+  bannerCropOffsetY: number;
   username: string;
   displayName: string;
   bio: string;
@@ -53,6 +55,8 @@ export function useEditorState(initialTemplateSlug?: string) {
       templateSlug: initialTemplateSlug || "starter",
       avatarUrl: null,
       bannerUrl: null,
+      bannerOriginalUrl: null,
+      bannerCropOffsetY: 0,
       username: "",
       displayName: "",
       bio: "",
@@ -110,6 +114,8 @@ export function useEditorState(initialTemplateSlug?: string) {
             templateSlug: finalTemplateSlug,
             avatarUrl: profile?.avatar_url || null,
             bannerUrl: profile?.banner_url || null,
+            bannerOriginalUrl: profile?.banner_original_url || null,
+            bannerCropOffsetY: Number(profile?.banner_crop_offset_y) || 0,
             username: profile?.username || "",
             displayName: profile?.display_name || "",
             bio: profile?.bio || "",
@@ -163,6 +169,8 @@ export function useEditorState(initialTemplateSlug?: string) {
           template_slug: currentState.profile.templateSlug,
           avatar_url: currentState.profile.avatarUrl,
           banner_url: currentState.profile.bannerUrl,
+          banner_original_url: currentState.profile.bannerOriginalUrl,
+          banner_crop_offset_y: currentState.profile.bannerCropOffsetY,
           username: currentState.profile.username,
           display_name: currentState.profile.displayName,
           bio: currentState.profile.bio,

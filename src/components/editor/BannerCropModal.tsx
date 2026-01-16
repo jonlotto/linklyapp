@@ -13,7 +13,8 @@ interface BannerCropModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   imageSrc: string;
-  onCropComplete: (croppedImageBlob: Blob) => void;
+  initialOffsetY?: number;
+  onCropComplete: (croppedImageBlob: Blob, offsetY: number) => void;
 }
 
 const ASPECT_RATIO = 16 / 9;
@@ -24,6 +25,7 @@ export function BannerCropModal({
   open,
   onOpenChange,
   imageSrc,
+  initialOffsetY = 0,
   onCropComplete,
 }: BannerCropModalProps) {
   const [isSaving, setIsSaving] = useState(false);
@@ -36,13 +38,13 @@ export function BannerCropModal({
   const imageRef = useRef<HTMLImageElement>(null);
   const dragStartRef = useRef({ y: 0, offsetY: 0 });
 
-  // Reset state when modal opens
+  // Reset state when modal opens - use initial offset if provided
   useEffect(() => {
     if (open) {
-      setOffsetY(0);
+      setOffsetY(initialOffsetY);
       setImageLoaded(false);
     }
-  }, [open]);
+  }, [open, initialOffsetY]);
 
   const handleImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -149,7 +151,7 @@ export function BannerCropModal({
     try {
       const blob = await getCroppedImage();
       if (blob) {
-        onCropComplete(blob);
+        onCropComplete(blob, offsetY);
       }
     } finally {
       setIsSaving(false);

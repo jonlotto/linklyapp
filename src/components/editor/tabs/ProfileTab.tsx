@@ -32,6 +32,8 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
   // Crop modal state
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+  const [initialCropOffsetY, setInitialCropOffsetY] = useState(0);
+  const [isNewUpload, setIsNewUpload] = useState(false);
 
   const template = templates.find((t) => t.slug === profile.templateSlug);
   const hasBanner = template?.hasBanner || false;
@@ -86,21 +88,43 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
 
   const handleBannerSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || !user) return;
 
-    // Read file and open crop modal
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImageToCrop(reader.result as string);
+    // Upload original image first
+    try {
+      const fileName = `${user.id}/banner_original.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, file, { upsert: true, contentType: file.type });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
+
+      const originalUrl = `${publicUrl}?t=${Date.now()}`;
+      
+      // Save original URL and open crop modal with it
+      onUpdate({ bannerOriginalUrl: originalUrl });
+      setImageToCrop(originalUrl);
+      setInitialCropOffsetY(0);
+      setIsNewUpload(true);
       setCropModalOpen(true);
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error uploading original banner:", error);
+      toast({
+        title: "Erro ao enviar imagem",
+        description: "Não foi possível processar sua imagem.",
+        variant: "destructive",
+      });
+    }
     
     // Reset input so same file can be selected again
     event.target.value = "";
   };
 
-  const handleCropComplete = async (croppedBlob: Blob) => {
+  const handleCropComplete = async (croppedBlob: Blob, offsetY: number) => {
     if (!user) return;
 
     setCropModalOpen(false);
@@ -119,7 +143,11 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
         .from("avatars")
         .getPublicUrl(fileName);
 
-      onUpdate({ bannerUrl: `${publicUrl}?t=${Date.now()}` });
+      // Save cropped banner URL and the offset for future adjustments
+      onUpdate({ 
+        bannerUrl: `${publicUrl}?t=${Date.now()}`,
+        bannerCropOffsetY: offsetY,
+      });
       toast({
         title: "Banner atualizado",
         description: "Sua imagem de capa foi alterada com sucesso.",
@@ -134,11 +162,12 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
     } finally {
       setIsUploadingBanner(false);
       setImageToCrop(null);
+      setIsNewUpload(false);
     }
   };
 
   const handleRemoveBanner = () => {
-    onUpdate({ bannerUrl: null });
+    onUpdate({ bannerUrl: null, bannerOriginalUrl: null, bannerCropOffsetY: 0 });
     toast({
       title: "Banner removido",
       description: "Sua imagem de capa foi removida.",
@@ -146,8 +175,12 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
   };
 
   const handleEditBanner = () => {
-    if (profile.bannerUrl) {
-      setImageToCrop(profile.bannerUrl);
+    // Use original image for re-cropping, fallback to current banner
+    const imageToEdit = profile.bannerOriginalUrl || profile.bannerUrl;
+    if (imageToEdit) {
+      setImageToCrop(imageToEdit);
+      setInitialCropOffsetY(profile.bannerCropOffsetY || 0);
+      setIsNewUpload(false);
       setCropModalOpen(true);
     }
   };
@@ -323,9 +356,13 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
           open={cropModalOpen}
           onOpenChange={(open) => {
             setCropModalOpen(open);
-            if (!open) setImageToCrop(null);
+            if (!open) {
+              setImageToCrop(null);
+              setIsNewUpload(false);
+            }
           }}
           imageSrc={imageToCrop}
+          initialOffsetY={initialCropOffsetY}
           onCropComplete={handleCropComplete}
         />
       )}
