@@ -1,5 +1,8 @@
 import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import whatsappIcon from "@/assets/whatsapp.svg";
+
+const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 
 interface LinkCardProps {
   title: string;
@@ -21,6 +24,7 @@ const LinkCard = ({
   buttonBorderRadius = "rounded-2xl"
 }: LinkCardProps) => {
   const hasCustomColors = buttonBgColor || buttonTextColor;
+  const isWhatsAppIcon = icon === WHATSAPP_ICON_VALUE;
   
   return (
     <a
@@ -42,7 +46,13 @@ const LinkCard = ({
         } : undefined}
       >
         <div className="flex items-center gap-3">
-          {icon && <span className="text-xl">{icon}</span>}
+          {icon && (
+            isWhatsAppIcon ? (
+              <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5" />
+            ) : (
+              <span className="text-xl">{icon}</span>
+            )
+          )}
           <span className={cn("font-medium", !hasCustomColors && "text-foreground")}>{title}</span>
         </div>
         <ExternalLink className={cn(

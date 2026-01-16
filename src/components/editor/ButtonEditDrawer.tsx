@@ -22,21 +22,24 @@ import {
 } from "@/components/ui/select";
 import { EditorLink } from "@/hooks/useEditorState";
 import { cn } from "@/lib/utils";
+import whatsappIcon from "@/assets/whatsapp.svg";
+
+const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 
 const ICONS = [
-  { value: "", label: "Nenhum" },
-  { value: "💬", label: "💬 WhatsApp" },
-  { value: "🔗", label: "🔗 Link" },
-  { value: "🌐", label: "🌐 Web" },
-  { value: "📧", label: "📧 Email" },
-  { value: "📱", label: "📱 Telefone" },
-  { value: "🛒", label: "🛒 Loja" },
-  { value: "📝", label: "📝 Blog" },
-  { value: "🎨", label: "🎨 Portfolio" },
-  { value: "📅", label: "📅 Agenda" },
-  { value: "🎁", label: "🎁 Promoção" },
-  { value: "⭐", label: "⭐ Destaque" },
-  { value: "🚀", label: "🚀 Lançamento" },
+  { value: "", label: "Nenhum", icon: null },
+  { value: WHATSAPP_ICON_VALUE, label: "WhatsApp", icon: whatsappIcon },
+  { value: "🔗", label: "🔗 Link", icon: null },
+  { value: "🌐", label: "🌐 Web", icon: null },
+  { value: "📧", label: "📧 Email", icon: null },
+  { value: "📱", label: "📱 Telefone", icon: null },
+  { value: "🛒", label: "🛒 Loja", icon: null },
+  { value: "📝", label: "📝 Blog", icon: null },
+  { value: "🎨", label: "🎨 Portfolio", icon: null },
+  { value: "📅", label: "📅 Agenda", icon: null },
+  { value: "🎁", label: "🎁 Promoção", icon: null },
+  { value: "⭐", label: "⭐ Destaque", icon: null },
+  { value: "🚀", label: "🚀 Lançamento", icon: null },
 ];
 
 const BORDER_RADIUS_OPTIONS = [
@@ -223,7 +226,7 @@ export function ButtonEditDrawer({
                   setErrors({});
                   // Auto-set WhatsApp icon when switching to WhatsApp
                   if (newType === "whatsapp" && !icon) {
-                    setIcon("💬");
+                    setIcon(WHATSAPP_ICON_VALUE);
                   }
                 }}
                 className="flex gap-4"
@@ -302,12 +305,28 @@ export function ButtonEditDrawer({
               <Label htmlFor="icon">Ícone (opcional)</Label>
               <Select value={icon} onValueChange={setIcon}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione um ícone" />
+                  <SelectValue placeholder="Selecione um ícone">
+                    {icon && (
+                      <span className="flex items-center gap-2">
+                        {ICONS.find(i => i.value === icon)?.icon ? (
+                          <img 
+                            src={ICONS.find(i => i.value === icon)?.icon!} 
+                            alt="" 
+                            className="w-4 h-4"
+                          />
+                        ) : null}
+                        {ICONS.find(i => i.value === icon)?.label}
+                      </span>
+                    )}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {ICONS.map((i) => (
-                    <SelectItem key={i.value} value={i.value || "none"}>
-                      {i.label}
+                    <SelectItem key={i.value || "none"} value={i.value || "none"}>
+                      <span className="flex items-center gap-2">
+                        {i.icon && <img src={i.icon} alt="" className="w-4 h-4" />}
+                        {i.label}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
