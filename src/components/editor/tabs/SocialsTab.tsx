@@ -50,6 +50,9 @@ export function SocialsTab({
       icon: selectedPlatform.icon,
       style: "filled",
       isActive: true,
+      buttonBgColor: null,
+      buttonTextColor: null,
+      buttonBorderRadius: "rounded-xl",
     });
 
     setSelectedPlatform(null);

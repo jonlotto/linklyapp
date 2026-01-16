@@ -16,6 +16,9 @@ export type Database = {
     Tables: {
       links: {
         Row: {
+          button_bg_color: string | null
+          button_border_radius: string | null
+          button_text_color: string | null
           created_at: string
           icon: string | null
           id: string
@@ -29,6 +32,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          button_bg_color?: string | null
+          button_border_radius?: string | null
+          button_text_color?: string | null
           created_at?: string
           icon?: string | null
           id?: string
@@ -42,6 +48,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          button_bg_color?: string | null
+          button_border_radius?: string | null
+          button_text_color?: string | null
           created_at?: string
           icon?: string | null
           id?: string

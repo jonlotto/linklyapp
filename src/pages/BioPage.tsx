@@ -124,6 +124,9 @@ const BioPage = () => {
                 url={link.url}
                 icon={link.icon || undefined}
                 delay={index * 100}
+                buttonBgColor={link.button_bg_color || undefined}
+                buttonTextColor={link.button_text_color || undefined}
+                buttonBorderRadius={link.button_border_radius || undefined}
               />
             ))
           )}

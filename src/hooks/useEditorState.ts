@@ -12,6 +12,10 @@ export interface EditorLink {
   style: "filled" | "outline";
   isActive: boolean;
   order: number;
+  // Button customization
+  buttonBgColor: string | null;
+  buttonTextColor: string | null;
+  buttonBorderRadius: string;
 }
 
 export interface EditorProfile {
@@ -109,6 +113,9 @@ export function useEditorState(initialTemplateSlug?: string) {
             style: (link.style as "filled" | "outline") || "filled",
             isActive: link.is_active,
             order: link.position,
+            buttonBgColor: link.button_bg_color || null,
+            buttonTextColor: link.button_text_color || null,
+            buttonBorderRadius: link.button_border_radius || "rounded-xl",
           })),
           isLoading: false,
           isDirty: templateChanged || false,
@@ -176,6 +183,9 @@ export function useEditorState(initialTemplateSlug?: string) {
           style: link.style,
           is_active: link.isActive,
           position: link.order,
+          button_bg_color: link.buttonBgColor,
+          button_text_color: link.buttonTextColor,
+          button_border_radius: link.buttonBorderRadius,
         };
 
         if (link.id.startsWith("temp-")) {
