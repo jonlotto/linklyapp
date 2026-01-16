@@ -23,13 +23,16 @@ import {
 import { EditorLink } from "@/hooks/useEditorState";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { LinkIcon } from "@/components/icons/LinkIcon";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
+const LINK_ICON_VALUE = "link-icon";
 
 const ICONS = [
   { value: "", label: "Nenhum", icon: null },
   { value: WHATSAPP_ICON_VALUE, label: "WhatsApp", icon: null },
-  { value: "🔗", label: "🔗 Link", icon: null },
+  { value: LINK_ICON_VALUE, label: "Link", icon: null },
+  { value: "🔗", label: "🔗 Link (emoji)", icon: null },
   { value: "🌐", label: "🌐 Web", icon: null },
   { value: "📧", label: "📧 Email", icon: null },
   { value: "📱", label: "📱 Telefone", icon: null },
@@ -308,9 +311,12 @@ export function ButtonEditDrawer({
                   <SelectValue placeholder="Selecione um ícone">
                     {icon && (
                       <span className="flex items-center gap-2">
-                        {icon === WHATSAPP_ICON_VALUE ? (
+                        {icon === WHATSAPP_ICON_VALUE && (
                           <WhatsAppIcon className="w-4 h-4" title="WhatsApp" />
-                        ) : null}
+                        )}
+                        {icon === LINK_ICON_VALUE && (
+                          <LinkIcon className="w-4 h-4" title="Link" />
+                        )}
                         {ICONS.find((i) => i.value === icon)?.label}
                       </span>
                     )}
@@ -320,9 +326,12 @@ export function ButtonEditDrawer({
                     {ICONS.map((i) => (
                       <SelectItem key={i.value || "none"} value={i.value || "none"}>
                         <span className="flex items-center gap-2">
-                          {i.value === WHATSAPP_ICON_VALUE ? (
+                          {i.value === WHATSAPP_ICON_VALUE && (
                             <WhatsAppIcon className="w-4 h-4" title="WhatsApp" />
-                          ) : null}
+                          )}
+                          {i.value === LINK_ICON_VALUE && (
+                            <LinkIcon className="w-4 h-4" title="Link" />
+                          )}
                           {i.label}
                         </span>
                       </SelectItem>
