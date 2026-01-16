@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 
 const ICONS = [
   { value: "", label: "Nenhum" },
+  { value: "💬", label: "💬 WhatsApp" },
   { value: "🔗", label: "🔗 Link" },
   { value: "🌐", label: "🌐 Web" },
   { value: "📧", label: "📧 Email" },
@@ -217,8 +218,13 @@ export function ButtonEditDrawer({
               <RadioGroup
                 value={buttonType}
                 onValueChange={(v) => {
-                  setButtonType(v as "link" | "whatsapp");
+                  const newType = v as "link" | "whatsapp";
+                  setButtonType(newType);
                   setErrors({});
+                  // Auto-set WhatsApp icon when switching to WhatsApp
+                  if (newType === "whatsapp" && !icon) {
+                    setIcon("💬");
+                  }
                 }}
                 className="flex gap-4"
               >
