@@ -186,6 +186,7 @@ export function BannerCropModal({
               ref={imageRef}
               src={imageSrc}
               alt="Preview"
+              crossOrigin="anonymous"
               onLoad={handleImageLoad}
               className="w-full pointer-events-none"
               style={{ 
