@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { Check, ChevronRight, Pencil } from "lucide-react";
+import { Check, ChevronDown, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EditorProfile } from "@/hooks/useEditorState";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface TextSectionProps {
   profile: EditorProfile;
@@ -42,7 +41,6 @@ const PRESET_TITLE_COLORS = [
 
 export function TextSection({ profile, onUpdate }: TextSectionProps) {
   const [customTitleColor, setCustomTitleColor] = useState(profile.titleColor || "#1A1A1A");
-  const [fontSheetOpen, setFontSheetOpen] = useState(false);
 
   const isCustomColorSelected = profile.titleColor && 
     !PRESET_TITLE_COLORS.some(c => c.value === profile.titleColor);
@@ -113,53 +111,29 @@ export function TextSection({ profile, onUpdate }: TextSectionProps) {
         {/* Font Selector */}
         <div className="space-y-3">
           <Label>Fonte</Label>
-          <Sheet open={fontSheetOpen} onOpenChange={setFontSheetOpen}>
-            <SheetTrigger asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <button className="w-full py-3 px-4 bg-muted/50 rounded-xl flex justify-between items-center hover:bg-muted transition-colors">
                 <span className="text-sm text-muted-foreground">Fonte</span>
                 <span className="font-medium flex items-center gap-1" style={{ fontFamily: selectedFont.id }}>
                   {selectedFont.label}
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 </span>
               </button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="h-[70vh]">
-              <SheetHeader>
-                <SheetTitle>Escolher fonte</SheetTitle>
-              </SheetHeader>
-              <div className="mt-6 space-y-2 overflow-y-auto max-h-[calc(70vh-100px)]">
-                {FONTS.map((font) => {
-                  const isSelected = profile.titleFont === font.id;
-                  return (
-                    <button
-                      key={font.id}
-                      onClick={() => {
-                        onUpdate({ titleFont: font.id });
-                        setFontSheetOpen(false);
-                      }}
-                      className={cn(
-                        "w-full py-4 px-4 rounded-xl flex justify-between items-center transition-all",
-                        isSelected 
-                          ? "bg-primary/10 border-2 border-primary" 
-                          : "bg-muted/50 hover:bg-muted border-2 border-transparent"
-                      )}
-                    >
-                      <div className="text-left">
-                        <span 
-                          className="text-lg font-medium block" 
-                          style={{ fontFamily: font.id }}
-                        >
-                          {font.label}
-                        </span>
-                        <span className="text-xs text-muted-foreground">{font.category}</span>
-                      </div>
-                      {isSelected && <Check className="h-5 w-5 text-primary" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </SheetContent>
-          </Sheet>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-background">
+              {FONTS.map((font) => (
+                <DropdownMenuItem
+                  key={font.id}
+                  onClick={() => onUpdate({ titleFont: font.id })}
+                  className="flex items-center justify-between cursor-pointer"
+                >
+                  <span style={{ fontFamily: font.id }}>{font.label}</span>
+                  {profile.titleFont === font.id && <Check className="h-4 w-4" />}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Title Color */}
