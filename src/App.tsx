@@ -11,6 +11,7 @@ import Admin from "./pages/Admin";
 import AdminUsers from "./pages/AdminUsers";
 import BioPage from "./pages/BioPage";
 import Editor from "./pages/Editor";
+import Design from "./pages/Design";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/editor" element={<Editor />} />
+            <Route path="/design" element={<Design />} />
             <Route
               path="/admin/users"
               element={
