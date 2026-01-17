@@ -293,76 +293,29 @@ const Admin = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
-        {/* Profile Section */}
+        {/* Welcome Section */}
         <section className="glass-strong rounded-3xl p-6 mb-8 animate-fade-in">
+          <h1 className="font-display text-2xl font-bold mb-4">
+            Olá, {displayName || username || "usuário"}!
+          </h1>
+          
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary">
-              <User className="h-5 w-5 text-secondary-foreground" />
-            </div>
-            <h2 className="font-display text-xl font-bold">Seu Perfil</h2>
-          </div>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="displayName">Nome de exibição</Label>
-                <Input
-                  id="displayName"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Seu nome"
-                  className="rounded-xl"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                    @
-                  </span>
-                  <Input
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="seuusername"
-                    className="rounded-xl pl-8"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Uma breve descrição sobre você..."
-                className="rounded-xl resize-none"
-                rows={3}
-              />
-            </div>
-
+            <span className="text-muted-foreground">Template atual:</span>
+            <Badge variant="secondary" className="rounded-lg text-sm">
+              {templates.find(t => t.slug === selectedTemplate)?.name || "Nenhum"}
+            </Badge>
             <Button
-              onClick={saveProfile}
-              disabled={saving}
-              className="rounded-xl bg-primary hover:bg-primary/90"
+              variant="outline"
+              size="sm"
+              onClick={() => navigate(`/editor?template=${selectedTemplate}`)}
+              className="rounded-xl"
             >
-              <Save className="h-4 w-4 mr-2" />
-              {saving ? "Salvando..." : "Salvar perfil"}
+              <Palette className="h-4 w-4 mr-2" />
+              Editar
             </Button>
           </div>
-        </section>
 
-        {/* Templates Section */}
-        <section className="glass-strong rounded-3xl p-6 mb-8 animate-fade-in animation-delay-100">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary">
-              <Palette className="h-5 w-5 text-secondary-foreground" />
-            </div>
-            <h2 className="font-display text-xl font-bold">Escolha seu Template</h2>
-          </div>
-
+          {/* Templates Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {templates.map((template) => (
               <button
@@ -388,9 +341,6 @@ const Admin = () => {
               </button>
             ))}
           </div>
-          <p className="text-sm text-muted-foreground mt-4 text-center">
-            Clique em um template para abrir o editor completo
-          </p>
         </section>
 
         {/* Links Section */}
