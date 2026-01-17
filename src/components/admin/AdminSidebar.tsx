@@ -52,7 +52,7 @@ export function AdminSidebar({ activeSection, username }: AdminSidebarProps) {
             "w-full justify-start rounded-xl h-11",
             activeSection === "design" && "bg-secondary"
           )}
-          onClick={() => navigate("/editor")}
+          onClick={() => navigate("/design")}
         >
           <Palette className="h-5 w-5 mr-3" />
           Design
