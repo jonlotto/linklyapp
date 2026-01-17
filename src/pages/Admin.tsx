@@ -28,13 +28,13 @@ export interface SocialPlatform {
 }
 
 export const SOCIAL_PLATFORMS: SocialPlatform[] = [
-  { id: "instagram", name: "Instagram", icon: "📷", Icon: InstagramIcon, urlTemplate: "https://instagram.com/{username}" },
-  { id: "tiktok", name: "TikTok", icon: "🎵", Icon: TikTokIcon, urlTemplate: "https://tiktok.com/@{username}" },
-  { id: "youtube", name: "YouTube", icon: "▶️", Icon: YouTubeIcon, urlTemplate: "https://youtube.com/@{username}" },
-  { id: "twitter", name: "Twitter/X", icon: "🐦", Icon: TwitterIcon, urlTemplate: "https://twitter.com/{username}" },
-  { id: "whatsapp", name: "WhatsApp", icon: "💬", Icon: WhatsAppIcon, urlTemplate: "https://wa.me/{phone}", isPhone: true },
-  { id: "linkedin", name: "LinkedIn", icon: "💼", Icon: LinkedInIcon, urlTemplate: "https://linkedin.com/in/{username}" },
-  { id: "email", name: "Email", icon: "✉️", Icon: EmailIcon, urlTemplate: "mailto:{email}" },
+  { id: "instagram", name: "Instagram", icon: "instagram-icon", Icon: InstagramIcon, urlTemplate: "https://instagram.com/{username}" },
+  { id: "tiktok", name: "TikTok", icon: "tiktok-icon", Icon: TikTokIcon, urlTemplate: "https://tiktok.com/@{username}" },
+  { id: "youtube", name: "YouTube", icon: "youtube-icon", Icon: YouTubeIcon, urlTemplate: "https://youtube.com/@{username}" },
+  { id: "twitter", name: "Twitter/X", icon: "twitter-icon", Icon: TwitterIcon, urlTemplate: "https://twitter.com/{username}" },
+  { id: "whatsapp", name: "WhatsApp", icon: "whatsapp-icon", Icon: WhatsAppIcon, urlTemplate: "https://wa.me/{phone}", isPhone: true },
+  { id: "linkedin", name: "LinkedIn", icon: "linkedin-icon", Icon: LinkedInIcon, urlTemplate: "https://linkedin.com/in/{username}" },
+  { id: "email", name: "Email", icon: "email-icon", Icon: EmailIcon, urlTemplate: "mailto:{email}" },
 ];
 
 const Admin = () => {

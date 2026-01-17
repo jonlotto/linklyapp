@@ -1,6 +1,10 @@
 import { SVGProps } from "react";
 
-export function TikTokIcon(props: SVGProps<SVGSVGElement>) {
+interface IconProps extends SVGProps<SVGSVGElement> {
+  title?: string;
+}
+
+export function TikTokIcon({ title, ...props }: IconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
