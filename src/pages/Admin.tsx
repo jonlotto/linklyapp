@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, ComponentType, SVGProps } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useEditorState, EditorLink } from "@/hooks/useEditorState";
@@ -10,22 +10,31 @@ import { ButtonEditDrawer } from "@/components/editor/ButtonEditDrawer";
 import { SocialAddModal } from "@/components/editor/SocialAddModal";
 import { Button } from "@/components/ui/button";
 import { Plus, Save, Loader2 } from "lucide-react";
+import { InstagramIcon } from "@/components/icons/InstagramIcon";
+import { TikTokIcon } from "@/components/icons/TikTokIcon";
+import { YouTubeIcon } from "@/components/icons/YouTubeIcon";
+import { TwitterIcon } from "@/components/icons/TwitterIcon";
+import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
+import { EmailIcon } from "@/components/icons/EmailIcon";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
-interface SocialPlatform {
+export interface SocialPlatform {
   id: string;
   name: string;
   icon: string;
+  Icon: ComponentType<SVGProps<SVGSVGElement>>;
   urlTemplate: string;
   isPhone?: boolean;
 }
 
-const SOCIAL_PLATFORMS: SocialPlatform[] = [
-  { id: "instagram", name: "Instagram", icon: "📷", urlTemplate: "https://instagram.com/{username}" },
-  { id: "tiktok", name: "TikTok", icon: "🎵", urlTemplate: "https://tiktok.com/@{username}" },
-  { id: "twitter", name: "Twitter/X", icon: "🐦", urlTemplate: "https://twitter.com/{username}" },
-  { id: "youtube", name: "YouTube", icon: "▶️", urlTemplate: "https://youtube.com/@{username}" },
-  { id: "whatsapp", name: "WhatsApp", icon: "💬", urlTemplate: "https://wa.me/{phone}", isPhone: true },
-  { id: "linkedin", name: "LinkedIn", icon: "💼", urlTemplate: "https://linkedin.com/in/{username}" },
+export const SOCIAL_PLATFORMS: SocialPlatform[] = [
+  { id: "instagram", name: "Instagram", icon: "📷", Icon: InstagramIcon, urlTemplate: "https://instagram.com/{username}" },
+  { id: "tiktok", name: "TikTok", icon: "🎵", Icon: TikTokIcon, urlTemplate: "https://tiktok.com/@{username}" },
+  { id: "youtube", name: "YouTube", icon: "▶️", Icon: YouTubeIcon, urlTemplate: "https://youtube.com/@{username}" },
+  { id: "twitter", name: "Twitter/X", icon: "🐦", Icon: TwitterIcon, urlTemplate: "https://twitter.com/{username}" },
+  { id: "whatsapp", name: "WhatsApp", icon: "💬", Icon: WhatsAppIcon, urlTemplate: "https://wa.me/{phone}", isPhone: true },
+  { id: "linkedin", name: "LinkedIn", icon: "💼", Icon: LinkedInIcon, urlTemplate: "https://linkedin.com/in/{username}" },
+  { id: "email", name: "Email", icon: "✉️", Icon: EmailIcon, urlTemplate: "mailto:{email}" },
 ];
 
 const Admin = () => {
@@ -167,7 +176,11 @@ const Admin = () => {
           <ProfileHeaderCard
             profile={profile}
             socials={socials}
-            onAddSocial={handleOpenSocialModal}
+            platforms={SOCIAL_PLATFORMS}
+            onSelectPlatform={(platform) => {
+              setSelectedPlatform(platform);
+              setShowAddSocial(true);
+            }}
             onEditProfile={() => navigate("/editor")}
           />
 
