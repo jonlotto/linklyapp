@@ -177,9 +177,12 @@ const Admin = () => {
             profile={profile}
             socials={socials}
             platforms={SOCIAL_PLATFORMS}
-            onSelectPlatform={(platform) => {
+            onSelectPlatform={(platform, existingSocial) => {
               setSelectedPlatform(platform);
               setShowAddSocial(true);
+            }}
+            onDeleteSocial={(linkId) => {
+              deleteLink(linkId);
             }}
             onEditProfile={() => navigate("/editor")}
           />
