@@ -299,8 +299,8 @@ export function ButtonEditDrawer({
 
             {/* Icon */}
             <div className="space-y-2">
-              <Label>Ícone (opcional)</Label>
-              <div className="flex flex-wrap gap-2">
+              <Label className="text-center block text-xs">Ícone (opcional)</Label>
+              <div className="flex gap-2 justify-start">
                 {ICONS.map((i) => {
                   const isSelected = icon === i.value || (icon === "" && i.value === "");
                   return (
