@@ -1,13 +1,25 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 interface ProfileHeaderProps {
   displayName: string;
   username: string;
   bio?: string;
   avatarUrl?: string;
+  titleFont?: string;
+  titleColor?: string | null;
+  titleSize?: "small" | "large";
 }
 
-const ProfileHeader = ({ displayName, username, bio, avatarUrl }: ProfileHeaderProps) => {
+const ProfileHeader = ({ 
+  displayName, 
+  username, 
+  bio, 
+  avatarUrl,
+  titleFont = "Inter",
+  titleColor,
+  titleSize = "large"
+}: ProfileHeaderProps) => {
   const initials = displayName
     .split(" ")
     .map((n) => n[0])
@@ -28,7 +40,18 @@ const ProfileHeader = ({ displayName, username, bio, avatarUrl }: ProfileHeaderP
       </div>
       
       <div className="space-y-1">
-        <h1 className="font-display text-2xl font-bold text-foreground">{displayName}</h1>
+        <h1 
+          className={cn(
+            "font-bold text-foreground",
+            titleSize === "small" ? "text-xl" : "text-2xl"
+          )}
+          style={{ 
+            fontFamily: titleFont,
+            color: titleColor || undefined 
+          }}
+        >
+          {displayName}
+        </h1>
         <p className="text-muted-foreground">@{username}</p>
       </div>
       

@@ -147,7 +147,17 @@ const BioPage = () => {
                 <p className={cn("text-sm mb-1", template.styles.textColor, "opacity-70")}>
                   @{profile.username}
                 </p>
-                <h1 className={cn("text-2xl font-bold mb-2", template.styles.textColor)}>
+                <h1 
+                  className={cn(
+                    "font-bold mb-2", 
+                    (profile as any).title_size === "small" ? "text-xl" : "text-2xl",
+                    !(profile as any).title_color && template.styles.textColor
+                  )}
+                  style={{
+                    fontFamily: (profile as any).title_font || "Inter",
+                    color: (profile as any).title_color || undefined
+                  }}
+                >
                   {profile.display_name || profile.username}
                 </h1>
                 {profile.bio && (
@@ -205,6 +215,9 @@ const BioPage = () => {
               username={profile.username}
               bio={profile.bio || undefined}
               avatarUrl={profile.avatar_url || undefined}
+              titleFont={(profile as any).title_font || "Inter"}
+              titleColor={(profile as any).title_color}
+              titleSize={(profile as any).title_size || "large"}
             />
           )}
 

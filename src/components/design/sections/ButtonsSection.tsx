@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, RotateCcw } from "lucide-react";
+import { Check, Pencil, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,7 @@ const BUTTON_SHAPES = [
   { id: "rounded-full", label: "Pílula", preview: "rounded-full" },
 ] as const;
 
-const PRESET_COLORS = [
+const PRESET_BG_COLORS = [
   { name: "Coral", value: "#FF7F6B" },
   { name: "Azul", value: "#3B82F6" },
   { name: "Verde", value: "#22C55E" },
@@ -30,6 +30,14 @@ const PRESET_COLORS = [
   { name: "Laranja", value: "#F97316" },
   { name: "Preto", value: "#1A1A1A" },
   { name: "Branco", value: "#FFFFFF" },
+];
+
+const PRESET_TEXT_COLORS = [
+  { name: "Branco", value: "#FFFFFF" },
+  { name: "Preto", value: "#1A1A1A" },
+  { name: "Cinza", value: "#6B7280" },
+  { name: "Coral", value: "#FF7F6B" },
+  { name: "Azul", value: "#3B82F6" },
 ];
 
 export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
@@ -45,6 +53,12 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
     });
   };
 
+  const isCustomBgColorSelected = profile.globalButtonBgColor && 
+    !PRESET_BG_COLORS.some(c => c.value === profile.globalButtonBgColor);
+
+  const isCustomTextColorSelected = profile.globalButtonTextColor && 
+    !PRESET_TEXT_COLORS.some(c => c.value === profile.globalButtonTextColor);
+
   return (
     <div className="space-y-6">
       <div>
@@ -55,30 +69,28 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
       </div>
 
       {/* Button Preview */}
-      <div className="p-4 bg-muted/50 rounded-lg">
-        <Label className="text-xs text-muted-foreground mb-2 block">Preview</Label>
-        <div className="space-y-2">
-          <button
-            className={cn(
-              "w-full py-3 px-4 font-medium transition-all",
-              profile.globalButtonBorderRadius || "rounded-xl",
-              profile.globalButtonStyle === "outline" 
-                ? "bg-transparent border-2" 
-                : ""
-            )}
-            style={{
-              backgroundColor: profile.globalButtonStyle === "filled" 
-                ? (profile.globalButtonBgColor || "#FF7F6B") 
-                : "transparent",
-              color: profile.globalButtonTextColor || "#FFFFFF",
-              borderColor: profile.globalButtonStyle === "outline" 
-                ? (profile.globalButtonBgColor || "#FF7F6B") 
-                : undefined,
-            }}
-          >
-            Exemplo de botão
-          </button>
-        </div>
+      <div className="p-4 bg-muted/50 rounded-xl">
+        <Label className="text-xs text-muted-foreground mb-3 block">Preview</Label>
+        <button
+          className={cn(
+            "w-full py-3 px-4 font-medium transition-all",
+            profile.globalButtonBorderRadius || "rounded-xl",
+            profile.globalButtonStyle === "outline" 
+              ? "bg-transparent border-2" 
+              : ""
+          )}
+          style={{
+            backgroundColor: profile.globalButtonStyle === "filled" 
+              ? (profile.globalButtonBgColor || "#FF7F6B") 
+              : "transparent",
+            color: profile.globalButtonTextColor || "#FFFFFF",
+            borderColor: profile.globalButtonStyle === "outline" 
+              ? (profile.globalButtonBgColor || "#FF7F6B") 
+              : undefined,
+          }}
+        >
+          Exemplo de botão
+        </button>
       </div>
 
       {/* Button Style */}
@@ -90,10 +102,10 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
               key={style.id}
               onClick={() => onUpdate({ globalButtonStyle: style.id })}
               className={cn(
-                "py-2 px-4 rounded-lg border-2 text-sm font-medium transition-all",
+                "py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all",
                 profile.globalButtonStyle === style.id
-                  ? "border-primary bg-primary/10"
-                  : "border-border hover:border-primary/50"
+                  ? "border-primary bg-white"
+                  : "border-gray-200 bg-gray-50 text-muted-foreground hover:border-gray-300"
               )}
             >
               {style.label}
@@ -111,15 +123,14 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
               key={shape.id}
               onClick={() => onUpdate({ globalButtonBorderRadius: shape.id })}
               className={cn(
-                "py-2 px-3 border-2 text-sm font-medium transition-all flex flex-col items-center gap-1",
-                shape.preview,
+                "py-3 px-3 rounded-xl border-2 text-sm font-medium transition-all flex flex-col items-center gap-2",
                 profile.globalButtonBorderRadius === shape.id
-                  ? "border-primary bg-primary/10"
-                  : "border-border hover:border-primary/50"
+                  ? "border-primary bg-white"
+                  : "border-gray-200 bg-gray-50 text-muted-foreground hover:border-gray-300"
               )}
             >
               <div 
-                className={cn("w-full h-4 bg-primary/30", shape.preview)} 
+                className={cn("w-full h-4 bg-primary/40", shape.preview)} 
               />
               <span className="text-xs">{shape.label}</span>
             </button>
@@ -130,9 +141,10 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
       {/* Background Color */}
       <div className="space-y-3">
         <Label>Cor de fundo</Label>
-        <div className="grid grid-cols-8 gap-2">
-          {PRESET_COLORS.map((color) => {
+        <div className="flex flex-wrap gap-3">
+          {PRESET_BG_COLORS.map((color) => {
             const isSelected = profile.globalButtonBgColor === color.value;
+            const isDark = color.value === "#1A1A1A";
             
             return (
               <button
@@ -142,8 +154,10 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
                   onUpdate({ globalButtonBgColor: color.value });
                 }}
                 className={cn(
-                  "w-full aspect-square rounded-lg border-2 transition-all relative",
-                  isSelected ? "border-primary scale-110" : "border-transparent hover:scale-105"
+                  "w-10 h-10 rounded-full border-2 transition-all relative shadow-sm",
+                  isSelected 
+                    ? "border-primary ring-2 ring-primary/30 scale-110" 
+                    : "border-gray-200 hover:border-gray-300 hover:scale-105"
                 )}
                 style={{ backgroundColor: color.value }}
                 title={color.name}
@@ -151,28 +165,56 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
                 {isSelected && (
                   <Check 
                     className={cn(
-                      "absolute inset-0 m-auto h-3 w-3",
-                      color.value === "#FFFFFF" ? "text-foreground" : "text-white"
+                      "absolute inset-0 m-auto h-4 w-4",
+                      color.value === "#FFFFFF" ? "text-gray-700" : "text-white"
                     )} 
                   />
                 )}
               </button>
             );
           })}
+          
+          {/* Custom Color Picker */}
+          <div className="relative">
+            <button
+              className={cn(
+                "w-10 h-10 rounded-full border-2 border-dashed transition-all flex items-center justify-center shadow-sm",
+                isCustomBgColorSelected
+                  ? "border-primary ring-2 ring-primary/30 scale-110"
+                  : "border-gray-300 hover:border-gray-400 hover:scale-105"
+              )}
+              style={{ 
+                backgroundColor: isCustomBgColorSelected ? customBgColor : "transparent" 
+              }}
+              title="Cor personalizada"
+            >
+              {isCustomBgColorSelected ? (
+                <Check className="h-4 w-4 text-white mix-blend-difference" />
+              ) : (
+                <Pencil className="h-4 w-4 text-gray-400" />
+              )}
+            </button>
+            <input
+              type="color"
+              value={customBgColor}
+              onChange={(e) => {
+                setCustomBgColor(e.target.value);
+                onUpdate({ globalButtonBgColor: e.target.value });
+              }}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <input
-            type="color"
-            value={customBgColor}
-            onChange={(e) => {
-              setCustomBgColor(e.target.value);
-              onUpdate({ globalButtonBgColor: e.target.value });
-            }}
-            className="w-10 h-10 rounded border border-border cursor-pointer"
+
+        {/* Color Value Display */}
+        <div className="flex items-center gap-3 bg-muted/50 rounded-xl px-4 py-3">
+          <div 
+            className="w-8 h-8 rounded-full border-2 border-gray-200 shadow-inner"
+            style={{ backgroundColor: profile.globalButtonBgColor || "#FF7F6B" }}
           />
           <input
             type="text"
-            value={customBgColor.toUpperCase()}
+            value={(profile.globalButtonBgColor || "#FF7F6B").toUpperCase()}
             onChange={(e) => {
               const value = e.target.value;
               if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
@@ -182,7 +224,7 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
                 }
               }
             }}
-            className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm font-mono"
+            className="flex-1 bg-transparent text-sm font-mono text-muted-foreground"
           />
         </div>
       </div>
@@ -190,19 +232,79 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
       {/* Text Color */}
       <div className="space-y-3">
         <Label>Cor do texto</Label>
-        <div className="flex items-center gap-2">
-          <input
-            type="color"
-            value={customTextColor}
-            onChange={(e) => {
-              setCustomTextColor(e.target.value);
-              onUpdate({ globalButtonTextColor: e.target.value });
-            }}
-            className="w-10 h-10 rounded border border-border cursor-pointer"
+        <div className="flex flex-wrap gap-3">
+          {PRESET_TEXT_COLORS.map((color) => {
+            const isSelected = profile.globalButtonTextColor === color.value;
+            
+            return (
+              <button
+                key={color.value}
+                onClick={() => {
+                  setCustomTextColor(color.value);
+                  onUpdate({ globalButtonTextColor: color.value });
+                }}
+                className={cn(
+                  "w-10 h-10 rounded-full border-2 transition-all relative shadow-sm",
+                  isSelected 
+                    ? "border-primary ring-2 ring-primary/30 scale-110" 
+                    : "border-gray-200 hover:border-gray-300 hover:scale-105"
+                )}
+                style={{ backgroundColor: color.value }}
+                title={color.name}
+              >
+                {isSelected && (
+                  <Check 
+                    className={cn(
+                      "absolute inset-0 m-auto h-4 w-4",
+                      color.value === "#FFFFFF" || color.value === "#6B7280" ? "text-gray-700" : "text-white"
+                    )} 
+                  />
+                )}
+              </button>
+            );
+          })}
+          
+          {/* Custom Color Picker */}
+          <div className="relative">
+            <button
+              className={cn(
+                "w-10 h-10 rounded-full border-2 border-dashed transition-all flex items-center justify-center shadow-sm",
+                isCustomTextColorSelected
+                  ? "border-primary ring-2 ring-primary/30 scale-110"
+                  : "border-gray-300 hover:border-gray-400 hover:scale-105"
+              )}
+              style={{ 
+                backgroundColor: isCustomTextColorSelected ? customTextColor : "transparent" 
+              }}
+              title="Cor personalizada"
+            >
+              {isCustomTextColorSelected ? (
+                <Check className="h-4 w-4 text-white mix-blend-difference" />
+              ) : (
+                <Pencil className="h-4 w-4 text-gray-400" />
+              )}
+            </button>
+            <input
+              type="color"
+              value={customTextColor}
+              onChange={(e) => {
+                setCustomTextColor(e.target.value);
+                onUpdate({ globalButtonTextColor: e.target.value });
+              }}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+        </div>
+
+        {/* Color Value Display */}
+        <div className="flex items-center gap-3 bg-muted/50 rounded-xl px-4 py-3">
+          <div 
+            className="w-8 h-8 rounded-full border-2 border-gray-200 shadow-inner"
+            style={{ backgroundColor: profile.globalButtonTextColor || "#FFFFFF" }}
           />
           <input
             type="text"
-            value={customTextColor.toUpperCase()}
+            value={(profile.globalButtonTextColor || "#FFFFFF").toUpperCase()}
             onChange={(e) => {
               const value = e.target.value;
               if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
@@ -212,7 +314,7 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
                 }
               }
             }}
-            className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm font-mono"
+            className="flex-1 bg-transparent text-sm font-mono text-muted-foreground"
           />
         </div>
       </div>
