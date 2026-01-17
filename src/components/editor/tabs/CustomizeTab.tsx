@@ -164,34 +164,6 @@ export function CustomizeTab({ profile, onUpdate }: CustomizeTabProps) {
           </Button>
         </div>
       </div>
-
-      {/* Preview */}
-      <div className="p-4 rounded-xl border bg-muted/30 space-y-3">
-        <Label className="text-sm font-medium text-muted-foreground">Preview</Label>
-        <div
-          className="p-4 rounded-lg transition-all"
-          style={{ backgroundColor: profile.globalBackgroundColor || "#f5f5f5" }}
-        >
-          <button
-            className={cn(
-              "w-full py-3 px-4 font-medium transition-all",
-              profile.globalButtonBorderRadius,
-              profile.globalButtonStyle === "outline" && "bg-transparent border-2"
-            )}
-            style={{
-              backgroundColor: profile.globalButtonStyle === "filled" 
-                ? (profile.globalButtonBgColor || "#000000") 
-                : "transparent",
-              color: profile.globalButtonTextColor || "#ffffff",
-              borderColor: profile.globalButtonStyle === "outline" 
-                ? (profile.globalButtonBgColor || "#000000") 
-                : undefined,
-            }}
-          >
-            Exemplo de Botão
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
