@@ -21,7 +21,7 @@ const LOCATION_ICON_VALUE = "location-icon";
 const renderIcon = (icon: string | undefined) => {
   if (!icon) return null;
   if (icon === WHATSAPP_ICON_VALUE) {
-    return <WhatsAppIcon className="w-5 h-5 shrink-0" title="WhatsApp" />;
+    return <WhatsAppIcon className="w-4 h-4 shrink-0" title="WhatsApp" />;
   }
   if (icon === LINK_ICON_VALUE) {
     return <LinkIcon className="w-5 h-5 shrink-0" title="Link" />;
