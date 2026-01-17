@@ -42,7 +42,7 @@ const ProfileHeader = ({
       <div className="space-y-1">
         <h1 
           className={cn(
-            "font-bold text-foreground",
+            "font-bold",
             titleSize === "small" ? "text-xl" : "text-2xl"
           )}
           style={{ 
@@ -53,8 +53,12 @@ const ProfileHeader = ({
           {displayName}
         </h1>
         <p 
-          className="text-muted-foreground"
-          style={{ fontFamily: titleFont }}
+          style={{ 
+            fontFamily: titleFont,
+            color: titleColor || undefined,
+            opacity: titleColor ? 0.7 : undefined
+          }}
+          className={!titleColor ? "text-muted-foreground" : undefined}
         >
           @{username}
         </p>
@@ -62,8 +66,15 @@ const ProfileHeader = ({
       
       {bio && (
         <p 
-          className="max-w-xs text-sm text-muted-foreground leading-relaxed"
-          style={{ fontFamily: titleFont }}
+          className={cn(
+            "max-w-xs text-sm leading-relaxed",
+            !titleColor && "text-muted-foreground"
+          )}
+          style={{ 
+            fontFamily: titleFont,
+            color: titleColor || undefined,
+            opacity: titleColor ? 0.8 : undefined
+          }}
         >
           {bio}
         </p>

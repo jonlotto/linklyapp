@@ -32,22 +32,12 @@ const PRESET_BG_COLORS = [
   { name: "Branco", value: "#FFFFFF" },
 ];
 
-const PRESET_TEXT_COLORS = [
-  { name: "Branco", value: "#FFFFFF" },
-  { name: "Preto", value: "#1A1A1A" },
-  { name: "Cinza", value: "#6B7280" },
-  { name: "Coral", value: "#FF7F6B" },
-  { name: "Azul", value: "#3B82F6" },
-];
-
 export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
   const [customBgColor, setCustomBgColor] = useState(profile.globalButtonBgColor || "#FF7F6B");
-  const [customTextColor, setCustomTextColor] = useState(profile.globalButtonTextColor || "#FFFFFF");
 
   const handleReset = () => {
     onUpdate({
       globalButtonBgColor: null,
-      globalButtonTextColor: null,
       globalButtonStyle: "filled",
       globalButtonBorderRadius: "rounded-xl",
     });
@@ -55,9 +45,6 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
 
   const isCustomBgColorSelected = profile.globalButtonBgColor && 
     !PRESET_BG_COLORS.some(c => c.value === profile.globalButtonBgColor);
-
-  const isCustomTextColorSelected = profile.globalButtonTextColor && 
-    !PRESET_TEXT_COLORS.some(c => c.value === profile.globalButtonTextColor);
 
   return (
     <div className="space-y-6">
@@ -221,96 +208,6 @@ export function ButtonsSection({ profile, onUpdate }: ButtonsSectionProps) {
                 setCustomBgColor(value);
                 if (value.length === 7) {
                   onUpdate({ globalButtonBgColor: value });
-                }
-              }
-            }}
-            className="flex-1 bg-transparent text-sm font-mono text-muted-foreground"
-          />
-        </div>
-      </div>
-
-      {/* Text Color */}
-      <div className="space-y-3">
-        <Label>Cor do texto</Label>
-        <div className="flex flex-wrap gap-3">
-          {PRESET_TEXT_COLORS.map((color) => {
-            const isSelected = profile.globalButtonTextColor === color.value;
-            
-            return (
-              <button
-                key={color.value}
-                onClick={() => {
-                  setCustomTextColor(color.value);
-                  onUpdate({ globalButtonTextColor: color.value });
-                }}
-                className={cn(
-                  "w-10 h-10 rounded-full border-2 transition-all relative shadow-sm",
-                  isSelected 
-                    ? "border-primary ring-2 ring-primary/30 scale-110" 
-                    : "border-gray-200 hover:border-gray-300 hover:scale-105"
-                )}
-                style={{ backgroundColor: color.value }}
-                title={color.name}
-              >
-                {isSelected && (
-                  <Check 
-                    className={cn(
-                      "absolute inset-0 m-auto h-4 w-4",
-                      color.value === "#FFFFFF" || color.value === "#6B7280" ? "text-gray-700" : "text-white"
-                    )} 
-                  />
-                )}
-              </button>
-            );
-          })}
-          
-          {/* Custom Color Picker */}
-          <div className="relative">
-            <button
-              className={cn(
-                "w-10 h-10 rounded-full border-2 border-dashed transition-all flex items-center justify-center shadow-sm",
-                isCustomTextColorSelected
-                  ? "border-primary ring-2 ring-primary/30 scale-110"
-                  : "border-gray-300 hover:border-gray-400 hover:scale-105"
-              )}
-              style={{ 
-                backgroundColor: isCustomTextColorSelected ? customTextColor : "transparent" 
-              }}
-              title="Cor personalizada"
-            >
-              {isCustomTextColorSelected ? (
-                <Check className="h-4 w-4 text-white mix-blend-difference" />
-              ) : (
-                <Pencil className="h-4 w-4 text-gray-400" />
-              )}
-            </button>
-            <input
-              type="color"
-              value={customTextColor}
-              onChange={(e) => {
-                setCustomTextColor(e.target.value);
-                onUpdate({ globalButtonTextColor: e.target.value });
-              }}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-          </div>
-        </div>
-
-        {/* Color Value Display */}
-        <div className="flex items-center gap-3 bg-muted/50 rounded-xl px-4 py-3">
-          <div 
-            className="w-8 h-8 rounded-full border-2 border-gray-200 shadow-inner"
-            style={{ backgroundColor: profile.globalButtonTextColor || "#FFFFFF" }}
-          />
-          <input
-            type="text"
-            value={(profile.globalButtonTextColor || "#FFFFFF").toUpperCase()}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-                setCustomTextColor(value);
-                if (value.length === 7) {
-                  onUpdate({ globalButtonTextColor: value });
                 }
               }
             }}

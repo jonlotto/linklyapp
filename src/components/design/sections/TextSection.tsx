@@ -1,15 +1,25 @@
-import { Check, ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { Check, ChevronDown, Pencil, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EditorProfile } from "@/hooks/useEditorState";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+const PRESET_TEXT_COLORS = [
+  { name: "Branco", value: "#FFFFFF" },
+  { name: "Preto", value: "#1A1A1A" },
+  { name: "Cinza", value: "#6B7280" },
+  { name: "Coral", value: "#FF7F6B" },
+  { name: "Azul", value: "#3B82F6" },
+];
 
 interface TextSectionProps {
   profile: EditorProfile;
@@ -47,6 +57,19 @@ const FONTS = [
 
 export function TextSection({ profile, onUpdate }: TextSectionProps) {
   const selectedFont = FONTS.find(f => f.id === profile.titleFont) || FONTS[0];
+  const [customTextColor, setCustomTextColor] = useState(profile.titleColor || "#1A1A1A");
+
+  const isCustomTextColorSelected = profile.titleColor && 
+    !PRESET_TEXT_COLORS.some(c => c.value === profile.titleColor);
+
+  const handleResetText = () => {
+    onUpdate({
+      titleFont: "Inter",
+      titleSize: "large",
+      titleColor: null,
+    });
+    setCustomTextColor("#1A1A1A");
+  };
 
   return (
     <div className="space-y-6">
@@ -165,6 +188,107 @@ export function TextSection({ profile, onUpdate }: TextSectionProps) {
             </button>
           </div>
         </div>
+
+        {/* Text Color */}
+        <div className="space-y-3 mt-4">
+          <Label>Cor do texto</Label>
+          <div className="flex flex-wrap gap-3">
+            {PRESET_TEXT_COLORS.map((color) => {
+              const isSelected = profile.titleColor === color.value;
+              
+              return (
+                <button
+                  key={color.value}
+                  onClick={() => {
+                    setCustomTextColor(color.value);
+                    onUpdate({ titleColor: color.value });
+                  }}
+                  className={cn(
+                    "w-10 h-10 rounded-full border-2 transition-all relative shadow-sm",
+                    isSelected 
+                      ? "border-primary ring-2 ring-primary/30 scale-110" 
+                      : "border-gray-200 hover:border-gray-300 hover:scale-105"
+                  )}
+                  style={{ backgroundColor: color.value }}
+                  title={color.name}
+                >
+                  {isSelected && (
+                    <Check 
+                      className={cn(
+                        "absolute inset-0 m-auto h-4 w-4",
+                        color.value === "#FFFFFF" || color.value === "#6B7280" ? "text-gray-700" : "text-white"
+                      )} 
+                    />
+                  )}
+                </button>
+              );
+            })}
+            
+            {/* Custom Color Picker */}
+            <div className="relative">
+              <button
+                className={cn(
+                  "w-10 h-10 rounded-full border-2 border-dashed transition-all flex items-center justify-center shadow-sm",
+                  isCustomTextColorSelected
+                    ? "border-primary ring-2 ring-primary/30 scale-110"
+                    : "border-gray-300 hover:border-gray-400 hover:scale-105"
+                )}
+                style={{ 
+                  backgroundColor: isCustomTextColorSelected ? customTextColor : "transparent" 
+                }}
+                title="Cor personalizada"
+              >
+                {isCustomTextColorSelected ? (
+                  <Check className="h-4 w-4 text-white mix-blend-difference" />
+                ) : (
+                  <Pencil className="h-4 w-4 text-gray-400" />
+                )}
+              </button>
+              <input
+                type="color"
+                value={customTextColor}
+                onChange={(e) => {
+                  setCustomTextColor(e.target.value);
+                  onUpdate({ titleColor: e.target.value });
+                }}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          {/* Color Value Display */}
+          <div className="flex items-center gap-3 bg-muted/50 rounded-xl px-4 py-3">
+            <div 
+              className="w-8 h-8 rounded-full border-2 border-gray-200 shadow-inner"
+              style={{ backgroundColor: profile.titleColor || "#1A1A1A" }}
+            />
+            <input
+              type="text"
+              value={(profile.titleColor || "#1A1A1A").toUpperCase()}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
+                  setCustomTextColor(value);
+                  if (value.length === 7) {
+                    onUpdate({ titleColor: value });
+                  }
+                }
+              }}
+              className="flex-1 bg-transparent text-sm font-mono text-muted-foreground"
+            />
+          </div>
+        </div>
+
+        {/* Reset Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleResetText}
+          className="w-full mt-4"
+        >
+          <RotateCcw className="h-4 w-4 mr-2" />
+          Restaurar padrões
+        </Button>
       </div>
     </div>
   );

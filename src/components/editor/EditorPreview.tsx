@@ -162,9 +162,12 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               <p
                 className={cn(
                   "text-center text-sm mb-1 cursor-pointer hover:opacity-80 transition-opacity",
-                  template.styles.textColor
+                  !profile.titleColor && template.styles.textColor
                 )}
-                style={{ fontFamily: profile.titleFont || "Inter" }}
+                style={{ 
+                  fontFamily: profile.titleFont || "Inter",
+                  color: profile.titleColor || undefined
+                }}
                 onClick={() => onClickElement?.("username")}
               >
                 @{profile.username || "usuario"}
@@ -189,9 +192,12 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 <p
                   className={cn(
                     "text-center text-sm mb-6 cursor-pointer hover:opacity-80 transition-opacity opacity-80",
-                    template.styles.textColor
+                    !profile.titleColor && template.styles.textColor
                   )}
-                  style={{ fontFamily: profile.titleFont || "Inter" }}
+                  style={{ 
+                    fontFamily: profile.titleFont || "Inter",
+                    color: profile.titleColor || undefined
+                  }}
                   onClick={() => onClickElement?.("bio")}
                 >
                   {profile.bio || "Sua bio aqui..."}
@@ -259,8 +265,9 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                         className={cn(
                           "w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform cursor-pointer",
                           template.styles.cardBg,
-                          template.styles.textColor
+                          !profile.titleColor && template.styles.textColor
                         )}
+                        style={{ color: profile.titleColor || undefined }}
                         onClick={() => onClickElement?.("link", social.id)}
                       >
                         {renderIcon(social.icon, "md") || "🔗"}
@@ -294,9 +301,12 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               <p
                 className={cn(
                   "text-center text-sm mb-1 cursor-pointer hover:opacity-80 transition-opacity",
-                  template.styles.textColor
+                  !profile.titleColor && template.styles.textColor
                 )}
-                style={{ fontFamily: profile.titleFont || "Inter" }}
+                style={{ 
+                  fontFamily: profile.titleFont || "Inter",
+                  color: profile.titleColor || undefined
+                }}
                 onClick={() => onClickElement?.("username")}
               >
                 @{profile.username || "usuario"}
@@ -321,9 +331,12 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               <p
                 className={cn(
                   "text-center text-sm mb-6 cursor-pointer hover:opacity-80 transition-opacity opacity-80",
-                  template.styles.textColor
+                  !profile.titleColor && template.styles.textColor
                 )}
-                style={{ fontFamily: profile.titleFont || "Inter" }}
+                style={{ 
+                  fontFamily: profile.titleFont || "Inter",
+                  color: profile.titleColor || undefined
+                }}
                 onClick={() => onClickElement?.("bio")}
               >
                 {profile.bio || "Sua bio aqui..."}
@@ -390,8 +403,9 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                       className={cn(
                         "w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform cursor-pointer",
                         template.styles.cardBg,
-                        template.styles.textColor
+                        !profile.titleColor && template.styles.textColor
                       )}
+                      style={{ color: profile.titleColor || undefined }}
                       onClick={() => onClickElement?.("link", social.id)}
                     >
                       {renderIcon(social.icon, "md") || "🔗"}
