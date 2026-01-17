@@ -2,9 +2,17 @@ import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { LinkIcon } from "@/components/icons/LinkIcon";
+import { CartIcon } from "@/components/icons/CartIcon";
+import { StoreIcon } from "@/components/icons/StoreIcon";
+import { StarIcon } from "@/components/icons/StarIcon";
+import { LocationIcon } from "@/components/icons/LocationIcon";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 const LINK_ICON_VALUE = "link-icon";
+const CART_ICON_VALUE = "cart-icon";
+const STORE_ICON_VALUE = "store-icon";
+const STAR_ICON_VALUE = "star-icon";
+const LOCATION_ICON_VALUE = "location-icon";
 
 interface LinkCardProps {
   title: string;
@@ -16,6 +24,29 @@ interface LinkCardProps {
   buttonBorderRadius?: string;
 }
 
+const renderIcon = (icon: string | undefined) => {
+  if (!icon) return null;
+  if (icon === WHATSAPP_ICON_VALUE) {
+    return <WhatsAppIcon className="w-5 h-5 shrink-0" title="WhatsApp" />;
+  }
+  if (icon === LINK_ICON_VALUE) {
+    return <LinkIcon className="w-5 h-5 shrink-0" title="Link" />;
+  }
+  if (icon === CART_ICON_VALUE) {
+    return <CartIcon className="w-5 h-5 shrink-0" title="Carrinho" />;
+  }
+  if (icon === STORE_ICON_VALUE) {
+    return <StoreIcon className="w-5 h-5 shrink-0" title="Loja" />;
+  }
+  if (icon === STAR_ICON_VALUE) {
+    return <StarIcon className="w-5 h-5 shrink-0" title="Estrela" />;
+  }
+  if (icon === LOCATION_ICON_VALUE) {
+    return <LocationIcon className="w-5 h-5 shrink-0" title="Localização" />;
+  }
+  return <span className="text-xl shrink-0">{icon}</span>;
+};
+
 const LinkCard = ({ 
   title, 
   url, 
@@ -26,8 +57,6 @@ const LinkCard = ({
   buttonBorderRadius = "rounded-2xl"
 }: LinkCardProps) => {
   const hasCustomColors = buttonBgColor || buttonTextColor;
-  const isWhatsAppIcon = icon === WHATSAPP_ICON_VALUE;
-  const isLinkIcon = icon === LINK_ICON_VALUE;
   
   return (
     <a
@@ -49,15 +78,7 @@ const LinkCard = ({
         } : undefined}
       >
         <div className="flex items-center gap-3">
-          {icon && (
-            isWhatsAppIcon ? (
-              <WhatsAppIcon className="w-5 h-5 shrink-0" title="WhatsApp" />
-            ) : isLinkIcon ? (
-              <LinkIcon className="w-5 h-5 shrink-0" title="Link" />
-            ) : (
-              <span className="text-xl shrink-0">{icon}</span>
-            )
-          )}
+          {renderIcon(icon)}
           <span className={cn("font-medium", !hasCustomColors && "text-foreground")}>{title}</span>
         </div>
         <ExternalLink className={cn(
