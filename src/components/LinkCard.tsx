@@ -23,6 +23,7 @@ interface LinkCardProps {
   buttonTextColor?: string;
   buttonBorderRadius?: string;
   buttonStyle?: "filled" | "outline";
+  fontFamily?: string;
 }
 
 const renderIcon = (icon: string | undefined) => {
@@ -56,7 +57,8 @@ const LinkCard = ({
   buttonBgColor,
   buttonTextColor,
   buttonBorderRadius = "rounded-2xl",
-  buttonStyle = "filled"
+  buttonStyle = "filled",
+  fontFamily = "Inter"
 }: LinkCardProps) => {
   const hasCustomColors = buttonBgColor || buttonTextColor;
   
@@ -75,11 +77,14 @@ const LinkCard = ({
           !hasCustomColors && "glass shadow-glow hover:shadow-glow-lg",
           buttonStyle === "outline" && hasCustomColors && "bg-transparent border-2"
         )}
-        style={hasCustomColors ? {
-          backgroundColor: buttonStyle === "filled" ? (buttonBgColor || undefined) : "transparent",
-          color: buttonTextColor || undefined,
-          borderColor: buttonStyle === "outline" ? (buttonBgColor || undefined) : undefined,
-        } : undefined}
+        style={{
+          fontFamily,
+          ...(hasCustomColors ? {
+            backgroundColor: buttonStyle === "filled" ? (buttonBgColor || undefined) : "transparent",
+            color: buttonTextColor || undefined,
+            borderColor: buttonStyle === "outline" ? (buttonBgColor || undefined) : undefined,
+          } : {})
+        }}
       >
         {icon && (
           <span className="absolute left-4">

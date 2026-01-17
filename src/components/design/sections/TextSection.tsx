@@ -112,7 +112,7 @@ export function TextSection({ profile, onUpdate }: TextSectionProps) {
 
         {/* Font Selector */}
         <div className="space-y-3">
-          <Label>Fonte do título</Label>
+          <Label>Fonte</Label>
           <Sheet open={fontSheetOpen} onOpenChange={setFontSheetOpen}>
             <SheetTrigger asChild>
               <button className="w-full py-3 px-4 bg-muted/50 rounded-xl flex justify-between items-center hover:bg-muted transition-colors">

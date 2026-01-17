@@ -158,16 +158,17 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 className={cn("pt-16 pb-6 px-6", !profile.globalBackgroundColor && template.styles.contentBg)}
                 style={profile.globalBackgroundColor ? { backgroundColor: profile.globalBackgroundColor } : undefined}
               >
-                {/* Username */}
-                <p
-                  className={cn(
-                    "text-center text-sm mb-1 cursor-pointer hover:opacity-80 transition-opacity",
-                    template.styles.textColor
-                  )}
-                  onClick={() => onClickElement?.("username")}
-                >
-                  @{profile.username || "usuario"}
-                </p>
+              {/* Username */}
+              <p
+                className={cn(
+                  "text-center text-sm mb-1 cursor-pointer hover:opacity-80 transition-opacity",
+                  template.styles.textColor
+                )}
+                style={{ fontFamily: profile.titleFont || "Inter" }}
+                onClick={() => onClickElement?.("username")}
+              >
+                @{profile.username || "usuario"}
+              </p>
 
                 {/* Display Name */}
                 <h1
@@ -190,6 +191,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                     "text-center text-sm mb-6 cursor-pointer hover:opacity-80 transition-opacity opacity-80",
                     template.styles.textColor
                   )}
+                  style={{ fontFamily: profile.titleFont || "Inter" }}
                   onClick={() => onClickElement?.("bio")}
                 >
                   {profile.bio || "Sua bio aqui..."}
@@ -217,11 +219,14 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                           ),
                           buttonStyle === "outline" && hasCustomColors && "bg-transparent border-2"
                         )}
-                        style={hasCustomColors ? {
-                          backgroundColor: buttonStyle === "filled" ? (bgColor || undefined) : "transparent",
-                          color: textColor || undefined,
-                          borderColor: buttonStyle === "outline" ? (bgColor || undefined) : undefined,
-                        } : undefined}
+                        style={{
+                          fontFamily: profile.titleFont || "Inter",
+                          ...(hasCustomColors ? {
+                            backgroundColor: buttonStyle === "filled" ? (bgColor || undefined) : "transparent",
+                            color: textColor || undefined,
+                            borderColor: buttonStyle === "outline" ? (bgColor || undefined) : undefined,
+                          } : {})
+                        }}
                         onClick={() => onClickElement?.("link", link.id)}
                       >
                         {link.icon && (
@@ -291,6 +296,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                   "text-center text-sm mb-1 cursor-pointer hover:opacity-80 transition-opacity",
                   template.styles.textColor
                 )}
+                style={{ fontFamily: profile.titleFont || "Inter" }}
                 onClick={() => onClickElement?.("username")}
               >
                 @{profile.username || "usuario"}
@@ -317,6 +323,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                   "text-center text-sm mb-6 cursor-pointer hover:opacity-80 transition-opacity opacity-80",
                   template.styles.textColor
                 )}
+                style={{ fontFamily: profile.titleFont || "Inter" }}
                 onClick={() => onClickElement?.("bio")}
               >
                 {profile.bio || "Sua bio aqui..."}
@@ -344,11 +351,14 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                         ),
                         buttonStyle === "outline" && hasCustomColors && "bg-transparent border-2"
                       )}
-                      style={hasCustomColors ? {
-                        backgroundColor: buttonStyle === "filled" ? (bgColor || undefined) : "transparent",
-                        color: textColor || undefined,
-                        borderColor: buttonStyle === "outline" ? (bgColor || undefined) : undefined,
-                      } : undefined}
+                      style={{
+                        fontFamily: profile.titleFont || "Inter",
+                        ...(hasCustomColors ? {
+                          backgroundColor: buttonStyle === "filled" ? (bgColor || undefined) : "transparent",
+                          color: textColor || undefined,
+                          borderColor: buttonStyle === "outline" ? (bgColor || undefined) : undefined,
+                        } : {})
+                      }}
                       onClick={() => onClickElement?.("link", link.id)}
                     >
                       {link.icon && (

@@ -52,11 +52,21 @@ const ProfileHeader = ({
         >
           {displayName}
         </h1>
-        <p className="text-muted-foreground">@{username}</p>
+        <p 
+          className="text-muted-foreground"
+          style={{ fontFamily: titleFont }}
+        >
+          @{username}
+        </p>
       </div>
       
       {bio && (
-        <p className="max-w-xs text-sm text-muted-foreground leading-relaxed">{bio}</p>
+        <p 
+          className="max-w-xs text-sm text-muted-foreground leading-relaxed"
+          style={{ fontFamily: titleFont }}
+        >
+          {bio}
+        </p>
       )}
     </div>
   );
