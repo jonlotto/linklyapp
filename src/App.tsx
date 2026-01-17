@@ -7,11 +7,10 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { RoleGuard } from "@/components/RoleGuard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import Admin from "./pages/Admin";
+import AdminLayout from "./layouts/AdminLayout";
 import AdminUsers from "./pages/AdminUsers";
 import BioPage from "./pages/BioPage";
 import Editor from "./pages/Editor";
-import Design from "./pages/Design";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,9 +25,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin" element={<AdminLayout />} />
             <Route path="/editor" element={<Editor />} />
-            <Route path="/design" element={<Design />} />
+            <Route path="/design" element={<AdminLayout />} />
             <Route
               path="/admin/users"
               element={

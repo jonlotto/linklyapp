@@ -8,9 +8,10 @@ import { useUserRole } from "@/hooks/useUserRole";
 interface AdminSidebarProps {
   activeSection: "links" | "design";
   username?: string;
+  onNavigate?: (view: "links" | "design") => void;
 }
 
-export function AdminSidebar({ activeSection, username }: AdminSidebarProps) {
+export function AdminSidebar({ activeSection, username, onNavigate }: AdminSidebarProps) {
   const navigate = useNavigate();
   const { signOut } = useAuth();
   const { isAdmin } = useUserRole();
@@ -20,8 +21,16 @@ export function AdminSidebar({ activeSection, username }: AdminSidebarProps) {
     navigate("/");
   };
 
+  const handleNavClick = (view: "links" | "design") => {
+    if (onNavigate) {
+      onNavigate(view);
+    } else {
+      navigate(view === "links" ? "/admin" : "/design");
+    }
+  };
+
   return (
-    <aside className="w-64 border-r border-border bg-card flex flex-col h-screen">
+    <aside className="w-64 border-r border-border bg-card flex flex-col h-screen flex-shrink-0">
       {/* Logo */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
@@ -40,7 +49,7 @@ export function AdminSidebar({ activeSection, username }: AdminSidebarProps) {
             "w-full justify-start rounded-xl h-11",
             activeSection === "links" && "bg-secondary"
           )}
-          onClick={() => navigate("/admin")}
+          onClick={() => handleNavClick("links")}
         >
           <LayoutGrid className="h-5 w-5 mr-3" />
           Links
@@ -52,7 +61,7 @@ export function AdminSidebar({ activeSection, username }: AdminSidebarProps) {
             "w-full justify-start rounded-xl h-11",
             activeSection === "design" && "bg-secondary"
           )}
-          onClick={() => navigate("/design")}
+          onClick={() => handleNavClick("design")}
         >
           <Palette className="h-5 w-5 mr-3" />
           Design
