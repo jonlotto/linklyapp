@@ -68,7 +68,7 @@ const LinkCard = ({
     >
       <div 
         className={cn(
-          "flex items-center justify-between gap-4 px-6 py-4 transition-all duration-300 hover:scale-[1.02]",
+          "relative flex items-center justify-center px-6 py-4 transition-all duration-300 hover:scale-[1.02]",
           buttonBorderRadius,
           !hasCustomColors && "glass shadow-glow hover:shadow-glow-lg"
         )}
@@ -77,14 +77,12 @@ const LinkCard = ({
           color: buttonTextColor || undefined,
         } : undefined}
       >
-        <div className="flex items-center gap-3">
-          {renderIcon(icon)}
-          <span className={cn("font-medium", !hasCustomColors && "text-foreground")}>{title}</span>
-        </div>
-        <ExternalLink className={cn(
-          "h-4 w-4 transition-transform duration-300 group-hover:translate-x-1",
-          hasCustomColors ? "opacity-60" : "text-muted-foreground group-hover:text-primary"
-        )} />
+        {icon && (
+          <span className="absolute left-4">
+            {renderIcon(icon)}
+          </span>
+        )}
+        <span className={cn("font-medium text-sm", !hasCustomColors && "text-foreground")}>{title}</span>
       </div>
     </a>
   );

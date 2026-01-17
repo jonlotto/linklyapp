@@ -166,7 +166,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                       <button
                         key={link.id}
                         className={cn(
-                          "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2",
+                          "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer relative flex items-center justify-center",
                           link.buttonBorderRadius || template.styles.buttonStyle,
                           !hasCustomColors && (
                             link.style === "filled"
@@ -180,8 +180,12 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                         } : undefined}
                         onClick={() => onClickElement?.("link", link.id)}
                       >
-                        {renderIcon(link.icon)}
-                        <span>{link.title}</span>
+                        {link.icon && (
+                          <span className="absolute left-4">
+                            {renderIcon(link.icon)}
+                          </span>
+                        )}
+                        <span className="text-sm">{link.title}</span>
                       </button>
                     );
                   })}
@@ -280,7 +284,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                     <button
                       key={link.id}
                       className={cn(
-                        "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2",
+                        "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer relative flex items-center justify-center",
                         link.buttonBorderRadius || template.styles.buttonStyle,
                         !hasCustomColors && (
                           link.style === "filled"
@@ -294,8 +298,12 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                       } : undefined}
                       onClick={() => onClickElement?.("link", link.id)}
                     >
-                      {renderIcon(link.icon)}
-                      <span>{link.title}</span>
+                      {link.icon && (
+                        <span className="absolute left-4">
+                          {renderIcon(link.icon)}
+                        </span>
+                      )}
+                      <span className="text-sm">{link.title}</span>
                     </button>
                   );
                 })}
