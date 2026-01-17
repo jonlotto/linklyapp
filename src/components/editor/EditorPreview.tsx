@@ -10,7 +10,6 @@ import { CartIcon } from "@/components/icons/CartIcon";
 import { StoreIcon } from "@/components/icons/StoreIcon";
 import { StarIcon } from "@/components/icons/StarIcon";
 import { LocationIcon } from "@/components/icons/LocationIcon";
-import { FlowButton } from "@/components/ui/flow-button";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 const LINK_ICON_VALUE = "link-icon";
@@ -163,26 +162,11 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 <div className="space-y-3 mb-6">
                   {buttons.map((link) => {
                     // Use global styles from profile
-                    const bgColor = profile.globalButtonBgColor || '#111111';
-                    const textColor = profile.globalButtonTextColor || '#111111';
+                    const bgColor = profile.globalButtonBgColor;
+                    const textColor = profile.globalButtonTextColor;
                     const borderRadius = profile.globalButtonBorderRadius || "rounded-xl";
                     const buttonStyle = profile.globalButtonStyle || "filled";
-                    const hasCustomColors = profile.globalButtonBgColor || profile.globalButtonTextColor;
-
-                    // Flow button style
-                    if (template.hasFlowButtons) {
-                      return (
-                        <div key={link.id} onClick={() => onClickElement?.("link", link.id)} className="cursor-pointer">
-                          <FlowButton
-                            text={link.title}
-                            icon={link.icon ? renderIcon(link.icon) : undefined}
-                            bgColor={bgColor}
-                            textColor={textColor}
-                          />
-                        </div>
-                      );
-                    }
-
+                    const hasCustomColors = bgColor || textColor;
                     return (
                       <button
                         key={link.id}
@@ -300,26 +284,11 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               <div className="space-y-3 mb-6">
                 {buttons.map((link) => {
                   // Use global styles from profile
-                  const bgColor = profile.globalButtonBgColor || '#111111';
-                  const textColor = profile.globalButtonTextColor || '#111111';
+                  const bgColor = profile.globalButtonBgColor;
+                  const textColor = profile.globalButtonTextColor;
                   const borderRadius = profile.globalButtonBorderRadius || "rounded-xl";
                   const buttonStyle = profile.globalButtonStyle || "filled";
-                  const hasCustomColors = profile.globalButtonBgColor || profile.globalButtonTextColor;
-
-                  // Flow button style
-                  if (template.hasFlowButtons) {
-                    return (
-                      <div key={link.id} onClick={() => onClickElement?.("link", link.id)} className="cursor-pointer">
-                        <FlowButton
-                          text={link.title}
-                          icon={link.icon ? renderIcon(link.icon) : undefined}
-                          bgColor={bgColor}
-                          textColor={textColor}
-                        />
-                      </div>
-                    );
-                  }
-
+                  const hasCustomColors = bgColor || textColor;
                   return (
                     <button
                       key={link.id}
