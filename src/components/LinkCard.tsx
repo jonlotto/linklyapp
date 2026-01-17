@@ -6,6 +6,7 @@ import { CartIcon } from "@/components/icons/CartIcon";
 import { StoreIcon } from "@/components/icons/StoreIcon";
 import { StarIcon } from "@/components/icons/StarIcon";
 import { LocationIcon } from "@/components/icons/LocationIcon";
+import { FlowButton } from "@/components/ui/flow-button";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 const LINK_ICON_VALUE = "link-icon";
@@ -23,6 +24,7 @@ interface LinkCardProps {
   buttonTextColor?: string;
   buttonBorderRadius?: string;
   buttonStyle?: "filled" | "outline";
+  useFlowStyle?: boolean;
 }
 
 const renderIcon = (icon: string | undefined) => {
@@ -56,9 +58,28 @@ const LinkCard = ({
   buttonBgColor,
   buttonTextColor,
   buttonBorderRadius = "rounded-2xl",
-  buttonStyle = "filled"
+  buttonStyle = "filled",
+  useFlowStyle = false
 }: LinkCardProps) => {
   const hasCustomColors = buttonBgColor || buttonTextColor;
+
+  // Flow style button
+  if (useFlowStyle) {
+    return (
+      <div 
+        className="animate-slide-up opacity-0"
+        style={{ animationDelay: `${delay}ms` }}
+      >
+        <FlowButton
+          text={title}
+          href={url}
+          icon={icon ? renderIcon(icon) : undefined}
+          bgColor={buttonBgColor || '#111111'}
+          textColor={buttonTextColor || '#111111'}
+        />
+      </div>
+    );
+  }
   
   return (
     <a

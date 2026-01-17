@@ -4,6 +4,7 @@ export interface Template {
   slug: string;
   description: string;
   hasBanner?: boolean;
+  hasFlowButtons?: boolean;
   styles: {
     background: string;
     cardBg: string;
@@ -94,6 +95,22 @@ export const templates: Template[] = [
       avatarBorder: "ring-4 ring-white shadow-lg",
       bannerHeight: "aspect-[2/1] w-full",
       contentBg: "bg-white",
+    },
+  },
+  {
+    id: "flow",
+    name: "Flow",
+    slug: "flow",
+    description: "Botões animados com efeito moderno de expansão",
+    hasFlowButtons: true,
+    styles: {
+      background: "bg-gradient-to-br from-gray-50 via-white to-gray-100",
+      cardBg: "bg-white/80 backdrop-blur-sm",
+      textColor: "text-gray-900",
+      buttonStyle: "rounded-full",
+      buttonBg: "bg-gray-900",
+      buttonText: "text-gray-900",
+      avatarBorder: "ring-4 ring-gray-200",
     },
   },
 ];

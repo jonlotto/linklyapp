@@ -100,6 +100,7 @@ const BioPage = () => {
 
   const template = templates.find((t) => t.slug === profile?.template_slug) || templates[0];
   const hasBanner = template.hasBanner;
+  const hasFlowButtons = template.hasFlowButtons;
 
   // Build background style with global color override
   const globalBgColor = profile?.global_background_color;
@@ -177,6 +178,7 @@ const BioPage = () => {
                       buttonTextColor={profile?.global_button_text_color || undefined}
                       buttonBorderRadius={profile?.global_button_border_radius || undefined}
                       buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
+                      useFlowStyle={hasFlowButtons}
                     />
                   ))
                 )}
@@ -228,6 +230,7 @@ const BioPage = () => {
                   buttonTextColor={profile?.global_button_text_color || undefined}
                   buttonBorderRadius={profile?.global_button_border_radius || undefined}
                   buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
+                  useFlowStyle={hasFlowButtons}
                 />
               ))
             )}
