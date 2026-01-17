@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import ProfileHeader from "@/components/ProfileHeader";
-import LinkCard from "@/components/LinkCard";
+import LinkCard, { renderIcon } from "@/components/LinkCard";
 import { Link2 } from "lucide-react";
 import { templates } from "@/data/templates";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,13 +10,13 @@ import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
-type Link = Tables<"links">;
+type LinkType = Tables<"links">;
 
 const BioPage = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [links, setLinks] = useState<Link[]>([]);
+  const [links, setLinks] = useState<LinkType[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -101,9 +101,14 @@ const BioPage = () => {
   const template = templates.find((t) => t.slug === profile?.template_slug) || templates[0];
   const hasBanner = template.hasBanner;
 
+  // Separate links by type
+  const buttons = links.filter(l => l.link_type !== "social");
+  const socials = links.filter(l => l.link_type === "social");
+
   // Build background style with global color override
   const globalBgColor = profile?.global_background_color;
   const backgroundStyle = globalBgColor ? { backgroundColor: globalBgColor } : undefined;
+  const textColor = profile?.global_button_text_color || template.styles.textColor;
 
   return (
     <div 
@@ -185,16 +190,37 @@ const BioPage = () => {
                 )}
               </div>
 
+              {/* Social Icons */}
+              {socials.length > 0 && (
+                <div className="flex justify-center gap-4 flex-wrap mb-6 animate-fade-in">
+                  {socials.map((social) => (
+                    <a
+                      key={social.id}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                      style={{ 
+                        backgroundColor: profile?.global_button_bg_color || template.styles.cardBg,
+                        color: profile?.global_button_text_color || undefined
+                      }}
+                    >
+                      {renderIcon(social.icon || undefined, "w-5 h-5")}
+                    </a>
+                  ))}
+                </div>
+              )}
+
               {/* Links */}
               <div className="space-y-4">
-                {links.length === 0 ? (
+                {buttons.length === 0 && socials.length === 0 ? (
                   <div className="text-center py-8 animate-fade-in">
                     <p className="text-muted-foreground">
                       Nenhum link disponível ainda.
                     </p>
                   </div>
                 ) : (
-                  links.map((link, index) => (
+                  buttons.map((link, index) => (
                     <LinkCard
                       key={link.id}
                       title={link.title}
@@ -240,16 +266,37 @@ const BioPage = () => {
             />
           )}
 
+          {/* Social Icons */}
+          {socials.length > 0 && (
+            <div className="flex justify-center gap-4 flex-wrap mt-6 animate-fade-in">
+              {socials.map((social) => (
+                <a
+                  key={social.id}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                  style={{ 
+                    backgroundColor: profile?.global_button_bg_color || template.styles.cardBg,
+                    color: profile?.global_button_text_color || undefined
+                  }}
+                >
+                  {renderIcon(social.icon || undefined, "w-5 h-5")}
+                </a>
+              ))}
+            </div>
+          )}
+
           {/* Links */}
           <div className="mt-8 space-y-4">
-            {links.length === 0 ? (
+            {buttons.length === 0 && socials.length === 0 ? (
               <div className="text-center py-8 animate-fade-in">
                 <p className="text-muted-foreground">
                   Nenhum link disponível ainda.
                 </p>
               </div>
             ) : (
-              links.map((link, index) => (
+              buttons.map((link, index) => (
                 <LinkCard
                   key={link.id}
                   title={link.title}
