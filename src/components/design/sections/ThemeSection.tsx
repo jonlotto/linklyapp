@@ -25,7 +25,15 @@ export function ThemeSection({ profile, onUpdate }: ThemeSectionProps) {
           return (
             <button
               key={template.slug}
-              onClick={() => onUpdate({ templateSlug: template.slug })}
+              onClick={() => onUpdate({ 
+                templateSlug: template.slug,
+                // Reset all custom colors to use the new template's defaults
+                globalBackgroundColor: null,
+                globalButtonBgColor: null,
+                globalButtonTextColor: null,
+                globalButtonStyle: "filled",
+                globalButtonBorderRadius: "rounded-xl",
+              })}
               className={cn(
                 "relative rounded-xl border-2 p-3 transition-all text-left",
                 isSelected
