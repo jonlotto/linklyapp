@@ -41,11 +41,18 @@ export function ButtonsTab({
     onSelectLink(link.id);
   };
 
-  const handleSave = (data: Omit<EditorLink, "id" | "order" | "linkType">) => {
+  const handleSave = (data: Pick<EditorLink, "title" | "url" | "icon" | "isActive">) => {
     if (editingLink) {
       onUpdate(editingLink.id, data);
     } else {
-      onAdd(data);
+      // Add with default values for global style properties
+      onAdd({
+        ...data,
+        style: "filled",
+        buttonBgColor: null,
+        buttonTextColor: null,
+        buttonBorderRadius: "rounded-xl",
+      });
     }
     setIsDrawerOpen(false);
     setEditingLink(null);

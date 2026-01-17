@@ -31,6 +31,8 @@ export interface EditorProfile {
   globalButtonBgColor: string | null;
   globalButtonTextColor: string | null;
   globalBackgroundColor: string | null;
+  globalButtonStyle: "filled" | "outline";
+  globalButtonBorderRadius: string;
 }
 
 export interface EditorState {
@@ -63,6 +65,8 @@ export function useEditorState(initialTemplateSlug?: string) {
       globalButtonBgColor: null,
       globalButtonTextColor: null,
       globalBackgroundColor: null,
+      globalButtonStyle: "filled",
+      globalButtonBorderRadius: "rounded-xl",
     },
     links: [],
     isDirty: false,
@@ -122,6 +126,8 @@ export function useEditorState(initialTemplateSlug?: string) {
             globalButtonBgColor: profile?.global_button_bg_color || null,
             globalButtonTextColor: profile?.global_button_text_color || null,
             globalBackgroundColor: profile?.global_background_color || null,
+            globalButtonStyle: (profile?.global_button_style as "filled" | "outline") || "filled",
+            globalButtonBorderRadius: profile?.global_button_border_radius || "rounded-xl",
           },
           links: (links || []).map((link) => ({
             id: link.id,
@@ -177,6 +183,8 @@ export function useEditorState(initialTemplateSlug?: string) {
           global_button_bg_color: currentState.profile.globalButtonBgColor,
           global_button_text_color: currentState.profile.globalButtonTextColor,
           global_background_color: currentState.profile.globalBackgroundColor,
+          global_button_style: currentState.profile.globalButtonStyle,
+          global_button_border_radius: currentState.profile.globalButtonBorderRadius,
           updated_at: new Date().toISOString(),
         })
         .eq("user_id", user.id);

@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
 import { EditorLink } from "@/hooks/useEditorState";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
@@ -39,16 +38,10 @@ const ICONS = [
   { value: LOCATION_ICON_VALUE, label: "Localização" },
 ];
 
-const BORDER_RADIUS_OPTIONS = [
-  { value: "rounded-none", label: "Quadrado", preview: "rounded-none" },
-  { value: "rounded-xl", label: "Arredondado", preview: "rounded-xl" },
-  { value: "rounded-full", label: "Pílula", preview: "rounded-full" },
-];
-
 interface ButtonEditDrawerProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: Omit<EditorLink, "id" | "order" | "linkType">) => void;
+  onSave: (data: Pick<EditorLink, "title" | "url" | "icon" | "isActive">) => void;
   initialData?: EditorLink | null;
 }
 
@@ -61,29 +54,17 @@ export function ButtonEditDrawer({
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [icon, setIcon] = useState("");
-  const [style, setStyle] = useState<"filled" | "outline">("filled");
   const [errors, setErrors] = useState<{ title?: string; url?: string; whatsapp?: string }>({});
   
   // Button type (link or whatsapp)
   const [buttonType, setButtonType] = useState<"link" | "whatsapp">("link");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [whatsappMessage, setWhatsappMessage] = useState("");
-  
-  // Button customization
-  const [buttonBorderRadius, setButtonBorderRadius] = useState("rounded-xl");
-  const [useCustomColors, setUseCustomColors] = useState(false);
-  const [buttonBgColor, setButtonBgColor] = useState("#000000");
-  const [buttonTextColor, setButtonTextColor] = useState("#ffffff");
 
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
       setIcon(initialData.icon || "");
-      setStyle(initialData.style);
-      setButtonBorderRadius(initialData.buttonBorderRadius || "rounded-xl");
-      setUseCustomColors(!!initialData.buttonBgColor || !!initialData.buttonTextColor);
-      setButtonBgColor(initialData.buttonBgColor || "#000000");
-      setButtonTextColor(initialData.buttonTextColor || "#ffffff");
       
       // Detect if it's a WhatsApp link
       if (initialData.url?.startsWith("https://wa.me/")) {
@@ -109,14 +90,9 @@ export function ButtonEditDrawer({
       setTitle("");
       setUrl("");
       setIcon("");
-      setStyle("filled");
       setButtonType("link");
       setWhatsappNumber("");
       setWhatsappMessage("");
-      setButtonBorderRadius("rounded-xl");
-      setUseCustomColors(false);
-      setButtonBgColor("#000000");
-      setButtonTextColor("#ffffff");
     }
     setErrors({});
   }, [initialData, open]);
@@ -173,11 +149,7 @@ export function ButtonEditDrawer({
       title: title.trim(),
       url: finalUrl,
       icon: icon || null,
-      style,
       isActive: initialData?.isActive ?? true,
-      buttonBgColor: useCustomColors ? buttonBgColor : null,
-      buttonTextColor: useCustomColors ? buttonTextColor : null,
-      buttonBorderRadius,
     });
   };
 
@@ -328,118 +300,6 @@ export function ButtonEditDrawer({
                 })}
               </div>
             </div>
-
-            {/* Style */}
-            <div className="space-y-2">
-              <Label>Estilo</Label>
-              <RadioGroup
-                value={style}
-                onValueChange={(v) => setStyle(v as "filled" | "outline")}
-                className="flex gap-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="filled" id="filled" />
-                  <Label htmlFor="filled" className="font-normal cursor-pointer">
-                    Preenchido
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="outline" id="outline" />
-                  <Label htmlFor="outline" className="font-normal cursor-pointer">
-                    Outline
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {/* Button Format */}
-            <div className="space-y-2">
-              <Label>Formato do Botão</Label>
-              <div className="flex gap-2">
-                {BORDER_RADIUS_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setButtonBorderRadius(option.value)}
-                    className={cn(
-                      "flex-1 py-3 px-2 border-2 transition-all text-sm",
-                      option.preview,
-                      buttonBorderRadius === option.value
-                        ? "border-primary bg-primary/10"
-                        : "border-muted hover:border-muted-foreground/50"
-                    )}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Custom Colors Toggle */}
-            <div className="flex items-center justify-between">
-              <Label htmlFor="custom-colors">Usar cores personalizadas</Label>
-              <Switch
-                id="custom-colors"
-                checked={useCustomColors}
-                onCheckedChange={setUseCustomColors}
-              />
-            </div>
-
-            {/* Custom Colors */}
-            {useCustomColors && (
-              <div className="space-y-3 p-3 border rounded-lg bg-muted/30">
-                <div className="space-y-2">
-                  <Label htmlFor="bg-color">Cor de fundo</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="bg-color"
-                      type="color"
-                      value={buttonBgColor}
-                      onChange={(e) => setButtonBgColor(e.target.value)}
-                      className="w-12 h-10 p-1 cursor-pointer"
-                    />
-                    <Input
-                      value={buttonBgColor}
-                      onChange={(e) => setButtonBgColor(e.target.value)}
-                      placeholder="#000000"
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="text-color">Cor do texto</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="text-color"
-                      type="color"
-                      value={buttonTextColor}
-                      onChange={(e) => setButtonTextColor(e.target.value)}
-                      className="w-12 h-10 p-1 cursor-pointer"
-                    />
-                    <Input
-                      value={buttonTextColor}
-                      onChange={(e) => setButtonTextColor(e.target.value)}
-                      placeholder="#ffffff"
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-                
-                {/* Preview */}
-                <div className="pt-2">
-                  <Label className="text-xs text-muted-foreground">Preview</Label>
-                  <div
-                    className={cn("w-full py-3 px-4 text-center font-medium mt-1", buttonBorderRadius)}
-                    style={{
-                      backgroundColor: buttonBgColor,
-                      color: buttonTextColor,
-                    }}
-                  >
-                    {title || "Texto do botão"}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           <DrawerFooter>
