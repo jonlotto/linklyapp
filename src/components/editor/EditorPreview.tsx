@@ -122,7 +122,10 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               </div>
 
               {/* Content below banner */}
-              <div className={cn("pt-16 pb-6 px-6", template.styles.contentBg)}>
+              <div 
+                className={cn("pt-16 pb-6 px-6", !profile.globalBackgroundColor && template.styles.contentBg)}
+                style={profile.globalBackgroundColor ? { backgroundColor: profile.globalBackgroundColor } : undefined}
+              >
                 {/* Username */}
                 <p
                   className={cn(

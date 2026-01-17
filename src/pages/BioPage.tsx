@@ -138,7 +138,10 @@ const BioPage = () => {
             </div>
 
             {/* Content */}
-            <div className={cn("pt-16 pb-12 px-4", template.styles.contentBg)}>
+            <div 
+              className={cn("pt-16 pb-12 px-4", !globalBgColor && template.styles.contentBg)}
+              style={globalBgColor ? { backgroundColor: globalBgColor } : undefined}
+            >
               {/* Profile Info */}
               <div className="text-center mb-8 animate-fade-in">
                 <p className={cn("text-sm mb-1", template.styles.textColor, "opacity-70")}>
