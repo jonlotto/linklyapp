@@ -18,6 +18,7 @@ interface TextSectionProps {
 }
 
 const FONTS = [
+  // Sans Serif
   { id: "Inter", label: "Inter", category: "Sans Serif" },
   { id: "Poppins", label: "Poppins", category: "Sans Serif" },
   { id: "Roboto", label: "Roboto", category: "Sans Serif" },
@@ -25,7 +26,24 @@ const FONTS = [
   { id: "Lato", label: "Lato", category: "Sans Serif" },
   { id: "Raleway", label: "Raleway", category: "Sans Serif" },
   { id: "Nunito", label: "Nunito", category: "Sans Serif" },
+  { id: "Space Grotesk", label: "Space Grotesk", category: "Sans Serif" },
+  { id: "DM Sans", label: "DM Sans", category: "Sans Serif" },
+  // Serif
   { id: "Playfair Display", label: "Playfair Display", category: "Serif" },
+  { id: "Merriweather", label: "Merriweather", category: "Serif" },
+  { id: "Lora", label: "Lora", category: "Serif" },
+  { id: "Crimson Text", label: "Crimson Text", category: "Serif" },
+  // Display
+  { id: "Oswald", label: "Oswald", category: "Display" },
+  { id: "Bebas Neue", label: "Bebas Neue", category: "Display" },
+  { id: "Righteous", label: "Righteous", category: "Display" },
+  { id: "Archivo Black", label: "Archivo Black", category: "Display" },
+  { id: "Lobster", label: "Lobster", category: "Display" },
+  // Handwritten
+  { id: "Pacifico", label: "Pacifico", category: "Handwritten" },
+  { id: "Dancing Script", label: "Dancing Script", category: "Handwritten" },
+  { id: "Caveat", label: "Caveat", category: "Handwritten" },
+  { id: "Satisfy", label: "Satisfy", category: "Handwritten" },
 ];
 
 const PRESET_TITLE_COLORS = [
