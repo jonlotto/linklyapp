@@ -144,7 +144,10 @@ const BioPage = () => {
             >
               {/* Profile Info */}
               <div className="text-center mb-8 animate-fade-in">
-                <p className={cn("text-sm mb-1", template.styles.textColor, "opacity-70")}>
+                <p 
+                  className={cn("text-sm mb-1", template.styles.textColor, "opacity-70")}
+                  style={{ fontFamily: (profile as any).title_font || "Inter" }}
+                >
                   @{profile.username}
                 </p>
                 <h1 
@@ -161,7 +164,10 @@ const BioPage = () => {
                   {profile.display_name || profile.username}
                 </h1>
                 {profile.bio && (
-                  <p className={cn("text-sm max-w-xs mx-auto", template.styles.textColor, "opacity-80")}>
+                  <p 
+                    className={cn("text-sm max-w-xs mx-auto", template.styles.textColor, "opacity-80")}
+                    style={{ fontFamily: (profile as any).title_font || "Inter" }}
+                  >
                     {profile.bio}
                   </p>
                 )}
@@ -187,6 +193,7 @@ const BioPage = () => {
                       buttonTextColor={profile?.global_button_text_color || undefined}
                       buttonBorderRadius={profile?.global_button_border_radius || undefined}
                       buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
+                      fontFamily={(profile as any)?.title_font || "Inter"}
                     />
                   ))
                 )}
@@ -241,6 +248,7 @@ const BioPage = () => {
                   buttonTextColor={profile?.global_button_text_color || undefined}
                   buttonBorderRadius={profile?.global_button_border_radius || undefined}
                   buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
+                  fontFamily={(profile as any)?.title_font || "Inter"}
                 />
               ))
             )}
