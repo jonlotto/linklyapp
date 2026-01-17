@@ -13,36 +13,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { EditorLink } from "@/hooks/useEditorState";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { LinkIcon } from "@/components/icons/LinkIcon";
+import { CartIcon } from "@/components/icons/CartIcon";
+import { StoreIcon } from "@/components/icons/StoreIcon";
+import { StarIcon } from "@/components/icons/StarIcon";
+import { LocationIcon } from "@/components/icons/LocationIcon";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 const LINK_ICON_VALUE = "link-icon";
+const CART_ICON_VALUE = "cart-icon";
+const STORE_ICON_VALUE = "store-icon";
+const STAR_ICON_VALUE = "star-icon";
+const LOCATION_ICON_VALUE = "location-icon";
 
 const ICONS = [
-  { value: "", label: "Nenhum", icon: null },
-  { value: WHATSAPP_ICON_VALUE, label: "WhatsApp", icon: null },
-  { value: LINK_ICON_VALUE, label: "Link", icon: null },
-  { value: "🔗", label: "🔗 Link (emoji)", icon: null },
-  { value: "🌐", label: "🌐 Web", icon: null },
-  { value: "📧", label: "📧 Email", icon: null },
-  { value: "📱", label: "📱 Telefone", icon: null },
-  { value: "🛒", label: "🛒 Loja", icon: null },
-  { value: "📝", label: "📝 Blog", icon: null },
-  { value: "🎨", label: "🎨 Portfolio", icon: null },
-  { value: "📅", label: "📅 Agenda", icon: null },
-  { value: "🎁", label: "🎁 Promoção", icon: null },
-  { value: "⭐", label: "⭐ Destaque", icon: null },
-  { value: "🚀", label: "🚀 Lançamento", icon: null },
+  { value: "", label: "Nenhum" },
+  { value: WHATSAPP_ICON_VALUE, label: "WhatsApp" },
+  { value: LINK_ICON_VALUE, label: "Link" },
+  { value: CART_ICON_VALUE, label: "Carrinho" },
+  { value: STORE_ICON_VALUE, label: "Loja" },
+  { value: STAR_ICON_VALUE, label: "Estrela" },
+  { value: LOCATION_ICON_VALUE, label: "Localização" },
 ];
 
 const BORDER_RADIUS_OPTIONS = [
