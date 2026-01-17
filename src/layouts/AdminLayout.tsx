@@ -208,7 +208,7 @@ export default function AdminLayout() {
 
       {/* Main Content */}
       {activeView === "links" ? (
-        <main className="flex-1 overflow-auto">
+        <main key="links" className="flex-1 overflow-auto animate-fade-in">
           <div className="max-w-2xl mx-auto py-8 px-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -274,8 +274,9 @@ export default function AdminLayout() {
         </main>
       ) : (
         <main 
+          key="design"
           ref={containerRef}
-          className="flex-1 overflow-y-auto scroll-smooth"
+          className="flex-1 overflow-y-auto scroll-smooth animate-fade-in"
         >
           {/* Save Status Bar */}
           <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border px-6 py-3">
