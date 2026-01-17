@@ -145,8 +145,14 @@ const BioPage = () => {
               {/* Profile Info */}
               <div className="text-center mb-8 animate-fade-in">
                 <p 
-                  className={cn("text-sm mb-1", template.styles.textColor, "opacity-70")}
-                  style={{ fontFamily: (profile as any).title_font || "Inter" }}
+                  className={cn(
+                    "text-sm mb-1 opacity-70",
+                    !(profile as any).title_color && template.styles.textColor
+                  )}
+                  style={{ 
+                    fontFamily: (profile as any).title_font || "Inter",
+                    color: (profile as any).title_color || undefined
+                  }}
                 >
                   @{profile.username}
                 </p>
@@ -165,8 +171,14 @@ const BioPage = () => {
                 </h1>
                 {profile.bio && (
                   <p 
-                    className={cn("text-sm max-w-xs mx-auto", template.styles.textColor, "opacity-80")}
-                    style={{ fontFamily: (profile as any).title_font || "Inter" }}
+                    className={cn(
+                      "text-sm max-w-xs mx-auto opacity-80",
+                      !(profile as any).title_color && template.styles.textColor
+                    )}
+                    style={{ 
+                      fontFamily: (profile as any).title_font || "Inter",
+                      color: (profile as any).title_color || undefined
+                    }}
                   >
                     {profile.bio}
                   </p>
