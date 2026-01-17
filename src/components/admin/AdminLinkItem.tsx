@@ -5,6 +5,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { EditorLink } from "@/hooks/useEditorState";
 import { cn } from "@/lib/utils";
+import { renderIcon } from "@/components/LinkCard";
 
 interface AdminLinkItemProps {
   link: EditorLink;
@@ -51,7 +52,7 @@ export function AdminLinkItem({ link, onToggle, onEdit, onDelete, onDuplicate }:
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           {link.icon && (
-            <span className="text-lg shrink-0">{link.icon}</span>
+            <span className="text-muted-foreground shrink-0">{renderIcon(link.icon, "w-5 h-5")}</span>
           )}
           <span className="font-medium truncate">{link.title}</span>
         </div>
