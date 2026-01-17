@@ -81,6 +81,9 @@ export type Database = {
           global_button_text_color: string | null
           id: string
           template_slug: string | null
+          title_color: string | null
+          title_font: string | null
+          title_size: string | null
           updated_at: string
           user_id: string
           username: string
@@ -100,6 +103,9 @@ export type Database = {
           global_button_text_color?: string | null
           id?: string
           template_slug?: string | null
+          title_color?: string | null
+          title_font?: string | null
+          title_size?: string | null
           updated_at?: string
           user_id: string
           username: string
@@ -119,6 +125,9 @@ export type Database = {
           global_button_text_color?: string | null
           id?: string
           template_slug?: string | null
+          title_color?: string | null
+          title_font?: string | null
+          title_size?: string | null
           updated_at?: string
           user_id?: string
           username?: string

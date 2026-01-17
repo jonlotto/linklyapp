@@ -172,9 +172,14 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 {/* Display Name */}
                 <h1
                   className={cn(
-                    "text-center text-xl font-bold mb-2",
-                    template.styles.textColor
+                    "text-center font-bold mb-2",
+                    profile.titleSize === "small" ? "text-lg" : "text-xl",
+                    !profile.titleColor && template.styles.textColor
                   )}
+                  style={{ 
+                    fontFamily: profile.titleFont || "Inter",
+                    color: profile.titleColor || undefined 
+                  }}
                 >
                   {profile.displayName || "Nome de Exibição"}
                 </h1>
@@ -294,9 +299,14 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               {/* Display Name */}
               <h1
                 className={cn(
-                  "text-center text-xl font-bold mb-2",
-                  template.styles.textColor
+                  "text-center font-bold mb-2",
+                  profile.titleSize === "small" ? "text-lg" : "text-xl",
+                  !profile.titleColor && template.styles.textColor
                 )}
+                style={{ 
+                  fontFamily: profile.titleFont || "Inter",
+                  color: profile.titleColor || undefined 
+                }}
               >
                 {profile.displayName || "Nome de Exibição"}
               </h1>

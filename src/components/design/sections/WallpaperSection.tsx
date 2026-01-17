@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, RotateCcw } from "lucide-react";
+import { Check, Pencil, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -38,6 +38,9 @@ export function WallpaperSection({ profile, onUpdate }: WallpaperSectionProps) {
     onUpdate({ globalBackgroundColor: null });
   };
 
+  const isCustomColorSelected = profile.globalBackgroundColor && 
+    !PRESET_COLORS.some(c => c.value === profile.globalBackgroundColor);
+
   return (
     <div className="space-y-6">
       <div>
@@ -47,72 +50,90 @@ export function WallpaperSection({ profile, onUpdate }: WallpaperSectionProps) {
         </p>
       </div>
 
-      {/* Preset Colors */}
+      {/* Preset Colors - Circular Design */}
       <div className="space-y-3">
-        <Label>Cores predefinidas</Label>
-        <div className="grid grid-cols-6 gap-2">
+        <Label>Cores</Label>
+        <div className="flex flex-wrap gap-3">
           {PRESET_COLORS.map((color) => {
             const isSelected = profile.globalBackgroundColor === color.value;
+            const isDark = color.value === "#1A1A1A" || color.value === "#424242";
             
             return (
               <button
                 key={color.value}
                 onClick={() => handleColorSelect(color.value)}
                 className={cn(
-                  "w-full aspect-square rounded-lg border-2 transition-all relative",
-                  isSelected ? "border-primary scale-110" : "border-transparent hover:scale-105"
+                  "w-10 h-10 rounded-full border-2 transition-all relative shadow-sm",
+                  isSelected 
+                    ? "border-primary ring-2 ring-primary/30 scale-110" 
+                    : "border-gray-200 hover:border-gray-300 hover:scale-105"
                 )}
                 style={{ backgroundColor: color.value }}
                 title={color.name}
               >
                 {isSelected && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Check 
-                      className={cn(
-                        "h-4 w-4",
-                        color.value === "#1A1A1A" || color.value === "#424242" 
-                          ? "text-white" 
-                          : "text-foreground"
-                      )} 
-                    />
-                  </div>
+                  <Check 
+                    className={cn(
+                      "absolute inset-0 m-auto h-4 w-4",
+                      isDark ? "text-white" : "text-gray-700"
+                    )} 
+                  />
                 )}
               </button>
             );
           })}
-        </div>
-      </div>
-
-      {/* Custom Color Picker */}
-      <div className="space-y-3">
-        <Label>Cor personalizada</Label>
-        <div className="flex items-center gap-3">
+          
+          {/* Custom Color Picker */}
           <div className="relative">
+            <button
+              className={cn(
+                "w-10 h-10 rounded-full border-2 border-dashed transition-all flex items-center justify-center shadow-sm",
+                isCustomColorSelected
+                  ? "border-primary ring-2 ring-primary/30 scale-110"
+                  : "border-gray-300 hover:border-gray-400 hover:scale-105"
+              )}
+              style={{ 
+                backgroundColor: isCustomColorSelected ? customColor : "transparent" 
+              }}
+              title="Cor personalizada"
+            >
+              {isCustomColorSelected ? (
+                <Check className="h-4 w-4 text-white mix-blend-difference" />
+              ) : (
+                <Pencil className="h-4 w-4 text-gray-400" />
+              )}
+            </button>
             <input
               type="color"
               value={customColor}
               onChange={(e) => handleColorSelect(e.target.value)}
-              className="w-12 h-12 rounded-lg border border-border cursor-pointer"
-            />
-          </div>
-          <div className="flex-1">
-            <input
-              type="text"
-              value={customColor.toUpperCase()}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-                  setCustomColor(value);
-                  if (value.length === 7) {
-                    onUpdate({ globalBackgroundColor: value });
-                  }
-                }
-              }}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm font-mono"
-              placeholder="#FFFFFF"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
           </div>
         </div>
+      </div>
+
+      {/* Custom Color Input */}
+      <div className="flex items-center gap-3 bg-muted/50 rounded-xl px-4 py-3">
+        <div 
+          className="w-8 h-8 rounded-full border-2 border-gray-200 shadow-inner"
+          style={{ backgroundColor: profile.globalBackgroundColor || "#FFFFFF" }}
+        />
+        <input
+          type="text"
+          value={(profile.globalBackgroundColor || "#FFFFFF").toUpperCase()}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
+              setCustomColor(value);
+              if (value.length === 7) {
+                onUpdate({ globalBackgroundColor: value });
+              }
+            }
+          }}
+          className="flex-1 bg-transparent text-sm font-mono text-muted-foreground"
+          placeholder="#FFFFFF"
+        />
       </div>
 
       {/* Reset Button */}

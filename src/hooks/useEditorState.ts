@@ -33,6 +33,10 @@ export interface EditorProfile {
   globalBackgroundColor: string | null;
   globalButtonStyle: "filled" | "outline";
   globalButtonBorderRadius: string;
+  // Typography customization
+  titleFont: string;
+  titleColor: string | null;
+  titleSize: "small" | "large";
 }
 
 export interface EditorState {
@@ -67,6 +71,9 @@ export function useEditorState(initialTemplateSlug?: string) {
       globalBackgroundColor: null,
       globalButtonStyle: "filled",
       globalButtonBorderRadius: "rounded-xl",
+      titleFont: "Inter",
+      titleColor: null,
+      titleSize: "large",
     },
     links: [],
     isDirty: false,
@@ -128,6 +135,9 @@ export function useEditorState(initialTemplateSlug?: string) {
             globalBackgroundColor: profile?.global_background_color || null,
             globalButtonStyle: (profile?.global_button_style as "filled" | "outline") || "filled",
             globalButtonBorderRadius: profile?.global_button_border_radius || "rounded-xl",
+            titleFont: (profile as any)?.title_font || "Inter",
+            titleColor: (profile as any)?.title_color || null,
+            titleSize: ((profile as any)?.title_size as "small" | "large") || "large",
           },
           links: (links || []).map((link) => ({
             id: link.id,
@@ -185,8 +195,11 @@ export function useEditorState(initialTemplateSlug?: string) {
           global_background_color: currentState.profile.globalBackgroundColor,
           global_button_style: currentState.profile.globalButtonStyle,
           global_button_border_radius: currentState.profile.globalButtonBorderRadius,
+          title_font: currentState.profile.titleFont,
+          title_color: currentState.profile.titleColor,
+          title_size: currentState.profile.titleSize,
           updated_at: new Date().toISOString(),
-        })
+        } as any)
         .eq("user_id", user.id);
 
       if (profileError) throw profileError;
