@@ -23,7 +23,7 @@ export function FlowButton({
       {/* Left arrow - slides in on hover */}
       <ArrowRight 
         className="absolute w-4 h-4 left-[-25%] z-[9] transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:left-4 group-hover:stroke-white" 
-        style={{ stroke: textColor }}
+        style={{ stroke: bgColor }}
       />
 
       {/* Icon (optional) */}
@@ -47,7 +47,7 @@ export function FlowButton({
       {/* Right arrow - slides out on hover */}
       <ArrowRight 
         className="absolute w-4 h-4 right-4 z-[9] transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:right-[-25%] group-hover:stroke-white"
-        style={{ stroke: textColor }}
+        style={{ stroke: bgColor }}
       />
     </>
   );
@@ -69,7 +69,7 @@ export function FlowButton({
         className={baseClasses}
         style={{ 
           color: textColor,
-          borderColor: `${textColor}40`
+          borderColor: `${bgColor}60`
         }}
       >
         {content}
@@ -83,7 +83,7 @@ export function FlowButton({
       className={baseClasses}
       style={{ 
         color: textColor,
-        borderColor: `${textColor}40`
+        borderColor: `${bgColor}60`
       }}
     >
       {content}
