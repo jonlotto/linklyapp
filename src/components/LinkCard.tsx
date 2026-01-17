@@ -1,4 +1,3 @@
-import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { LinkIcon } from "@/components/icons/LinkIcon";
@@ -6,6 +5,12 @@ import { CartIcon } from "@/components/icons/CartIcon";
 import { StoreIcon } from "@/components/icons/StoreIcon";
 import { StarIcon } from "@/components/icons/StarIcon";
 import { LocationIcon } from "@/components/icons/LocationIcon";
+import { InstagramIcon } from "@/components/icons/InstagramIcon";
+import { TikTokIcon } from "@/components/icons/TikTokIcon";
+import { YouTubeIcon } from "@/components/icons/YouTubeIcon";
+import { TwitterIcon } from "@/components/icons/TwitterIcon";
+import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
+import { EmailIcon } from "@/components/icons/EmailIcon";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 const LINK_ICON_VALUE = "link-icon";
@@ -13,6 +18,53 @@ const CART_ICON_VALUE = "cart-icon";
 const STORE_ICON_VALUE = "store-icon";
 const STAR_ICON_VALUE = "star-icon";
 const LOCATION_ICON_VALUE = "location-icon";
+const INSTAGRAM_ICON_VALUE = "instagram-icon";
+const TIKTOK_ICON_VALUE = "tiktok-icon";
+const YOUTUBE_ICON_VALUE = "youtube-icon";
+const TWITTER_ICON_VALUE = "twitter-icon";
+const LINKEDIN_ICON_VALUE = "linkedin-icon";
+const EMAIL_ICON_VALUE = "email-icon";
+
+export const renderIcon = (icon: string | undefined, className = "w-5 h-5 shrink-0") => {
+  if (!icon) return null;
+  if (icon === WHATSAPP_ICON_VALUE) {
+    return <WhatsAppIcon className={className} title="WhatsApp" />;
+  }
+  if (icon === LINK_ICON_VALUE) {
+    return <LinkIcon className={className} title="Link" />;
+  }
+  if (icon === CART_ICON_VALUE) {
+    return <CartIcon className={className} title="Carrinho" />;
+  }
+  if (icon === STORE_ICON_VALUE) {
+    return <StoreIcon className={className} title="Loja" />;
+  }
+  if (icon === STAR_ICON_VALUE) {
+    return <StarIcon className={className} title="Estrela" />;
+  }
+  if (icon === LOCATION_ICON_VALUE) {
+    return <LocationIcon className={className} title="Localização" />;
+  }
+  if (icon === INSTAGRAM_ICON_VALUE) {
+    return <InstagramIcon className={className} title="Instagram" />;
+  }
+  if (icon === TIKTOK_ICON_VALUE) {
+    return <TikTokIcon className={className} title="TikTok" />;
+  }
+  if (icon === YOUTUBE_ICON_VALUE) {
+    return <YouTubeIcon className={className} title="YouTube" />;
+  }
+  if (icon === TWITTER_ICON_VALUE) {
+    return <TwitterIcon className={className} title="Twitter" />;
+  }
+  if (icon === LINKEDIN_ICON_VALUE) {
+    return <LinkedInIcon className={className} title="LinkedIn" />;
+  }
+  if (icon === EMAIL_ICON_VALUE) {
+    return <EmailIcon className={className} title="Email" />;
+  }
+  return <span className="text-xl shrink-0">{icon}</span>;
+};
 
 interface LinkCardProps {
   title: string;
@@ -25,29 +77,6 @@ interface LinkCardProps {
   buttonStyle?: "filled" | "outline";
   fontFamily?: string;
 }
-
-const renderIcon = (icon: string | undefined) => {
-  if (!icon) return null;
-  if (icon === WHATSAPP_ICON_VALUE) {
-    return <WhatsAppIcon className="w-4 h-4 shrink-0" title="WhatsApp" />;
-  }
-  if (icon === LINK_ICON_VALUE) {
-    return <LinkIcon className="w-5 h-5 shrink-0" title="Link" />;
-  }
-  if (icon === CART_ICON_VALUE) {
-    return <CartIcon className="w-5 h-5 shrink-0" title="Carrinho" />;
-  }
-  if (icon === STORE_ICON_VALUE) {
-    return <StoreIcon className="w-5 h-5 shrink-0" title="Loja" />;
-  }
-  if (icon === STAR_ICON_VALUE) {
-    return <StarIcon className="w-5 h-5 shrink-0" title="Estrela" />;
-  }
-  if (icon === LOCATION_ICON_VALUE) {
-    return <LocationIcon className="w-5 h-5 shrink-0" title="Localização" />;
-  }
-  return <span className="text-xl shrink-0">{icon}</span>;
-};
 
 const LinkCard = ({ 
   title, 
