@@ -27,12 +27,16 @@ export function ThemeSection({ profile, onUpdate }: ThemeSectionProps) {
               key={template.slug}
               onClick={() => onUpdate({ 
                 templateSlug: template.slug,
-                // Reset all custom colors to use the new template's defaults
+                // Reset ALL custom settings to use the new template's defaults
                 globalBackgroundColor: null,
                 globalButtonBgColor: null,
                 globalButtonTextColor: null,
                 globalButtonStyle: "filled",
-                globalButtonBorderRadius: "rounded-xl",
+                globalButtonBorderRadius: template.styles.buttonStyle,
+                // Typography
+                titleFont: template.styles.font,
+                titleColor: null,
+                titleSize: template.styles.textSize,
               })}
               className={cn(
                 "relative rounded-xl border-2 p-3 transition-all text-left",

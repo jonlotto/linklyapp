@@ -14,6 +14,8 @@ export interface Template {
     avatarBorder: string;
     bannerHeight?: string;
     contentBg?: string;
+    font: string;
+    textSize: "small" | "large";
   };
 }
 
@@ -31,6 +33,8 @@ export const templates: Template[] = [
       buttonBg: "bg-gray-200 hover:bg-gray-300",
       buttonText: "text-gray-800",
       avatarBorder: "ring-4 ring-white/30",
+      font: "Playfair Display",
+      textSize: "large",
     },
   },
   {
@@ -46,6 +50,8 @@ export const templates: Template[] = [
       buttonBg: "bg-white hover:bg-gray-50 shadow-md",
       buttonText: "text-gray-700",
       avatarBorder: "ring-4 ring-gray-200",
+      font: "Inter",
+      textSize: "large",
     },
   },
   {
@@ -61,6 +67,8 @@ export const templates: Template[] = [
       buttonBg: "bg-gradient-to-r from-orange-400 to-pink-500 hover:from-orange-500 hover:to-pink-600",
       buttonText: "text-white",
       avatarBorder: "ring-4 ring-orange-400/50",
+      font: "Poppins",
+      textSize: "large",
     },
   },
   {
@@ -76,6 +84,8 @@ export const templates: Template[] = [
       buttonBg: "bg-primary hover:bg-primary/90",
       buttonText: "text-primary-foreground",
       avatarBorder: "ring-4 ring-primary/30",
+      font: "Inter",
+      textSize: "large",
     },
   },
   {
@@ -94,6 +104,8 @@ export const templates: Template[] = [
       avatarBorder: "ring-4 ring-white shadow-lg",
       bannerHeight: "aspect-[2/1] w-full",
       contentBg: "bg-white",
+      font: "Inter",
+      textSize: "large",
     },
   },
 ];
