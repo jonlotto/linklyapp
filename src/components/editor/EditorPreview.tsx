@@ -93,10 +93,23 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
 
   const hasBanner = template.hasBanner;
 
-  // Build background style with global color override
-  const backgroundStyle = profile.globalBackgroundColor 
-    ? { backgroundColor: profile.globalBackgroundColor } 
-    : undefined;
+  // Build background style with global color override or template image
+  const getBackgroundStyle = () => {
+    if (profile.globalBackgroundColor) {
+      return { backgroundColor: profile.globalBackgroundColor };
+    }
+    if (template.styles.backgroundType === "image" && template.styles.backgroundImage) {
+      return {
+        backgroundImage: `url(${template.styles.backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      };
+    }
+    return undefined;
+  };
+
+  const backgroundStyle = getBackgroundStyle();
+  const hasImageBackground = template.styles.backgroundType === "image" && template.styles.backgroundImage && !profile.globalBackgroundColor;
 
   return (
     <div className="flex flex-col items-center">
@@ -104,7 +117,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
       <div
         className={cn(
           "relative w-[320px] h-[640px] rounded-[3rem] border-8 border-foreground/20 shadow-2xl overflow-hidden",
-          !profile.globalBackgroundColor && template.styles.background
+          !profile.globalBackgroundColor && !hasImageBackground && template.styles.background
         )}
         style={backgroundStyle}
       >
