@@ -1,6 +1,10 @@
 import { SVGProps } from "react";
 
-export function YouTubeIcon(props: SVGProps<SVGSVGElement>) {
+interface IconProps extends SVGProps<SVGSVGElement> {
+  title?: string;
+}
+
+export function YouTubeIcon({ title, ...props }: IconProps) {
   return (
     <svg
       viewBox="0 0 24 24"

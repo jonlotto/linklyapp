@@ -10,6 +10,12 @@ import { CartIcon } from "@/components/icons/CartIcon";
 import { StoreIcon } from "@/components/icons/StoreIcon";
 import { StarIcon } from "@/components/icons/StarIcon";
 import { LocationIcon } from "@/components/icons/LocationIcon";
+import { InstagramIcon } from "@/components/icons/InstagramIcon";
+import { TikTokIcon } from "@/components/icons/TikTokIcon";
+import { YouTubeIcon } from "@/components/icons/YouTubeIcon";
+import { TwitterIcon } from "@/components/icons/TwitterIcon";
+import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
+import { EmailIcon } from "@/components/icons/EmailIcon";
 
 const WHATSAPP_ICON_VALUE = "whatsapp-icon";
 const LINK_ICON_VALUE = "link-icon";
@@ -17,11 +23,19 @@ const CART_ICON_VALUE = "cart-icon";
 const STORE_ICON_VALUE = "store-icon";
 const STAR_ICON_VALUE = "star-icon";
 const LOCATION_ICON_VALUE = "location-icon";
+const INSTAGRAM_ICON_VALUE = "instagram-icon";
+const TIKTOK_ICON_VALUE = "tiktok-icon";
+const YOUTUBE_ICON_VALUE = "youtube-icon";
+const TWITTER_ICON_VALUE = "twitter-icon";
+const LINKEDIN_ICON_VALUE = "linkedin-icon";
+const EMAIL_ICON_VALUE = "email-icon";
 
-const renderIcon = (icon: string | undefined) => {
+const renderIcon = (icon: string | undefined, size: "sm" | "md" = "sm") => {
   if (!icon) return null;
+  const sizeClass = size === "sm" ? "w-4 h-4" : "w-5 h-5";
+  
   if (icon === WHATSAPP_ICON_VALUE) {
-    return <WhatsAppIcon className="w-4 h-4 shrink-0" title="WhatsApp" />;
+    return <WhatsAppIcon className={cn(sizeClass, "shrink-0")} title="WhatsApp" />;
   }
   if (icon === LINK_ICON_VALUE) {
     return <LinkIcon className="w-5 h-5 shrink-0" title="Link" />;
@@ -37,6 +51,24 @@ const renderIcon = (icon: string | undefined) => {
   }
   if (icon === LOCATION_ICON_VALUE) {
     return <LocationIcon className="w-5 h-5 shrink-0" title="Localização" />;
+  }
+  if (icon === INSTAGRAM_ICON_VALUE) {
+    return <InstagramIcon className={cn(sizeClass, "shrink-0")} title="Instagram" />;
+  }
+  if (icon === TIKTOK_ICON_VALUE) {
+    return <TikTokIcon className={cn(sizeClass, "shrink-0")} title="TikTok" />;
+  }
+  if (icon === YOUTUBE_ICON_VALUE) {
+    return <YouTubeIcon className={cn(sizeClass, "shrink-0")} title="YouTube" />;
+  }
+  if (icon === TWITTER_ICON_VALUE) {
+    return <TwitterIcon className={cn(sizeClass, "shrink-0")} title="Twitter" />;
+  }
+  if (icon === LINKEDIN_ICON_VALUE) {
+    return <LinkedInIcon className={cn(sizeClass, "shrink-0")} title="LinkedIn" />;
+  }
+  if (icon === EMAIL_ICON_VALUE) {
+    return <EmailIcon className={cn(sizeClass, "shrink-0")} title="Email" />;
   }
   return <span className="shrink-0">{icon}</span>;
 };
@@ -215,13 +247,13 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                       <button
                         key={social.id}
                         className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center text-xl hover:scale-110 transition-transform cursor-pointer",
+                          "w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform cursor-pointer",
                           template.styles.cardBg,
                           template.styles.textColor
                         )}
                         onClick={() => onClickElement?.("link", social.id)}
                       >
-                        {social.icon || "🔗"}
+                        {renderIcon(social.icon, "md") || "🔗"}
                       </button>
                     ))}
                   </div>
@@ -330,20 +362,19 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 )}
               </div>
 
-              {/* Social Icons */}
               {socials.length > 0 && (
                 <div className="flex justify-center gap-4 flex-wrap">
                   {socials.map((social) => (
                     <button
                       key={social.id}
                       className={cn(
-                        "w-10 h-10 rounded-full flex items-center justify-center text-xl hover:scale-110 transition-transform cursor-pointer",
+                        "w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform cursor-pointer",
                         template.styles.cardBg,
                         template.styles.textColor
                       )}
                       onClick={() => onClickElement?.("link", social.id)}
                     >
-                      {social.icon || "🔗"}
+                      {renderIcon(social.icon, "md") || "🔗"}
                     </button>
                   ))}
                 </div>

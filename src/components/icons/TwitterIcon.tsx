@@ -1,6 +1,10 @@
 import { SVGProps } from "react";
 
-export function TwitterIcon(props: SVGProps<SVGSVGElement>) {
+interface IconProps extends SVGProps<SVGSVGElement> {
+  title?: string;
+}
+
+export function TwitterIcon({ title, ...props }: IconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
