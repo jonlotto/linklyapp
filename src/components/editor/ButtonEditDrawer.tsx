@@ -299,39 +299,34 @@ export function ButtonEditDrawer({
 
             {/* Icon */}
             <div className="space-y-2">
-              <Label htmlFor="icon">Ícone (opcional)</Label>
-              <Select value={icon} onValueChange={setIcon}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um ícone">
-                    {icon && (
-                      <span className="flex items-center gap-2">
-                        {icon === WHATSAPP_ICON_VALUE && (
-                          <WhatsAppIcon className="w-4 h-4" title="WhatsApp" />
-                        )}
-                        {icon === LINK_ICON_VALUE && (
-                          <LinkIcon className="w-4 h-4" title="Link" />
-                        )}
-                        {ICONS.find((i) => i.value === icon)?.label}
-                      </span>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                  <SelectContent>
-                    {ICONS.map((i) => (
-                      <SelectItem key={i.value || "none"} value={i.value || "none"}>
-                        <span className="flex items-center gap-2">
-                          {i.value === WHATSAPP_ICON_VALUE && (
-                            <WhatsAppIcon className="w-4 h-4" title="WhatsApp" />
-                          )}
-                          {i.value === LINK_ICON_VALUE && (
-                            <LinkIcon className="w-4 h-4" title="Link" />
-                          )}
-                          {i.label}
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-              </Select>
+              <Label>Ícone (opcional)</Label>
+              <div className="flex flex-wrap gap-2">
+                {ICONS.map((i) => {
+                  const isSelected = icon === i.value || (icon === "" && i.value === "");
+                  return (
+                    <button
+                      key={i.value || "none"}
+                      type="button"
+                      onClick={() => setIcon(i.value)}
+                      className={cn(
+                        "w-10 h-10 flex items-center justify-center border-2 rounded-lg transition-all",
+                        isSelected
+                          ? "border-primary bg-primary/10"
+                          : "border-muted hover:border-muted-foreground/50"
+                      )}
+                      title={i.label}
+                    >
+                      {i.value === "" && <span className="text-xs text-muted-foreground">—</span>}
+                      {i.value === WHATSAPP_ICON_VALUE && <WhatsAppIcon className="w-5 h-5" />}
+                      {i.value === LINK_ICON_VALUE && <LinkIcon className="w-5 h-5" />}
+                      {i.value === CART_ICON_VALUE && <CartIcon className="w-5 h-5" />}
+                      {i.value === STORE_ICON_VALUE && <StoreIcon className="w-5 h-5" />}
+                      {i.value === STAR_ICON_VALUE && <StarIcon className="w-5 h-5" />}
+                      {i.value === LOCATION_ICON_VALUE && <LocationIcon className="w-5 h-5" />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Style */}
