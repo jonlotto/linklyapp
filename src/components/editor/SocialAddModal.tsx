@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ComponentType, SVGProps } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +15,7 @@ interface SocialPlatform {
   id: string;
   name: string;
   icon: string;
+  Icon?: ComponentType<SVGProps<SVGSVGElement>>;
   urlTemplate: string;
   isPhone?: boolean;
 }
@@ -71,7 +72,11 @@ export function SocialAddModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span className="text-2xl">{platform?.icon}</span>
+            {platform?.Icon ? (
+              <platform.Icon className="h-6 w-6" />
+            ) : (
+              <span className="text-2xl">{platform?.icon}</span>
+            )}
             Adicionar {platform?.name}
           </DialogTitle>
           <DialogDescription>
