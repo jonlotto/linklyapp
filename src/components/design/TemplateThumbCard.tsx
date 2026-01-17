@@ -31,10 +31,10 @@ export function TemplateThumbCard({ template, isSelected, onClick }: TemplateThu
         "group"
       )}
     >
-      {/* Card Preview */}
+      {/* Card Preview - Phone-like proportion */}
       <div
         className={cn(
-          "relative w-full aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200",
+          "relative w-full aspect-[5/6] rounded-2xl overflow-hidden border-2 transition-all duration-200",
           isSelected
             ? "border-primary ring-2 ring-primary/20"
             : "border-border hover:border-primary/50",
@@ -43,11 +43,11 @@ export function TemplateThumbCard({ template, isSelected, onClick }: TemplateThu
         style={getBackgroundStyle()}
       >
         {/* Content Container */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-3 gap-2">
-          {/* Font Preview "Aa" */}
+        <div className="absolute inset-0 flex flex-col items-center justify-between py-5 px-3">
+          {/* Font Preview "Aa" - Large and prominent */}
           <span
             className={cn(
-              "text-2xl font-semibold",
+              "text-3xl font-semibold",
               styles.textColor
             )}
             style={{ fontFamily: styles.font }}
@@ -55,37 +55,34 @@ export function TemplateThumbCard({ template, isSelected, onClick }: TemplateThu
             Aa
           </span>
           
-          {/* Button Preview */}
+          {/* Single Button Preview - Just shape, no text */}
           <div
             className={cn(
-              "w-3/4 h-5 flex items-center justify-center text-[8px] font-medium",
+              "w-full h-7",
               styles.buttonStyle,
-              styles.buttonBg,
-              styles.buttonText
+              styles.buttonBg
             )}
-          >
-            Botão
-          </div>
+          />
         </div>
 
         {/* Selected Indicator */}
         {isSelected && (
-          <div className="absolute top-1.5 right-1.5 w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow-md">
+          <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow-md">
             <Check className="h-3 w-3 text-primary-foreground" />
           </div>
         )}
 
-        {/* Premium Indicator */}
-        {isPremium && (
-          <div className="absolute top-1.5 left-1.5 w-5 h-5 bg-amber-400 rounded-full flex items-center justify-center shadow-md">
-            <Zap className="h-3 w-3 text-amber-900" />
+        {/* Premium Indicator - Top right, dark style */}
+        {isPremium && !isSelected && (
+          <div className="absolute top-2 right-2 w-5 h-5 bg-gray-800/70 rounded-full flex items-center justify-center">
+            <Zap className="h-3 w-3 text-white" />
           </div>
         )}
       </div>
 
       {/* Template Name */}
       <span className={cn(
-        "mt-1.5 text-xs font-medium transition-colors",
+        "mt-2 text-xs font-medium transition-colors",
         isSelected ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
       )}>
         {template.name}
