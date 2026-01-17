@@ -6,11 +6,11 @@ export function useScrollSpy(
   options?: { offset?: number }
 ) {
   const [activeId, setActiveId] = useState<string | null>(sectionIds[0] || null);
-  const offsetRef = useRef(options?.offset ?? 100);
+  const offsetRef = useRef(options?.offset ?? 80);
   
   // Update offset ref when it changes
   useEffect(() => {
-    offsetRef.current = options?.offset ?? 100;
+    offsetRef.current = options?.offset ?? 80;
   }, [options?.offset]);
 
   useEffect(() => {

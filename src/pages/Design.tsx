@@ -29,7 +29,7 @@ export default function Design() {
     updateProfile,
   } = useEditorState();
 
-  const activeSection = useScrollSpy(SECTION_IDS, containerRef, { offset: 150 });
+  const activeSection = useScrollSpy(SECTION_IDS, containerRef, { offset: 80 });
 
   const handleNavigate = (sectionId: string) => {
     const element = document.getElementById(sectionId);
