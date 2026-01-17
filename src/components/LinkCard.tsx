@@ -22,6 +22,7 @@ interface LinkCardProps {
   buttonBgColor?: string;
   buttonTextColor?: string;
   buttonBorderRadius?: string;
+  buttonStyle?: "filled" | "outline";
 }
 
 const renderIcon = (icon: string | undefined) => {
@@ -54,7 +55,8 @@ const LinkCard = ({
   delay = 0,
   buttonBgColor,
   buttonTextColor,
-  buttonBorderRadius = "rounded-2xl"
+  buttonBorderRadius = "rounded-2xl",
+  buttonStyle = "filled"
 }: LinkCardProps) => {
   const hasCustomColors = buttonBgColor || buttonTextColor;
   
@@ -70,11 +72,13 @@ const LinkCard = ({
         className={cn(
           "relative flex items-center justify-center px-6 py-4 transition-all duration-300 hover:scale-[1.02]",
           buttonBorderRadius,
-          !hasCustomColors && "glass shadow-glow hover:shadow-glow-lg"
+          !hasCustomColors && "glass shadow-glow hover:shadow-glow-lg",
+          buttonStyle === "outline" && hasCustomColors && "bg-transparent border-2"
         )}
         style={hasCustomColors ? {
-          backgroundColor: buttonBgColor || undefined,
+          backgroundColor: buttonStyle === "filled" ? (buttonBgColor || undefined) : "transparent",
           color: buttonTextColor || undefined,
+          borderColor: buttonStyle === "outline" ? (buttonBgColor || undefined) : undefined,
         } : undefined}
       >
         {icon && (

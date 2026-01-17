@@ -158,25 +158,29 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 {/* Buttons */}
                 <div className="space-y-3 mb-6">
                   {buttons.map((link) => {
-                    // Priority: individual color > global color > template default
-                    const bgColor = link.buttonBgColor || profile.globalButtonBgColor;
-                    const textColor = link.buttonTextColor || profile.globalButtonTextColor;
+                    // Use global styles from profile
+                    const bgColor = profile.globalButtonBgColor;
+                    const textColor = profile.globalButtonTextColor;
+                    const borderRadius = profile.globalButtonBorderRadius || "rounded-xl";
+                    const buttonStyle = profile.globalButtonStyle || "filled";
                     const hasCustomColors = bgColor || textColor;
                     return (
                       <button
                         key={link.id}
                         className={cn(
                           "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer relative flex items-center justify-center",
-                          link.buttonBorderRadius || template.styles.buttonStyle,
+                          borderRadius,
                           !hasCustomColors && (
-                            link.style === "filled"
+                            buttonStyle === "filled"
                               ? cn(template.styles.buttonBg, template.styles.buttonText)
                               : cn("bg-transparent border-2", template.styles.textColor)
-                          )
+                          ),
+                          buttonStyle === "outline" && hasCustomColors && "bg-transparent border-2"
                         )}
                         style={hasCustomColors ? {
-                          backgroundColor: bgColor || undefined,
+                          backgroundColor: buttonStyle === "filled" ? (bgColor || undefined) : "transparent",
                           color: textColor || undefined,
+                          borderColor: buttonStyle === "outline" ? (bgColor || undefined) : undefined,
                         } : undefined}
                         onClick={() => onClickElement?.("link", link.id)}
                       >
@@ -276,25 +280,29 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               {/* Buttons */}
               <div className="space-y-3 mb-6">
                 {buttons.map((link) => {
-                  // Priority: individual color > global color > template default
-                  const bgColor = link.buttonBgColor || profile.globalButtonBgColor;
-                  const textColor = link.buttonTextColor || profile.globalButtonTextColor;
+                  // Use global styles from profile
+                  const bgColor = profile.globalButtonBgColor;
+                  const textColor = profile.globalButtonTextColor;
+                  const borderRadius = profile.globalButtonBorderRadius || "rounded-xl";
+                  const buttonStyle = profile.globalButtonStyle || "filled";
                   const hasCustomColors = bgColor || textColor;
                   return (
                     <button
                       key={link.id}
                       className={cn(
                         "w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer relative flex items-center justify-center",
-                        link.buttonBorderRadius || template.styles.buttonStyle,
+                        borderRadius,
                         !hasCustomColors && (
-                          link.style === "filled"
+                          buttonStyle === "filled"
                             ? cn(template.styles.buttonBg, template.styles.buttonText)
                             : cn("bg-transparent border-2", template.styles.textColor)
-                        )
+                        ),
+                        buttonStyle === "outline" && hasCustomColors && "bg-transparent border-2"
                       )}
                       style={hasCustomColors ? {
-                        backgroundColor: bgColor || undefined,
+                        backgroundColor: buttonStyle === "filled" ? (bgColor || undefined) : "transparent",
                         color: textColor || undefined,
+                        borderColor: buttonStyle === "outline" ? (bgColor || undefined) : undefined,
                       } : undefined}
                       onClick={() => onClickElement?.("link", link.id)}
                     >
