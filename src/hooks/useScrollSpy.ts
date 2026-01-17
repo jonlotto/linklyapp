@@ -1,42 +1,54 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export function useScrollSpy(
   sectionIds: string[],
   containerRef?: React.RefObject<HTMLElement>,
-  options?: IntersectionObserverInit
+  options?: { offset?: number }
 ) {
   const [activeId, setActiveId] = useState<string | null>(sectionIds[0] || null);
 
-  useEffect(() => {
+  const handleScroll = useCallback(() => {
     if (sectionIds.length === 0) return;
 
-    const observerOptions: IntersectionObserverInit = {
-      threshold: 0.3,
-      rootMargin: "-10% 0px -60% 0px",
-      root: containerRef?.current || null,
-      ...options,
-    };
+    const container = containerRef?.current;
+    const offset = options?.offset || 100;
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveId(entry.target.id);
-        }
-      });
-    }, observerOptions);
+    let currentSection = sectionIds[0];
 
-    // Observe all sections
-    sectionIds.forEach((id) => {
+    for (const id of sectionIds) {
       const element = document.getElementById(id);
       if (element) {
-        observer.observe(element);
+        const rect = element.getBoundingClientRect();
+        const containerRect = container?.getBoundingClientRect();
+        
+        // Calculate position relative to container or viewport
+        const elementTop = container 
+          ? rect.top - (containerRect?.top || 0)
+          : rect.top;
+        
+        // If section top is above the offset, this is the active section
+        if (elementTop <= offset) {
+          currentSection = id;
+        }
       }
-    });
+    }
 
+    setActiveId(currentSection);
+  }, [sectionIds, containerRef, options?.offset]);
+
+  useEffect(() => {
+    const container = containerRef?.current;
+    const target = container || window;
+
+    // Run immediately to set initial state
+    handleScroll();
+
+    target.addEventListener("scroll", handleScroll, { passive: true });
+    
     return () => {
-      observer.disconnect();
+      target.removeEventListener("scroll", handleScroll);
     };
-  }, [sectionIds, containerRef, options]);
+  }, [handleScroll, containerRef]);
 
   return activeId;
 }
