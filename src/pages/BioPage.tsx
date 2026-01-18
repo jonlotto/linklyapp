@@ -105,14 +105,45 @@ const BioPage = () => {
   const buttons = links.filter(l => l.link_type !== "social");
   const socials = links.filter(l => l.link_type === "social");
 
-  // Build background style with global color override
+  // Build background style with global color/image override or template image
   const globalBgColor = profile?.global_background_color;
-  const backgroundStyle = globalBgColor ? { backgroundColor: globalBgColor } : undefined;
+  const globalBgImage = (profile as any)?.global_background_image;
   const textColor = profile?.global_button_text_color || template.styles.textColor;
+
+  const getBackgroundStyle = (): React.CSSProperties | undefined => {
+    // 1. Custom background image has highest priority
+    if (globalBgImage) {
+      return {
+        backgroundImage: `url(${globalBgImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      };
+    }
+    // 2. Custom color or gradient
+    if (globalBgColor) {
+      if (globalBgColor.startsWith("linear-gradient")) {
+        return { background: globalBgColor };
+      }
+      return { backgroundColor: globalBgColor };
+    }
+    // 3. Template background image
+    if (template.styles.backgroundType === "image" && template.styles.backgroundImage) {
+      return {
+        backgroundImage: `url(${template.styles.backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      };
+    }
+    return undefined;
+  };
+
+  const backgroundStyle = getBackgroundStyle();
+  const hasCustomBackground = !!globalBgImage || !!globalBgColor;
+  const hasTemplateImageBg = template.styles.backgroundType === "image" && template.styles.backgroundImage;
 
   return (
     <div 
-      className={cn("min-h-screen", !globalBgColor && template.styles.background)}
+      className={cn("min-h-screen", !hasCustomBackground && !hasTemplateImageBg && template.styles.background)}
       style={backgroundStyle}
     >
       {hasBanner && profile ? (
@@ -144,8 +175,8 @@ const BioPage = () => {
 
             {/* Content */}
             <div 
-              className={cn("pt-16 pb-12 px-4", !globalBgColor && template.styles.contentBg)}
-              style={globalBgColor ? { backgroundColor: globalBgColor } : undefined}
+              className={cn("pt-16 pb-12 px-4", !hasCustomBackground && template.styles.contentBg)}
+              style={hasCustomBackground ? backgroundStyle : undefined}
             >
               {/* Profile Info */}
               <div className="text-center mb-8 animate-fade-in">
