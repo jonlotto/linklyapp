@@ -145,33 +145,37 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
             <>
               {/* Banner Layout */}
               <div className="relative">
-                {/* Banner Image */}
+                {/* Banner Container - extended height for curved banners */}
                 <div
-                  className="w-full cursor-pointer relative aspect-[2/1]"
+                  className={cn(
+                    "w-full cursor-pointer relative",
+                    hasCurvedBanner ? "h-[200px]" : "aspect-[2/1]"
+                  )}
                   onClick={() => onClickElement?.("banner")}
                 >
-                {profile.bannerUrl ? (
+                  {/* Banner Image - fills entire container */}
+                  {profile.bannerUrl ? (
                     <img
                       src={profile.bannerUrl}
                       alt="Banner"
-                      className="w-full h-full object-fill"
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center">
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center">
                       <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
                     </div>
                   )}
                   
-                  {/* Curved wave edge - arc going down */}
+                  {/* Curved wave overlay - white cutout at bottom */}
                   {hasCurvedBanner && (
                     <svg 
-                      viewBox="0 0 320 50" 
-                      className="absolute -bottom-[49px] left-0 w-full h-[50px]"
+                      viewBox="0 0 320 40" 
+                      className="absolute bottom-0 left-0 w-full h-[40px]"
                       preserveAspectRatio="none"
                     >
                       <path 
-                        d="M0,50 Q160,0 320,50 L320,0 L0,0 Z" 
-                        fill={template.styles.primaryColor || "#3B82F6"}
+                        d="M0,40 Q160,0 320,40 L320,40 L0,40 Z" 
+                        fill={hasCustomBackground ? "transparent" : "#ffffff"}
                       />
                     </svg>
                   )}
@@ -180,13 +184,13 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 {/* Avatar overlapping banner */}
                 <div
                   className={cn(
-                    "absolute left-1/2 transform -translate-x-1/2 cursor-pointer hover:opacity-90 transition-opacity",
-                    hasCurvedBanner ? "-bottom-10" : "-bottom-12"
+                    "absolute left-1/2 transform -translate-x-1/2 cursor-pointer hover:opacity-90 transition-opacity z-10",
+                    hasCurvedBanner ? "bottom-0 translate-y-1/2" : "-bottom-12"
                   )}
                   onClick={() => onClickElement?.("avatar")}
                 >
                   <Avatar
-                    className={cn("w-24 h-24", template.styles.avatarBorder, hasCurvedBanner && "shadow-lg")}
+                    className={cn("w-24 h-24 border-4 border-white", template.styles.avatarBorder, hasCurvedBanner && "shadow-lg")}
                   >
                     <AvatarImage src={profile.avatarUrl || undefined} />
                     <AvatarFallback
