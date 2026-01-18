@@ -26,6 +26,7 @@ export type Database = {
           link_type: string | null
           position: number
           style: string | null
+          thumbnail_url: string | null
           title: string
           updated_at: string
           url: string
@@ -42,6 +43,7 @@ export type Database = {
           link_type?: string | null
           position?: number
           style?: string | null
+          thumbnail_url?: string | null
           title: string
           updated_at?: string
           url: string
@@ -58,6 +60,7 @@ export type Database = {
           link_type?: string | null
           position?: number
           style?: string | null
+          thumbnail_url?: string | null
           title?: string
           updated_at?: string
           url?: string

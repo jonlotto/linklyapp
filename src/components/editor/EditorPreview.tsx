@@ -262,7 +262,13 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                         }}
                         onClick={() => onClickElement?.("link", link.id)}
                       >
-                        {link.icon && (
+                        {link.thumbnailUrl ? (
+                          <img 
+                            src={link.thumbnailUrl} 
+                            alt="" 
+                            className="absolute left-2 w-10 h-10 rounded-lg object-cover"
+                          />
+                        ) : link.icon && (
                           <span className="absolute left-4">
                             {renderIcon(link.icon)}
                           </span>
@@ -401,7 +407,13 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                       }}
                       onClick={() => onClickElement?.("link", link.id)}
                     >
-                      {link.icon && (
+                      {link.thumbnailUrl ? (
+                        <img 
+                          src={link.thumbnailUrl} 
+                          alt="" 
+                          className="absolute left-2 w-10 h-10 rounded-lg object-cover"
+                        />
+                      ) : link.icon && (
                         <span className="absolute left-4">
                           {renderIcon(link.icon)}
                         </span>

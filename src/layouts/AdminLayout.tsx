@@ -123,6 +123,7 @@ export default function AdminLayout() {
       title: "Novo Link",
       url: "https://",
       icon: null,
+      thumbnailUrl: null,
       linkType: "button",
       style: "filled",
       isActive: true,
@@ -147,6 +148,7 @@ export default function AdminLayout() {
       title: selectedPlatform.name,
       url,
       icon: selectedPlatform.icon,
+      thumbnailUrl: null,
       linkType: "social",
       style: "filled",
       isActive: true,
@@ -162,9 +164,9 @@ export default function AdminLayout() {
     updateLink(id, { isActive });
   };
 
-  const handleSaveLink = (data: Pick<EditorLink, "title" | "url" | "icon" | "isActive">) => {
+  const handleSaveLink = (data: Pick<EditorLink, "title" | "url" | "icon" | "isActive"> & { thumbnailUrl?: string | null }) => {
     if (selectedLinkId) {
-      updateLink(selectedLinkId, data);
+      updateLink(selectedLinkId, { ...data, thumbnailUrl: data.thumbnailUrl ?? null });
       setSelectedLinkId(null);
     }
   };

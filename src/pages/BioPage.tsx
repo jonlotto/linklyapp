@@ -257,6 +257,7 @@ const BioPage = () => {
                       title={link.title}
                       url={link.url}
                       icon={link.icon || undefined}
+                      thumbnailUrl={(link as any).thumbnail_url}
                       delay={index * 100}
                       buttonBgColor={profile?.global_button_bg_color || undefined}
                       buttonTextColor={profile?.global_button_text_color || undefined}
@@ -333,6 +334,7 @@ const BioPage = () => {
                   title={link.title}
                   url={link.url}
                   icon={link.icon || undefined}
+                  thumbnailUrl={(link as any).thumbnail_url}
                   delay={index * 100}
                   buttonBgColor={profile?.global_button_bg_color || undefined}
                   buttonTextColor={profile?.global_button_text_color || undefined}
