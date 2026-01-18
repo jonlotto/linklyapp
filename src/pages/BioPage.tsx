@@ -151,10 +151,10 @@ const BioPage = () => {
         // Banner Layout - centered container for consistent look
         <div className="min-h-screen flex flex-col items-center">
           <div className="w-full max-w-md">
-            {/* Banner Container - extended height for curved banners */}
+            {/* Banner Container - unified 8:5 aspect ratio */}
             <div className={cn(
               "relative w-full",
-              hasCurvedBanner ? "h-[200px]" : "aspect-[2/1]"
+              hasCurvedBanner ? "aspect-[8/5]" : "aspect-[8/5]"
             )}>
               {/* Banner Image - fills entire container */}
               {profile.banner_url ? (

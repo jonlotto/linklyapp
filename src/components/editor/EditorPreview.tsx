@@ -149,7 +149,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 <div
                   className={cn(
                     "w-full cursor-pointer relative",
-                    hasCurvedBanner ? "h-[200px]" : "aspect-[2/1]"
+                    hasCurvedBanner ? "aspect-[8/5]" : "aspect-[8/5]"
                   )}
                   onClick={() => onClickElement?.("banner")}
                 >
