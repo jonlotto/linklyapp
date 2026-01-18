@@ -186,7 +186,7 @@ export function HeaderSection({ profile, onUpdate }: HeaderSectionProps) {
       <div className="space-y-3">
         <label className="text-sm font-medium">Banner</label>
         <div 
-          className="relative aspect-[3/1] rounded-lg border-2 border-dashed border-border 
+          className="relative aspect-[8/5] rounded-lg border-2 border-dashed border-border 
                      bg-muted/50 overflow-hidden group cursor-pointer hover:border-primary/50 
                      transition-colors"
           onClick={() => document.getElementById("banner-upload")?.click()}
@@ -233,7 +233,7 @@ export function HeaderSection({ profile, onUpdate }: HeaderSectionProps) {
         />
         <div className="flex items-center gap-2">
           <p className="text-xs text-muted-foreground flex-1">
-            Recomendado: 1200x400px (proporção 3:1)
+            Recomendado: 1200x750px (proporção 8:5)
           </p>
           {profile.bannerUrl && (
             <Button
