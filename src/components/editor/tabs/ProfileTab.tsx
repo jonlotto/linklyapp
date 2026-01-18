@@ -316,7 +316,7 @@ export function ProfileTab({ profile, onUpdate, focusField }: ProfileTabProps) {
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              Este será o link da sua página: lovable.app/{profile.username || "seunome"}
+              Este será o link da sua página: biobr.site/{profile.username || "seunome"}
             </p>
           </div>
 

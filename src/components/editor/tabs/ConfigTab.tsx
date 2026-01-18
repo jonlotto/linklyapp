@@ -20,7 +20,7 @@ export function ConfigTab({ profile, onUpdate, onSave, isDirty, isSaving }: Conf
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   
-  const pageUrl = `${window.location.origin}/${profile.username}`;
+  const pageUrl = `https://biobr.site/${profile.username}`;
 
   const handleCopyUrl = async () => {
     try {

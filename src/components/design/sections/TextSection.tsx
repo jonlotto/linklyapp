@@ -96,7 +96,7 @@ export function TextSection({ profile, onUpdate }: TextSectionProps) {
         <Label htmlFor="username">Nome de usuário</Label>
         <div className="flex items-center">
           <span className="px-3 py-2 bg-muted rounded-l-lg border border-r-0 border-border text-muted-foreground text-sm">
-            linklyapp.lovable.app/
+            biobr.site/
           </span>
           <Input
             id="username"
