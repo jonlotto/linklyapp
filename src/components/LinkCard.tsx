@@ -120,11 +120,11 @@ const LinkCard = ({
         }}
       >
         {thumbnailUrl ? (
-              <img 
-                src={thumbnailUrl} 
-                alt="" 
-                className="absolute left-2 w-10 h-10 rounded-full object-cover"
-              />
+          <img 
+            src={thumbnailUrl} 
+            alt="" 
+            className="absolute left-3 w-8 h-8 rounded-full object-cover"
+          />
         ) : icon && (
           <span className="absolute left-4">
             {renderIcon(icon)}
