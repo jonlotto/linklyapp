@@ -95,10 +95,14 @@ export function ButtonEditDrawer({
           const waUrl = new URL(initialData.url);
           const pathNumber = waUrl.pathname.replace("/", "");
           const message = waUrl.searchParams.get("text") || "";
-          setWhatsappNumber(pathNumber);
+          // Remove 55 prefix if present (we'll add it automatically)
+          const numberWithout55 = pathNumber.startsWith("55") ? pathNumber.slice(2) : pathNumber;
+          setWhatsappNumber(numberWithout55);
           setWhatsappMessage(message);
         } catch {
-          setWhatsappNumber(initialData.url.replace("https://wa.me/", "").split("?")[0]);
+          const rawNumber = initialData.url.replace("https://wa.me/", "").split("?")[0];
+          const numberWithout55 = rawNumber.startsWith("55") ? rawNumber.slice(2) : rawNumber;
+          setWhatsappNumber(numberWithout55);
           setWhatsappMessage("");
         }
         setUrl("");
@@ -128,6 +132,19 @@ export function ButtonEditDrawer({
     } catch {
       return false;
     }
+  };
+
+  // Phone mask function (XX) XXXXX-XXXX
+  const maskPhoneNumber = (value: string): string => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    
+    if (digits.length <= 2) {
+      return digits.length ? `(${digits}` : "";
+    }
+    if (digits.length <= 7) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    }
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -209,12 +226,12 @@ export function ButtonEditDrawer({
         newErrors.url = "Digite uma URL válida (ex: https://exemplo.com)";
       }
     } else {
-      // WhatsApp validation
+      // WhatsApp validation (10-11 digits without country code)
       const cleanNumber = whatsappNumber.replace(/\D/g, "");
       if (!cleanNumber) {
         newErrors.whatsapp = "O número é obrigatório";
-      } else if (cleanNumber.length < 10) {
-        newErrors.whatsapp = "Digite um número válido com DDD";
+      } else if (cleanNumber.length < 10 || cleanNumber.length > 11) {
+        newErrors.whatsapp = "Digite um número válido com DDD (10 ou 11 dígitos)";
       }
     }
 
@@ -226,7 +243,8 @@ export function ButtonEditDrawer({
     let finalUrl: string;
     if (buttonType === "whatsapp") {
       const cleanNumber = whatsappNumber.replace(/\D/g, "");
-      finalUrl = `https://wa.me/${cleanNumber}`;
+      // Always prepend 55 (Brazil country code)
+      finalUrl = `https://wa.me/55${cleanNumber}`;
       if (whatsappMessage.trim()) {
         finalUrl += `?text=${encodeURIComponent(whatsappMessage.trim())}`;
       }
@@ -328,18 +346,25 @@ export function ButtonEditDrawer({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="whatsapp">Número do WhatsApp *</Label>
-                  <Input
-                    id="whatsapp"
-                    type="tel"
-                    value={whatsappNumber}
-                    onChange={(e) => {
-                      setWhatsappNumber(e.target.value.replace(/\D/g, ""));
-                      setErrors((prev) => ({ ...prev, whatsapp: undefined }));
-                    }}
-                    placeholder="5511999999999"
-                  />
+                  <div className="flex gap-2">
+                    <div className="flex items-center px-3 bg-muted border border-input rounded-md text-sm font-medium text-muted-foreground">
+                      +55
+                    </div>
+                    <Input
+                      id="whatsapp"
+                      type="tel"
+                      value={maskPhoneNumber(whatsappNumber)}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+                        setWhatsappNumber(digits);
+                        setErrors((prev) => ({ ...prev, whatsapp: undefined }));
+                      }}
+                      placeholder="(11) 99999-9999"
+                      className="flex-1"
+                    />
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    Digite com código do país e DDD (ex: 5511999999999)
+                    Digite DDD + número (ex: 11 99999-9999)
                   </p>
                   {errors.whatsapp && (
                     <p className="text-xs text-destructive">{errors.whatsapp}</p>

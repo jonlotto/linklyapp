@@ -53,16 +53,31 @@ export function SocialAddModal({
     setValue("");
   };
 
+  // Phone mask function (XX) XXXXX-XXXX
+  const maskPhoneNumber = (phoneValue: string): string => {
+    const digits = phoneValue.replace(/\D/g, "").slice(0, 11);
+    
+    if (digits.length <= 2) {
+      return digits.length ? `(${digits}` : "";
+    }
+    if (digits.length <= 7) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    }
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
   const getPlaceholder = () => {
     if (!platform) return "";
-    if (platform.isPhone) return "+55 11 99999-9999";
+    if (platform.isPhone) return "(11) 99999-9999";
     return "seunome";
   };
 
   const getPreviewUrl = () => {
     if (!platform || !value) return "";
     if (platform.isPhone) {
-      return platform.urlTemplate.replace("{phone}", value.replace(/\D/g, ""));
+      // Always prepend 55 (Brazil country code)
+      const cleanDigits = value.replace(/\D/g, "");
+      return platform.urlTemplate.replace("{phone}", `55${cleanDigits}`);
     }
     return platform.urlTemplate.replace("{username}", value);
   };
@@ -91,16 +106,37 @@ export function SocialAddModal({
             <Label htmlFor="value">
               {platform?.isPhone ? "Número de telefone" : "Nome de usuário"}
             </Label>
-            <Input
-              id="value"
-              value={value}
-              onChange={(e) => {
-                setValue(e.target.value);
-                setError("");
-              }}
-              placeholder={getPlaceholder()}
-              autoFocus
-            />
+            {platform?.isPhone ? (
+              <div className="flex gap-2">
+                <div className="flex items-center px-3 bg-muted border border-input rounded-md text-sm font-medium text-muted-foreground">
+                  +55
+                </div>
+                <Input
+                  id="value"
+                  type="tel"
+                  value={maskPhoneNumber(value)}
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+                    setValue(digits);
+                    setError("");
+                  }}
+                  placeholder={getPlaceholder()}
+                  className="flex-1"
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <Input
+                id="value"
+                value={value}
+                onChange={(e) => {
+                  setValue(e.target.value);
+                  setError("");
+                }}
+                placeholder={getPlaceholder()}
+                autoFocus
+              />
+            )}
             {error && <p className="text-xs text-destructive">{error}</p>}
           </div>
 
