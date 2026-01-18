@@ -100,6 +100,7 @@ const BioPage = () => {
 
   const template = templates.find((t) => t.slug === profile?.template_slug) || templates[0];
   const hasBanner = template.hasBanner;
+  const hasCurvedBanner = template.hasCurvedBanner;
 
   // Separate links by type
   const buttons = links.filter(l => l.link_type !== "social");
@@ -162,9 +163,26 @@ const BioPage = () => {
                 <div className="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
               )}
               
+              {/* Curved wave edge */}
+              {hasCurvedBanner && (
+                <svg 
+                  viewBox="0 0 320 40" 
+                  className="absolute -bottom-px left-0 w-full h-10"
+                  preserveAspectRatio="none"
+                >
+                  <path 
+                    d="M0,0 Q160,40 320,0 L320,40 L0,40 Z" 
+                    fill="white"
+                  />
+                </svg>
+              )}
+              
               {/* Avatar overlapping banner */}
-              <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-12">
-                <Avatar className={cn("w-24 h-24", template.styles.avatarBorder)}>
+              <div className={cn(
+                "absolute left-1/2 transform -translate-x-1/2",
+                hasCurvedBanner ? "-bottom-10" : "-bottom-12"
+              )}>
+                <Avatar className={cn("w-24 h-24", template.styles.avatarBorder, hasCurvedBanner && "shadow-lg")}>
                   <AvatarImage src={profile.avatar_url || undefined} />
                   <AvatarFallback className={cn(template.styles.cardBg, template.styles.textColor)}>
                     {(profile.display_name || profile.username)?.charAt(0) || "?"}

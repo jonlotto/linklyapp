@@ -92,6 +92,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
   };
 
   const hasBanner = template.hasBanner;
+  const hasCurvedBanner = template.hasCurvedBanner;
 
   // Build background style with global color/image override or template image
   const getBackgroundStyle = (): React.CSSProperties | undefined => {
@@ -149,7 +150,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                   className="w-full cursor-pointer relative aspect-[2/1]"
                   onClick={() => onClickElement?.("banner")}
                 >
-                  {profile.bannerUrl ? (
+                {profile.bannerUrl ? (
                     <img
                       src={profile.bannerUrl}
                       alt="Banner"
@@ -160,15 +161,32 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                       <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
                     </div>
                   )}
+                  
+                  {/* Curved wave edge */}
+                  {hasCurvedBanner && (
+                    <svg 
+                      viewBox="0 0 320 40" 
+                      className="absolute -bottom-px left-0 w-full h-10"
+                      preserveAspectRatio="none"
+                    >
+                      <path 
+                        d="M0,0 Q160,40 320,0 L320,40 L0,40 Z" 
+                        fill="white"
+                      />
+                    </svg>
+                  )}
                 </div>
 
                 {/* Avatar overlapping banner */}
                 <div
-                  className="absolute left-1/2 transform -translate-x-1/2 -bottom-12 cursor-pointer hover:opacity-90 transition-opacity"
+                  className={cn(
+                    "absolute left-1/2 transform -translate-x-1/2 cursor-pointer hover:opacity-90 transition-opacity",
+                    hasCurvedBanner ? "-bottom-10" : "-bottom-12"
+                  )}
                   onClick={() => onClickElement?.("avatar")}
                 >
                   <Avatar
-                    className={cn("w-24 h-24", template.styles.avatarBorder)}
+                    className={cn("w-24 h-24", template.styles.avatarBorder, hasCurvedBanner && "shadow-lg")}
                   >
                     <AvatarImage src={profile.avatarUrl || undefined} />
                     <AvatarFallback

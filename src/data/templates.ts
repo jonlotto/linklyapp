@@ -10,6 +10,7 @@ export interface Template {
   slug: string;
   description: string;
   hasBanner?: boolean;
+  hasCurvedBanner?: boolean;
   isPremium?: boolean;
   styles: {
     background: string;
@@ -507,6 +508,33 @@ export const templates: Template[] = [
       textSize: "large",
       theme: "light",
       primaryColor: "#f9fafb",
+      accentColor: "#6b7280",
+    },
+  },
+  // Wave Template - Curved Banner
+  {
+    id: "wave",
+    name: "Wave",
+    slug: "wave",
+    description: "Banner com borda curvada elegante",
+    hasBanner: true,
+    hasCurvedBanner: true,
+    styles: {
+      background: "bg-white",
+      backgroundType: "solid",
+      cardBg: "bg-white",
+      textColor: "text-gray-800",
+      buttonStyle: "rounded-xl",
+      buttonBg: "bg-gray-100 hover:bg-gray-200 shadow-sm",
+      buttonText: "text-gray-700",
+      avatarBorder: "ring-4 ring-white",
+      bannerHeight: "aspect-[2/1] w-full",
+      contentBg: "bg-white",
+      font: "Inter",
+      fontDisplay: "Inter",
+      textSize: "large",
+      theme: "light",
+      primaryColor: "#f3f4f6",
       accentColor: "#6b7280",
     },
   },
