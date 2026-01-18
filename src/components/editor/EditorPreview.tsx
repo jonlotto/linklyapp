@@ -162,16 +162,16 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                     </div>
                   )}
                   
-                  {/* Curved wave edge */}
+                  {/* Curved wave edge - arc going down */}
                   {hasCurvedBanner && (
                     <svg 
-                      viewBox="0 0 320 40" 
-                      className="absolute -bottom-px left-0 w-full h-10"
+                      viewBox="0 0 320 50" 
+                      className="absolute -bottom-[49px] left-0 w-full h-[50px]"
                       preserveAspectRatio="none"
                     >
                       <path 
-                        d="M0,0 Q160,40 320,0 L320,40 L0,40 Z" 
-                        fill="white"
+                        d="M0,50 Q160,0 320,50 L320,0 L0,0 Z" 
+                        fill={template.styles.primaryColor || "#3B82F6"}
                       />
                     </svg>
                   )}
