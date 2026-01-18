@@ -31,6 +31,7 @@ export interface EditorProfile {
   globalButtonBgColor: string | null;
   globalButtonTextColor: string | null;
   globalBackgroundColor: string | null;
+  globalBackgroundImage: string | null;
   globalButtonStyle: "filled" | "outline";
   globalButtonBorderRadius: string;
   // Typography customization
@@ -69,6 +70,7 @@ export function useEditorState(initialTemplateSlug?: string) {
       globalButtonBgColor: null,
       globalButtonTextColor: null,
       globalBackgroundColor: null,
+      globalBackgroundImage: null,
       globalButtonStyle: "filled",
       globalButtonBorderRadius: "rounded-xl",
       titleFont: "Inter",
@@ -133,6 +135,7 @@ export function useEditorState(initialTemplateSlug?: string) {
             globalButtonBgColor: profile?.global_button_bg_color || null,
             globalButtonTextColor: profile?.global_button_text_color || null,
             globalBackgroundColor: profile?.global_background_color || null,
+            globalBackgroundImage: (profile as any)?.global_background_image || null,
             globalButtonStyle: (profile?.global_button_style as "filled" | "outline") || "filled",
             globalButtonBorderRadius: profile?.global_button_border_radius || "rounded-xl",
             titleFont: (profile as any)?.title_font || "Inter",
@@ -193,6 +196,7 @@ export function useEditorState(initialTemplateSlug?: string) {
           global_button_bg_color: currentState.profile.globalButtonBgColor,
           global_button_text_color: currentState.profile.globalButtonTextColor,
           global_background_color: currentState.profile.globalBackgroundColor,
+          global_background_image: currentState.profile.globalBackgroundImage,
           global_button_style: currentState.profile.globalButtonStyle,
           global_button_border_radius: currentState.profile.globalButtonBorderRadius,
           title_font: currentState.profile.titleFont,

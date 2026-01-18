@@ -93,11 +93,24 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
 
   const hasBanner = template.hasBanner;
 
-  // Build background style with global color override or template image
-  const getBackgroundStyle = () => {
+  // Build background style with global color/image override or template image
+  const getBackgroundStyle = (): React.CSSProperties | undefined => {
+    // 1. Custom background image has highest priority
+    if (profile.globalBackgroundImage) {
+      return {
+        backgroundImage: `url(${profile.globalBackgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      };
+    }
+    // 2. Custom color or gradient
     if (profile.globalBackgroundColor) {
+      if (profile.globalBackgroundColor.startsWith("linear-gradient")) {
+        return { background: profile.globalBackgroundColor };
+      }
       return { backgroundColor: profile.globalBackgroundColor };
     }
+    // 3. Template background image
     if (template.styles.backgroundType === "image" && template.styles.backgroundImage) {
       return {
         backgroundImage: `url(${template.styles.backgroundImage})`,
@@ -109,7 +122,8 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
   };
 
   const backgroundStyle = getBackgroundStyle();
-  const hasImageBackground = template.styles.backgroundType === "image" && template.styles.backgroundImage && !profile.globalBackgroundColor;
+  const hasCustomBackground = !!profile.globalBackgroundImage || !!profile.globalBackgroundColor;
+  const hasImageBackground = template.styles.backgroundType === "image" && template.styles.backgroundImage && !hasCustomBackground;
 
   return (
     <div className="flex flex-col items-center">
@@ -117,7 +131,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
       <div
         className={cn(
           "relative w-[320px] h-[640px] rounded-[3rem] border-8 border-foreground/20 shadow-2xl overflow-hidden",
-          !profile.globalBackgroundColor && !hasImageBackground && template.styles.background
+          !hasCustomBackground && !hasImageBackground && template.styles.background
         )}
         style={backgroundStyle}
       >
@@ -168,8 +182,8 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
 
               {/* Content below banner */}
               <div 
-                className={cn("pt-16 pb-6 px-6", !profile.globalBackgroundColor && template.styles.contentBg)}
-                style={profile.globalBackgroundColor ? { backgroundColor: profile.globalBackgroundColor } : undefined}
+                className={cn("pt-16 pb-6 px-6", !hasCustomBackground && template.styles.contentBg)}
+                style={hasCustomBackground ? backgroundStyle : undefined}
               >
               {/* Username */}
               <p

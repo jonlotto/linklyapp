@@ -75,6 +75,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           global_background_color: string | null
+          global_background_image: string | null
           global_button_bg_color: string | null
           global_button_border_radius: string | null
           global_button_style: string | null
@@ -97,6 +98,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           global_background_color?: string | null
+          global_background_image?: string | null
           global_button_bg_color?: string | null
           global_button_border_radius?: string | null
           global_button_style?: string | null
@@ -119,6 +121,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           global_background_color?: string | null
+          global_background_image?: string | null
           global_button_bg_color?: string | null
           global_button_border_radius?: string | null
           global_button_style?: string | null
