@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { ImageIcon, Upload, X } from "lucide-react";
+import { ImageIcon, Upload, X, Crop } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EditorProfile } from "@/hooks/useEditorState";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { BannerCropModal } from "@/components/editor/BannerCropModal";
 
 interface HeaderSectionProps {
   profile: EditorProfile;
@@ -17,6 +18,9 @@ export function HeaderSection({ profile, onUpdate }: HeaderSectionProps) {
   const { toast } = useToast();
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+  const [initialCropOffsetY, setInitialCropOffsetY] = useState(0);
 
   const handleImageUpload = async (
     file: File,
@@ -43,17 +47,17 @@ export function HeaderSection({ profile, onUpdate }: HeaderSectionProps) {
 
       if (type === "avatar") {
         onUpdate({ avatarUrl: urlData.publicUrl });
-      } else {
-        onUpdate({ 
-          bannerUrl: urlData.publicUrl,
-          bannerOriginalUrl: urlData.publicUrl 
+        toast({
+          title: "Upload concluído",
+          description: "Avatar atualizado com sucesso!",
         });
+      } else {
+        // Save as original and open crop modal
+        onUpdate({ bannerOriginalUrl: urlData.publicUrl });
+        setImageToCrop(urlData.publicUrl);
+        setInitialCropOffsetY(0);
+        setCropModalOpen(true);
       }
-
-      toast({
-        title: "Upload concluído",
-        description: `${type === "avatar" ? "Avatar" : "Banner"} atualizado com sucesso!`,
-      });
     } catch (error) {
       console.error("Upload error:", error);
       toast({
@@ -63,6 +67,55 @@ export function HeaderSection({ profile, onUpdate }: HeaderSectionProps) {
       });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob, offsetY: number) => {
+    if (!user) return;
+
+    setCropModalOpen(false);
+    setIsUploadingBanner(true);
+
+    try {
+      const fileName = `${user.id}/banner-cropped-${Date.now()}.jpg`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, croppedBlob, { upsert: true, contentType: "image/jpeg" });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
+
+      onUpdate({
+        bannerUrl: `${urlData.publicUrl}?t=${Date.now()}`,
+        bannerCropOffsetY: offsetY,
+      });
+
+      toast({
+        title: "Banner atualizado",
+        description: "Imagem de capa salva com sucesso!",
+      });
+    } catch (error) {
+      console.error("Error saving cropped banner:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar o banner.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingBanner(false);
+    }
+  };
+
+  const handleEditBanner = () => {
+    const imageUrl = profile.bannerOriginalUrl || profile.bannerUrl;
+    if (imageUrl) {
+      setImageToCrop(imageUrl);
+      setInitialCropOffsetY(profile.bannerCropOffsetY || 0);
+      setCropModalOpen(true);
     }
   };
 
@@ -178,10 +231,33 @@ export function HeaderSection({ profile, onUpdate }: HeaderSectionProps) {
             if (file) handleImageUpload(file, "banner");
           }}
         />
-        <p className="text-xs text-muted-foreground">
-          Recomendado: 1200x400px (proporção 3:1)
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-xs text-muted-foreground flex-1">
+            Recomendado: 1200x400px (proporção 3:1)
+          </p>
+          {profile.bannerUrl && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEditBanner();
+              }}
+            >
+              <Crop className="h-4 w-4 mr-2" />
+              Ajustar
+            </Button>
+          )}
+        </div>
       </div>
+
+      <BannerCropModal
+        open={cropModalOpen}
+        onOpenChange={setCropModalOpen}
+        imageSrc={imageToCrop || ""}
+        initialOffsetY={initialCropOffsetY}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 }
