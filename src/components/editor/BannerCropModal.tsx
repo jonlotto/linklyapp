@@ -202,9 +202,10 @@ export function BannerCropModal({
               alt="Preview"
               crossOrigin="anonymous"
               onLoad={handleImageLoad}
-              className="w-full pointer-events-none"
+              className="absolute left-0 w-full pointer-events-none"
               style={{ 
-                transform: `translateY(${offsetY}px)`,
+                top: '50%',
+                transform: `translateY(calc(-50% + ${offsetY}px))`,
                 transition: isDragging ? 'none' : 'transform 0.1s ease-out'
               }}
               draggable={false}
