@@ -29,15 +29,12 @@ const ProfileHeader = ({
 
   return (
     <div className="flex flex-col items-center gap-4 text-center animate-fade-in">
-      <div className="relative">
-        <div className="absolute inset-0 gradient-bg rounded-full blur-xl opacity-50 animate-pulse-glow" />
-        <Avatar className="relative h-24 w-24 border-4 border-card shadow-glow-lg">
-          <AvatarImage src={avatarUrl} alt={displayName} />
-          <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-display font-bold">
-            {initials}
-          </AvatarFallback>
-        </Avatar>
-      </div>
+      <Avatar className="h-24 w-24 border-4 border-card">
+        <AvatarImage src={avatarUrl} alt={displayName} />
+        <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-display font-bold">
+          {initials}
+        </AvatarFallback>
+      </Avatar>
       
       <div className="space-y-1">
         <h1 
