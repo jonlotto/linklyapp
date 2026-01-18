@@ -48,6 +48,7 @@ export function SocialsTab({
       title: selectedPlatform.name,
       url,
       icon: selectedPlatform.icon,
+      thumbnailUrl: null,
       style: "filled",
       isActive: true,
       buttonBgColor: null,

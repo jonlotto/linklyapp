@@ -8,6 +8,7 @@ export interface EditorLink {
   title: string;
   url: string;
   icon: string | null;
+  thumbnailUrl: string | null;
   linkType: "button" | "social";
   style: "filled" | "outline";
   isActive: boolean;
@@ -147,6 +148,7 @@ export function useEditorState(initialTemplateSlug?: string) {
             title: link.title,
             url: link.url,
             icon: link.icon,
+            thumbnailUrl: (link as any).thumbnail_url || null,
             linkType: (link.link_type as "button" | "social") || "button",
             style: (link.style as "filled" | "outline") || "filled",
             isActive: link.is_active,
@@ -229,6 +231,7 @@ export function useEditorState(initialTemplateSlug?: string) {
           title: link.title,
           url: link.url,
           icon: link.icon,
+          thumbnail_url: link.thumbnailUrl,
           link_type: link.linkType,
           style: link.style,
           is_active: link.isActive,

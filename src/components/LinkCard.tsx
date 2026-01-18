@@ -70,6 +70,7 @@ interface LinkCardProps {
   title: string;
   url: string;
   icon?: string;
+  thumbnailUrl?: string | null;
   delay?: number;
   buttonBgColor?: string;
   buttonTextColor?: string;
@@ -82,6 +83,7 @@ const LinkCard = ({
   title, 
   url, 
   icon, 
+  thumbnailUrl,
   delay = 0,
   buttonBgColor,
   buttonTextColor,
@@ -90,6 +92,7 @@ const LinkCard = ({
   fontFamily = "Inter"
 }: LinkCardProps) => {
   const hasCustomColors = buttonBgColor || buttonTextColor;
+  const hasMedia = thumbnailUrl || icon;
   
   return (
     <a
@@ -104,7 +107,8 @@ const LinkCard = ({
           "relative flex items-center justify-center px-6 py-4 transition-all duration-300 hover:scale-[1.02]",
           buttonBorderRadius,
           !hasCustomColors && "glass shadow-glow hover:shadow-glow-lg",
-          buttonStyle === "outline" && hasCustomColors && "bg-transparent border-2"
+          buttonStyle === "outline" && hasCustomColors && "bg-transparent border-2",
+          hasMedia && "pl-14"
         )}
         style={{
           fontFamily,
@@ -115,7 +119,13 @@ const LinkCard = ({
           } : {})
         }}
       >
-        {icon && (
+        {thumbnailUrl ? (
+          <img 
+            src={thumbnailUrl} 
+            alt="" 
+            className="absolute left-2 w-10 h-10 rounded-lg object-cover"
+          />
+        ) : icon && (
           <span className="absolute left-4">
             {renderIcon(icon)}
           </span>

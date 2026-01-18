@@ -41,13 +41,14 @@ export function ButtonsTab({
     onSelectLink(link.id);
   };
 
-  const handleSave = (data: Pick<EditorLink, "title" | "url" | "icon" | "isActive">) => {
+  const handleSave = (data: Pick<EditorLink, "title" | "url" | "icon" | "isActive"> & { thumbnailUrl?: string | null }) => {
     if (editingLink) {
-      onUpdate(editingLink.id, data);
+      onUpdate(editingLink.id, { ...data, thumbnailUrl: data.thumbnailUrl ?? null });
     } else {
       // Add with default values for global style properties
       onAdd({
         ...data,
+        thumbnailUrl: data.thumbnailUrl ?? null,
         style: "filled",
         buttonBgColor: null,
         buttonTextColor: null,
