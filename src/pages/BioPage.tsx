@@ -221,27 +221,6 @@ const BioPage = () => {
                 )}
               </div>
 
-              {/* Social Icons */}
-              {socials.length > 0 && (
-                <div className="flex justify-center gap-4 flex-wrap mb-6 animate-fade-in">
-                  {socials.map((social) => (
-                    <a
-                      key={social.id}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
-                      style={{ 
-                        backgroundColor: profile?.global_button_bg_color || template.styles.cardBg,
-                        color: profile?.global_button_text_color || undefined
-                      }}
-                    >
-                      {renderIcon(social.icon || undefined, "w-5 h-5")}
-                    </a>
-                  ))}
-                </div>
-              )}
-
               {/* Links */}
               <div className="space-y-4">
                 {buttons.length === 0 && socials.length === 0 ? (
@@ -259,8 +238,8 @@ const BioPage = () => {
                       icon={link.icon || undefined}
                       thumbnailUrl={(link as any).thumbnail_url}
                       delay={index * 100}
-                      buttonBgColor={profile?.global_button_bg_color || undefined}
-                      buttonTextColor={profile?.global_button_text_color || undefined}
+                      buttonBgColor={profile?.global_button_bg_color || template.styles.primaryColor}
+                      buttonTextColor={profile?.global_button_text_color || template.styles.buttonText?.includes("white") ? "#ffffff" : undefined}
                       buttonBorderRadius={profile?.global_button_border_radius || undefined}
                       buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
                       fontFamily={(profile as any)?.title_font || "Inter"}
@@ -268,6 +247,27 @@ const BioPage = () => {
                   ))
                 )}
               </div>
+
+              {/* Social Icons */}
+              {socials.length > 0 && (
+                <div className="flex justify-center gap-4 flex-wrap mt-6 animate-fade-in">
+                  {socials.map((social) => (
+                    <a
+                      key={social.id}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                      style={{ 
+                        backgroundColor: profile?.global_button_bg_color || template.styles.primaryColor,
+                        color: profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)
+                      }}
+                    >
+                      {renderIcon(social.icon || undefined, "w-5 h-5")}
+                    </a>
+                  ))}
+                </div>
+              )}
 
               {/* Footer */}
               <footer className="mt-12 text-center animate-fade-in">
@@ -298,27 +298,6 @@ const BioPage = () => {
             />
           )}
 
-          {/* Social Icons */}
-          {socials.length > 0 && (
-            <div className="flex justify-center gap-4 flex-wrap mt-6 animate-fade-in">
-              {socials.map((social) => (
-                <a
-                  key={social.id}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
-                  style={{ 
-                    backgroundColor: profile?.global_button_bg_color || template.styles.cardBg,
-                    color: profile?.global_button_text_color || undefined
-                  }}
-                >
-                  {renderIcon(social.icon || undefined, "w-5 h-5")}
-                </a>
-              ))}
-            </div>
-          )}
-
           {/* Links */}
           <div className="mt-8 space-y-4">
             {buttons.length === 0 && socials.length === 0 ? (
@@ -336,8 +315,8 @@ const BioPage = () => {
                   icon={link.icon || undefined}
                   thumbnailUrl={(link as any).thumbnail_url}
                   delay={index * 100}
-                  buttonBgColor={profile?.global_button_bg_color || undefined}
-                  buttonTextColor={profile?.global_button_text_color || undefined}
+                  buttonBgColor={profile?.global_button_bg_color || template.styles.primaryColor}
+                  buttonTextColor={profile?.global_button_text_color || template.styles.buttonText?.includes("white") ? "#ffffff" : undefined}
                   buttonBorderRadius={profile?.global_button_border_radius || undefined}
                   buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
                   fontFamily={(profile as any)?.title_font || "Inter"}
@@ -345,6 +324,27 @@ const BioPage = () => {
               ))
             )}
           </div>
+
+          {/* Social Icons */}
+          {socials.length > 0 && (
+            <div className="flex justify-center gap-4 flex-wrap mt-6 animate-fade-in">
+              {socials.map((social) => (
+                <a
+                  key={social.id}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                  style={{ 
+                    backgroundColor: profile?.global_button_bg_color || template.styles.primaryColor,
+                    color: profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)
+                  }}
+                >
+                  {renderIcon(social.icon || undefined, "w-5 h-5")}
+                </a>
+              ))}
+            </div>
+          )}
 
           {/* Footer */}
           <footer className="mt-12 text-center animate-fade-in">
