@@ -103,8 +103,13 @@ export function ProfileHeaderCard({
     const trimmedValue = handleValue.trim();
     const currentHandle = profile.handle || profile.username;
     if (trimmedValue && trimmedValue !== currentHandle) {
-      onUpdateHandle?.(trimmedValue);
-      toast.success("@ atualizado!");
+      if (onUpdateHandle) {
+        onUpdateHandle(trimmedValue);
+        toast.success("@ atualizado!");
+      } else {
+        toast.error("Não foi possível salvar o @");
+        setHandleValue(currentHandle || "");
+      }
     } else {
       setHandleValue(currentHandle || "");
     }
