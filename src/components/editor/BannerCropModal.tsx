@@ -234,9 +234,10 @@ export function BannerCropModal({
               style={{ 
                 top: '50%',
                 left: '50%',
-                width: `${100 * zoom}%`,
-                transform: `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`,
-                transition: isDragging ? 'none' : 'transform 0.1s ease-out, width 0.15s ease-out'
+                width: '100%',
+                transform: `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(${zoom})`,
+                transformOrigin: 'center center',
+                transition: isDragging ? 'none' : 'transform 0.15s ease-out'
               }}
               draggable={false}
             />
