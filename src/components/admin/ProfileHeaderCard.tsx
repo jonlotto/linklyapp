@@ -145,7 +145,7 @@ export function ProfileHeaderCard({
             ref={handleInputRef}
             type="text"
             value={handleValue}
-            onChange={(e) => setHandleValue(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+            onChange={(e) => setHandleValue(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''))}
             onBlur={handleSaveHandle}
             onKeyDown={handleHandleKeyDown}
             className="bg-transparent border-none outline-none text-sm text-muted-foreground w-24 focus:ring-0"
