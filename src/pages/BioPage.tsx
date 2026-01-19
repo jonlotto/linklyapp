@@ -144,98 +144,73 @@ const BioPage = () => {
   const hasTemplateImageBg = template.styles.backgroundType === "image" && template.styles.backgroundImage;
 
   return (
-    <div 
-      className={cn("min-h-screen", !hasCustomBackground && !hasTemplateImageBg && template.styles.background)}
-      style={backgroundStyle}
-    >
-      {hasBanner && profile ? (
-        // Banner Layout - centered container for consistent look
-        <div className="min-h-screen flex flex-col items-center">
-          <div className="w-full max-w-md">
-            {/* Banner Container with wrapper for avatar positioning */}
-            <div className="relative w-full">
-              {/* Inner container with overflow-hidden for banner only */}
-              <div className={cn(
-                "relative w-full overflow-hidden",
-                hasCurvedBanner ? "aspect-[8/5]" : "aspect-[8/5]"
-              )}>
-                {/* Banner Image - fills entire container */}
-                {profile.banner_url ? (
-                  <img
-                    src={profile.banner_url}
-                    alt="Banner"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
-                )}
-                
-                {/* Curved wave overlay - dynamic fill to match background */}
-                {hasCurvedBanner && (
-                  <svg 
-                    viewBox="0 0 320 44" 
-                    className="absolute bottom-[-1px] left-0 w-full h-[44px] pointer-events-none"
-                    preserveAspectRatio="none"
-                  >
-                    <path 
-                      d="M0,44 Q160,0 320,44 L320,44 L0,44 Z" 
-                      fill={globalBgColor && !globalBgColor.startsWith("linear-gradient") ? globalBgColor : "#ffffff"}
+    <div className="min-h-screen flex flex-col">
+      <div 
+        className={cn("flex-1", !hasCustomBackground && !hasTemplateImageBg && template.styles.background)}
+        style={backgroundStyle}
+      >
+        {hasBanner && profile ? (
+          // Banner Layout - centered container for consistent look
+          <div className="min-h-full flex flex-col items-center">
+            <div className="w-full max-w-md">
+              {/* Banner Container with wrapper for avatar positioning */}
+              <div className="relative w-full">
+                {/* Inner container with overflow-hidden for banner only */}
+                <div className={cn(
+                  "relative w-full overflow-hidden",
+                  hasCurvedBanner ? "aspect-[8/5]" : "aspect-[8/5]"
+                )}>
+                  {/* Banner Image - fills entire container */}
+                  {profile.banner_url ? (
+                    <img
+                      src={profile.banner_url}
+                      alt="Banner"
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
-                  </svg>
-                )}
+                  ) : (
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
+                  )}
+                  
+                  {/* Curved wave overlay - dynamic fill to match background */}
+                  {hasCurvedBanner && (
+                    <svg 
+                      viewBox="0 0 320 44" 
+                      className="absolute bottom-[-1px] left-0 w-full h-[44px] pointer-events-none"
+                      preserveAspectRatio="none"
+                    >
+                      <path 
+                        d="M0,44 Q160,0 320,44 L320,44 L0,44 Z" 
+                        fill={globalBgColor && !globalBgColor.startsWith("linear-gradient") ? globalBgColor : "#ffffff"}
+                      />
+                    </svg>
+                  )}
+                </div>
+                
+                {/* Avatar overlapping banner - OUTSIDE overflow-hidden */}
+                <div className={cn(
+                  "absolute left-1/2 transform -translate-x-1/2 z-10",
+                  hasCurvedBanner ? "bottom-0 translate-y-1/2" : "-bottom-12"
+                )}>
+                  <Avatar className={cn("w-24 h-24 border-4 border-white", template.styles.avatarBorder, hasCurvedBanner && "shadow-lg")}>
+                    <AvatarImage src={profile.avatar_url || undefined} />
+                    <AvatarFallback className={cn(template.styles.cardBg, template.styles.textColor)}>
+                      {(profile.display_name || profile.username)?.charAt(0) || "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
               </div>
-              
-              {/* Avatar overlapping banner - OUTSIDE overflow-hidden */}
-              <div className={cn(
-                "absolute left-1/2 transform -translate-x-1/2 z-10",
-                hasCurvedBanner ? "bottom-0 translate-y-1/2" : "-bottom-12"
-              )}>
-                <Avatar className={cn("w-24 h-24 border-4 border-white", template.styles.avatarBorder, hasCurvedBanner && "shadow-lg")}>
-                  <AvatarImage src={profile.avatar_url || undefined} />
-                  <AvatarFallback className={cn(template.styles.cardBg, template.styles.textColor)}>
-                    {(profile.display_name || profile.username)?.charAt(0) || "?"}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-            </div>
 
-            {/* Content - Spacer for avatar (no background) */}
-            <div className="pt-16">
-              {/* Inner content container with background */}
-              <div 
-                className={cn("pb-12 px-4", !hasCustomBackground && template.styles.contentBg)}
-              >
-              {/* Profile Info */}
-              <div className="text-center mb-8 animate-fade-in">
-                <p 
-                  className={cn(
-                    "text-sm mb-1 opacity-70",
-                    !(profile as any).title_color && template.styles.textColor
-                  )}
-                  style={{ 
-                    fontFamily: (profile as any).title_font || "Inter",
-                    color: (profile as any).title_color || undefined
-                  }}
+              {/* Content - Spacer for avatar (no background) */}
+              <div className="pt-16">
+                {/* Inner content container with background */}
+                <div 
+                  className={cn("pb-12 px-4", !hasCustomBackground && template.styles.contentBg)}
                 >
-                  @{profile.username}
-                </p>
-                <h1 
-                  className={cn(
-                    "font-bold mb-2", 
-                    (profile as any).title_size === "small" ? "text-xl" : "text-2xl",
-                    !(profile as any).title_color && template.styles.textColor
-                  )}
-                  style={{
-                    fontFamily: (profile as any).title_font || "Inter",
-                    color: (profile as any).title_color || undefined
-                  }}
-                >
-                  {profile.display_name || profile.username}
-                </h1>
-                {profile.bio && (
+                {/* Profile Info */}
+                <div className="text-center mb-8 animate-fade-in">
                   <p 
                     className={cn(
-                      "text-sm max-w-xs mx-auto opacity-80",
+                      "text-sm mb-1 opacity-70",
                       !(profile as any).title_color && template.styles.textColor
                     )}
                     style={{ 
@@ -243,143 +218,162 @@ const BioPage = () => {
                       color: (profile as any).title_color || undefined
                     }}
                   >
-                    {profile.bio}
+                    @{profile.username}
                   </p>
-                )}
-              </div>
-
-              {/* Links */}
-              <div className="space-y-4">
-                {buttons.length === 0 && socials.length === 0 ? (
-                  <div className="text-center py-8 animate-fade-in">
-                    <p className="text-muted-foreground">
-                      Nenhum link disponível ainda.
-                    </p>
-                  </div>
-                ) : (
-                  buttons.map((link, index) => (
-                    <LinkCard
-                      key={link.id}
-                      title={link.title}
-                      url={link.url}
-                      icon={link.icon || undefined}
-                      thumbnailUrl={(link as any).thumbnail_url}
-                      delay={index * 100}
-                      buttonBgColor={profile?.global_button_bg_color || template.styles.primaryColor}
-                      buttonTextColor={profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)}
-                      buttonBorderRadius={profile?.global_button_border_radius || undefined}
-                      buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
-                      fontFamily={(profile as any)?.title_font || "Inter"}
-                    />
-                  ))
-                )}
-              </div>
-
-              {/* Social Icons */}
-              {socials.length > 0 && (
-                <div className="flex justify-center gap-4 flex-wrap mt-6 animate-fade-in">
-                  {socials.map((social) => (
-                    <a
-                      key={social.id}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                  <h1 
+                    className={cn(
+                      "font-bold mb-2", 
+                      (profile as any).title_size === "small" ? "text-xl" : "text-2xl",
+                      !(profile as any).title_color && template.styles.textColor
+                    )}
+                    style={{
+                      fontFamily: (profile as any).title_font || "Inter",
+                      color: (profile as any).title_color || undefined
+                    }}
+                  >
+                    {profile.display_name || profile.username}
+                  </h1>
+                  {profile.bio && (
+                    <p 
+                      className={cn(
+                        "text-sm max-w-xs mx-auto opacity-80",
+                        !(profile as any).title_color && template.styles.textColor
+                      )}
                       style={{ 
-                        backgroundColor: profile?.global_button_bg_color || template.styles.primaryColor,
-                        color: profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)
+                        fontFamily: (profile as any).title_font || "Inter",
+                        color: (profile as any).title_color || undefined
                       }}
                     >
-                      {renderIcon(social.icon || undefined, "w-5 h-5")}
-                    </a>
-                  ))}
+                      {profile.bio}
+                    </p>
+                  )}
                 </div>
-              )}
 
-              {/* Footer */}
-              <footer className="mt-8 w-full">
-                <div className="bg-black rounded-lg py-3 px-4 flex items-center justify-center gap-2">
-                  <span className="text-white text-sm">Criado por</span>
-                  <img src={biobrLogo} alt="BioBR" className="h-5" />
+                {/* Links */}
+                <div className="space-y-4">
+                  {buttons.length === 0 && socials.length === 0 ? (
+                    <div className="text-center py-8 animate-fade-in">
+                      <p className="text-muted-foreground">
+                        Nenhum link disponível ainda.
+                      </p>
+                    </div>
+                  ) : (
+                    buttons.map((link, index) => (
+                      <LinkCard
+                        key={link.id}
+                        title={link.title}
+                        url={link.url}
+                        icon={link.icon || undefined}
+                        thumbnailUrl={(link as any).thumbnail_url}
+                        delay={index * 100}
+                        buttonBgColor={profile?.global_button_bg_color || template.styles.primaryColor}
+                        buttonTextColor={profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)}
+                        buttonBorderRadius={profile?.global_button_border_radius || undefined}
+                        buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
+                        fontFamily={(profile as any)?.title_font || "Inter"}
+                      />
+                    ))
+                  )}
                 </div>
-              </footer>
+
+                {/* Social Icons */}
+                {socials.length > 0 && (
+                  <div className="flex justify-center gap-4 flex-wrap mt-6 animate-fade-in">
+                    {socials.map((social) => (
+                      <a
+                        key={social.id}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                        style={{ 
+                          backgroundColor: profile?.global_button_bg_color || template.styles.primaryColor,
+                          color: profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)
+                        }}
+                      >
+                        {renderIcon(social.icon || undefined, "w-5 h-5")}
+                      </a>
+                    ))}
+                  </div>
+                )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : (
-        // Standard Layout
-        <div className="container mx-auto px-4 py-12 max-w-md">
-          {/* Profile Header */}
-          {profile && (
-            <ProfileHeader
-              displayName={profile.display_name || profile.username}
-              username={profile.username}
-              bio={profile.bio || undefined}
-              avatarUrl={profile.avatar_url || undefined}
-              titleFont={(profile as any).title_font || "Inter"}
-              titleColor={(profile as any).title_color}
-              titleSize={(profile as any).title_size || "large"}
-            />
-          )}
+        ) : (
+          // Standard Layout
+          <div className="container mx-auto px-4 py-12 max-w-md">
+            {/* Profile Header */}
+            {profile && (
+              <ProfileHeader
+                displayName={profile.display_name || profile.username}
+                username={profile.username}
+                bio={profile.bio || undefined}
+                avatarUrl={profile.avatar_url || undefined}
+                titleFont={(profile as any).title_font || "Inter"}
+                titleColor={(profile as any).title_color}
+                titleSize={(profile as any).title_size || "large"}
+              />
+            )}
 
-          {/* Links */}
-          <div className="mt-8 space-y-4">
-            {buttons.length === 0 && socials.length === 0 ? (
-              <div className="text-center py-8 animate-fade-in">
-                <p className="text-muted-foreground">
-                  Nenhum link disponível ainda.
-                </p>
+            {/* Links */}
+            <div className="mt-8 space-y-4">
+              {buttons.length === 0 && socials.length === 0 ? (
+                <div className="text-center py-8 animate-fade-in">
+                  <p className="text-muted-foreground">
+                    Nenhum link disponível ainda.
+                  </p>
+                </div>
+              ) : (
+                buttons.map((link, index) => (
+                  <LinkCard
+                    key={link.id}
+                    title={link.title}
+                    url={link.url}
+                    icon={link.icon || undefined}
+                    thumbnailUrl={(link as any).thumbnail_url}
+                    delay={index * 100}
+                    buttonBgColor={profile?.global_button_bg_color || template.styles.primaryColor}
+                    buttonTextColor={profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)}
+                    buttonBorderRadius={profile?.global_button_border_radius || undefined}
+                    buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
+                    fontFamily={(profile as any)?.title_font || "Inter"}
+                  />
+                ))
+              )}
+            </div>
+
+            {/* Social Icons */}
+            {socials.length > 0 && (
+              <div className="flex justify-center gap-4 flex-wrap mt-6 animate-fade-in">
+                {socials.map((social) => (
+                  <a
+                    key={social.id}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                    style={{ 
+                      backgroundColor: profile?.global_button_bg_color || template.styles.primaryColor,
+                      color: profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)
+                    }}
+                  >
+                    {renderIcon(social.icon || undefined, "w-5 h-5")}
+                  </a>
+                ))}
               </div>
-            ) : (
-              buttons.map((link, index) => (
-                <LinkCard
-                  key={link.id}
-                  title={link.title}
-                  url={link.url}
-                  icon={link.icon || undefined}
-                  thumbnailUrl={(link as any).thumbnail_url}
-                  delay={index * 100}
-                  buttonBgColor={profile?.global_button_bg_color || template.styles.primaryColor}
-                  buttonTextColor={profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)}
-                  buttonBorderRadius={profile?.global_button_border_radius || undefined}
-                  buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
-                  fontFamily={(profile as any)?.title_font || "Inter"}
-                />
-              ))
             )}
           </div>
+        )}
+      </div>
 
-          {/* Social Icons */}
-          {socials.length > 0 && (
-            <div className="flex justify-center gap-4 flex-wrap mt-6 animate-fade-in">
-              {socials.map((social) => (
-                <a
-                  key={social.id}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
-                  style={{ 
-                    backgroundColor: profile?.global_button_bg_color || template.styles.primaryColor,
-                    color: profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)
-                  }}
-                >
-                  {renderIcon(social.icon || undefined, "w-5 h-5")}
-                </a>
-              ))}
-            </div>
-          )}
-
-          {/* Footer */}
-          <footer className="mt-8 w-full">
-            <div className="bg-black rounded-lg py-3 px-4 flex items-center justify-center gap-2">
-              <span className="text-white text-sm">Criado por</span>
-              <img src={biobrLogo} alt="BioBR" className="h-5" />
-            </div>
-          </footer>
+      {/* Fixed Footer - Full Width */}
+      <footer className="w-full bg-black py-4">
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-white text-sm">Criado por</span>
+          <img src={biobrLogo} alt="BioBR" className="h-5" />
         </div>
-      )}
+      </footer>
     </div>
   );
 };
