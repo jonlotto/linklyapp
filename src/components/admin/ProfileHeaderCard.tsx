@@ -1,8 +1,8 @@
-import { ComponentType, SVGProps, useState } from "react";
+import { ComponentType, SVGProps, useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EditorProfile, EditorLink } from "@/hooks/useEditorState";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-import { X, Copy, Check } from "lucide-react";
+import { X, Copy, Check, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
 interface SocialPlatform {
@@ -20,7 +20,7 @@ interface ProfileHeaderCardProps {
   platforms: SocialPlatform[];
   onSelectPlatform: (platform: SocialPlatform, existingSocial?: EditorLink) => void;
   onDeleteSocial: (linkId: string) => void;
-  onEditProfile: () => void;
+  onUpdateUsername: (username: string) => void;
 }
 
 export function ProfileHeaderCard({ 
@@ -29,9 +29,25 @@ export function ProfileHeaderCard({
   platforms, 
   onSelectPlatform, 
   onDeleteSocial,
-  onEditProfile 
+  onUpdateUsername 
 }: ProfileHeaderCardProps) {
   const [copied, setCopied] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(profile.username || "");
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Sync editValue when profile.username changes
+  useEffect(() => {
+    setEditValue(profile.username || "");
+  }, [profile.username]);
+
+  // Focus input when editing starts
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
   
   // Create a map of platform id -> existing social link
   const existingSocialsMap = new Map<string, EditorLink>();
@@ -55,13 +71,30 @@ export function ProfileHeaderCard({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleSaveUsername = () => {
+    const trimmedValue = editValue.trim();
+    if (trimmedValue && trimmedValue !== profile.username) {
+      onUpdateUsername(trimmedValue);
+      toast.success("Username atualizado!");
+    } else {
+      setEditValue(profile.username || "");
+    }
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveUsername();
+    } else if (e.key === 'Escape') {
+      setEditValue(profile.username || "");
+      setIsEditing(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center py-8 px-4 bg-card rounded-2xl border border-border mb-6">
       {/* Avatar */}
-      <div 
-        className="cursor-pointer hover:opacity-80 transition-opacity mb-4"
-        onClick={onEditProfile}
-      >
+      <div className="mb-4">
         <Avatar className="w-24 h-24 border-4 border-background shadow-lg">
           <AvatarImage src={profile.avatarUrl || undefined} />
           <AvatarFallback className="text-2xl font-bold bg-primary text-primary-foreground">
@@ -70,33 +103,58 @@ export function ProfileHeaderCard({
         </Avatar>
       </div>
 
-      {/* Username */}
-      <p 
-        className="text-muted-foreground text-sm cursor-pointer hover:text-foreground transition-colors"
-        onClick={onEditProfile}
-      >
+      {/* Username Display */}
+      <p className="text-muted-foreground text-sm">
         @{profile.username || "usuario"}
       </p>
 
-      {/* Bio Link */}
-      {profile.username && (
-        <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-muted/50 rounded-full">
-          <span className="text-sm font-medium text-foreground truncate">
-            biobr.site/{profile.username}
-          </span>
-          <button
-            onClick={handleCopyLink}
-            className="p-1.5 rounded-full hover:bg-muted transition-colors"
-            title="Copiar link"
+      {/* Bio Link - Editable */}
+      <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-muted/50 rounded-full">
+        <span className="text-sm text-muted-foreground">biobr.site/</span>
+        
+        {isEditing ? (
+          <input
+            ref={inputRef}
+            type="text"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+            onBlur={handleSaveUsername}
+            onKeyDown={handleKeyDown}
+            className="bg-transparent border-none outline-none text-sm font-medium text-foreground w-28 focus:ring-0"
+            maxLength={30}
+          />
+        ) : (
+          <span 
+            className="text-sm font-medium text-foreground cursor-pointer hover:underline"
+            onClick={() => setIsEditing(true)}
           >
-            {copied ? (
-              <Check className="h-4 w-4 text-green-500" />
-            ) : (
-              <Copy className="h-4 w-4 text-muted-foreground" />
-            )}
-          </button>
-        </div>
-      )}
+            {profile.username || "usuario"}
+          </span>
+        )}
+        
+        {!isEditing && (
+          <>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="p-1.5 rounded-full hover:bg-muted transition-colors"
+              title="Editar username"
+            >
+              <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+            <button
+              onClick={handleCopyLink}
+              className="p-1.5 rounded-full hover:bg-muted transition-colors"
+              title="Copiar link"
+            >
+              {copied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Copy className="h-4 w-4 text-muted-foreground" />
+              )}
+            </button>
+          </>
+        )}
+      </div>
 
       {/* Social Platform Icons Row */}
       <TooltipProvider delayDuration={100}>
