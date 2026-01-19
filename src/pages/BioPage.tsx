@@ -198,7 +198,6 @@ const BioPage = () => {
             {/* Content */}
             <div 
               className={cn("pt-16 pb-12 px-4", !hasCustomBackground && template.styles.contentBg)}
-              style={hasCustomBackground ? backgroundStyle : undefined}
             >
               {/* Profile Info */}
               <div className="text-center mb-8 animate-fade-in">
