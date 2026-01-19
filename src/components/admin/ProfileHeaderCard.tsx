@@ -1,8 +1,9 @@
-import { ComponentType, SVGProps } from "react";
+import { ComponentType, SVGProps, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EditorProfile, EditorLink } from "@/hooks/useEditorState";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-import { X } from "lucide-react";
+import { X, Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 interface SocialPlatform {
   id: string;
@@ -30,6 +31,8 @@ export function ProfileHeaderCard({
   onDeleteSocial,
   onEditProfile 
 }: ProfileHeaderCardProps) {
+  const [copied, setCopied] = useState(false);
+  
   // Create a map of platform id -> existing social link
   const existingSocialsMap = new Map<string, EditorLink>();
   socials.forEach(s => {
@@ -42,6 +45,15 @@ export function ProfileHeaderCard({
       existingSocialsMap.set(platform.id, s);
     }
   });
+
+  const handleCopyLink = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const link = `https://biobr.site/${profile.username}`;
+    navigator.clipboard.writeText(link);
+    setCopied(true);
+    toast.success("Link copiado!");
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="flex flex-col items-center py-8 px-4 bg-card rounded-2xl border border-border mb-6">
@@ -65,6 +77,26 @@ export function ProfileHeaderCard({
       >
         @{profile.username || "usuario"}
       </p>
+
+      {/* Bio Link */}
+      {profile.username && (
+        <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-muted/50 rounded-full">
+          <span className="text-sm font-medium text-foreground truncate">
+            biobr.site/{profile.username}
+          </span>
+          <button
+            onClick={handleCopyLink}
+            className="p-1.5 rounded-full hover:bg-muted transition-colors"
+            title="Copiar link"
+          >
+            {copied ? (
+              <Check className="h-4 w-4 text-green-500" />
+            ) : (
+              <Copy className="h-4 w-4 text-muted-foreground" />
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Social Platform Icons Row */}
       <TooltipProvider delayDuration={100}>
