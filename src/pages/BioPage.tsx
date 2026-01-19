@@ -368,10 +368,15 @@ const BioPage = () => {
       </div>
 
       {/* Fixed Footer - Full Width */}
-      <footer className="w-full bg-black py-4">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-white text-sm">Criado por</span>
-          <img src={biobrLogo} alt="BioBR" className="h-5" />
+      <footer className="w-full bg-black py-6">
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-white text-sm">Criado por</span>
+            <img src={biobrLogo} alt="BioBR" className="h-5" />
+          </div>
+          <span className="text-white/60 text-xs">
+            © BioBR 2026 - Todos os direitos reservados
+          </span>
         </div>
       </footer>
     </div>
