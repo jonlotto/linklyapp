@@ -148,7 +148,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 {/* Banner Container - extended height for curved banners */}
                 <div
                   className={cn(
-                    "w-full cursor-pointer relative",
+                    "w-full cursor-pointer relative overflow-hidden",
                     hasCurvedBanner ? "aspect-[8/5]" : "aspect-[8/5]"
                   )}
                   onClick={() => onClickElement?.("banner")}
@@ -166,16 +166,16 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                     </div>
                   )}
                   
-                  {/* Curved wave overlay - white cutout at bottom */}
+                  {/* Curved wave overlay - solid cutout at bottom to prevent banner bleed */}
                   {hasCurvedBanner && (
                     <svg 
-                      viewBox="0 0 320 40" 
-                      className="absolute bottom-0 left-0 w-full h-[40px]"
+                      viewBox="0 0 320 44" 
+                      className="absolute bottom-[-1px] left-0 w-full h-[44px] pointer-events-none"
                       preserveAspectRatio="none"
                     >
                       <path 
-                        d="M0,40 Q160,0 320,40 L320,40 L0,40 Z" 
-                        fill={hasCustomBackground ? "transparent" : "#ffffff"}
+                        d="M0,44 Q160,0 320,44 L320,44 L0,44 Z" 
+                        fill="#ffffff"
                       />
                     </svg>
                   )}
