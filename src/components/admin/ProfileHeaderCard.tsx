@@ -41,11 +41,15 @@ export function ProfileHeaderCard({
   const usernameInputRef = useRef<HTMLInputElement>(null);
   const handleInputRef = useRef<HTMLInputElement>(null);
   
-  // Sync values when profile changes
+  // Sync values when profile changes - only when NOT editing
   useEffect(() => {
-    setUsernameValue(profile.username || "");
-    setHandleValue(profile.handle || profile.username || "");
-  }, [profile.username, profile.handle]);
+    if (!isEditingUsername) {
+      setUsernameValue(profile.username || "");
+    }
+    if (!isEditingHandle) {
+      setHandleValue(profile.handle || profile.username || "");
+    }
+  }, [profile.username, profile.handle, isEditingUsername, isEditingHandle]);
 
   // Focus inputs when editing starts
   useEffect(() => {
