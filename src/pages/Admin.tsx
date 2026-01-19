@@ -187,6 +187,7 @@ const Admin = () => {
               deleteLink(linkId);
             }}
             onUpdateUsername={(newUsername) => updateProfile({ username: newUsername })}
+            onUpdateHandle={(newHandle) => updateProfile({ handle: newHandle })}
           />
 
           {/* Add Link Button */}

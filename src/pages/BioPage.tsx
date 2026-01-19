@@ -242,7 +242,7 @@ const BioPage = () => {
                       color: (profile as any).title_color || undefined
                     }}
                   >
-                    @{profile.username}
+                    @{(profile as any).handle || profile.username}
                   </p>
                   <h1 
                     className={cn(
@@ -332,6 +332,7 @@ const BioPage = () => {
               <ProfileHeader
                 displayName={profile.display_name || profile.username}
                 username={profile.username}
+                handle={(profile as any).handle}
                 bio={profile.bio || undefined}
                 avatarUrl={profile.avatar_url || undefined}
                 titleFont={(profile as any).title_font || "Inter"}
