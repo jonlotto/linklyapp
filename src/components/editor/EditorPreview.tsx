@@ -202,10 +202,12 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 </div>
               </div>
 
-              {/* Content below banner */}
-              <div 
-                className={cn("pt-16 pb-6 px-6", !hasCustomBackground && template.styles.contentBg)}
-              >
+              {/* Content below banner - Spacer for avatar (no background) */}
+              <div className="pt-16">
+                {/* Inner content container with background */}
+                <div 
+                  className={cn("pb-6 px-6", !hasCustomBackground && template.styles.contentBg)}
+                >
               {/* Username */}
               <p
                 className={cn(
@@ -333,6 +335,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                     })}
                   </div>
                 )}
+                </div>
               </div>
             </>
           ) : (
