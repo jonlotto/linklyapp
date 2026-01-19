@@ -244,7 +244,7 @@ export default function AdminLayout() {
               onDeleteSocial={(linkId) => {
                 deleteLink(linkId);
               }}
-              onEditProfile={() => navigate("/editor")}
+              onUpdateUsername={(newUsername) => updateProfile({ username: newUsername })}
             />
 
             {/* Add Link Button */}
