@@ -91,25 +91,6 @@ export function TextSection({ profile, onUpdate }: TextSectionProps) {
         />
       </div>
 
-      {/* Username */}
-      <div className="space-y-2">
-        <Label htmlFor="username">Nome de usuário</Label>
-        <div className="flex items-center">
-          <span className="px-3 py-2 bg-muted rounded-l-lg border border-r-0 border-border text-muted-foreground text-sm">
-            biobr.site/
-          </span>
-          <Input
-            id="username"
-            value={profile.username}
-            onChange={(e) => onUpdate({ username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "") })}
-            placeholder="usuario"
-            className="rounded-l-none"
-          />
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Apenas letras minúsculas, números, hífen e underscore
-        </p>
-      </div>
 
       {/* Bio */}
       <div className="space-y-2">
