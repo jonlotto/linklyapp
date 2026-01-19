@@ -63,11 +63,10 @@ const BioPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center">
-        <div className="animate-pulse text-center">
-          <div className="h-24 w-24 rounded-full bg-card/50 mx-auto mb-4" />
-          <div className="h-6 w-32 bg-card/50 rounded-lg mx-auto mb-2" />
-          <div className="h-4 w-24 bg-card/50 rounded-lg mx-auto" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+          <span className="text-gray-400 text-sm">Carregando...</span>
         </div>
       </div>
     );
