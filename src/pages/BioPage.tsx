@@ -195,10 +195,12 @@ const BioPage = () => {
               </div>
             </div>
 
-            {/* Content */}
-            <div 
-              className={cn("pt-16 pb-12 px-4", !hasCustomBackground && template.styles.contentBg)}
-            >
+            {/* Content - Spacer for avatar (no background) */}
+            <div className="pt-16">
+              {/* Inner content container with background */}
+              <div 
+                className={cn("pb-12 px-4", !hasCustomBackground && template.styles.contentBg)}
+              >
               {/* Profile Info */}
               <div className="text-center mb-8 animate-fade-in">
                 <p 
@@ -300,6 +302,7 @@ const BioPage = () => {
                   Crie seu Link na Bio
                 </button>
               </footer>
+              </div>
             </div>
           </div>
         </div>
