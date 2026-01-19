@@ -261,7 +261,7 @@ const BioPage = () => {
                       thumbnailUrl={(link as any).thumbnail_url}
                       delay={index * 100}
                       buttonBgColor={profile?.global_button_bg_color || template.styles.primaryColor}
-                      buttonTextColor={profile?.global_button_text_color || template.styles.buttonText?.includes("white") ? "#ffffff" : undefined}
+                      buttonTextColor={profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)}
                       buttonBorderRadius={profile?.global_button_border_radius || undefined}
                       buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
                       fontFamily={(profile as any)?.title_font || "Inter"}
@@ -338,7 +338,7 @@ const BioPage = () => {
                   thumbnailUrl={(link as any).thumbnail_url}
                   delay={index * 100}
                   buttonBgColor={profile?.global_button_bg_color || template.styles.primaryColor}
-                  buttonTextColor={profile?.global_button_text_color || template.styles.buttonText?.includes("white") ? "#ffffff" : undefined}
+                  buttonTextColor={profile?.global_button_text_color || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined)}
                   buttonBorderRadius={profile?.global_button_border_radius || undefined}
                   buttonStyle={profile?.global_button_style as "filled" | "outline" || "filled"}
                   fontFamily={(profile as any)?.title_font || "Inter"}
