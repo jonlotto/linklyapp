@@ -169,7 +169,7 @@ const BioPage = () => {
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
                 )}
                 
-                {/* Curved wave overlay - solid cutout at bottom to prevent banner bleed */}
+                {/* Curved wave overlay - dynamic fill to match background */}
                 {hasCurvedBanner && (
                   <svg 
                     viewBox="0 0 320 44" 
@@ -178,7 +178,7 @@ const BioPage = () => {
                   >
                     <path 
                       d="M0,44 Q160,0 320,44 L320,44 L0,44 Z" 
-                      fill="#ffffff"
+                      fill={globalBgColor && !globalBgColor.startsWith("linear-gradient") ? globalBgColor : "#ffffff"}
                     />
                   </svg>
                 )}
