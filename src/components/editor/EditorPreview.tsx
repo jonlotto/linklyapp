@@ -220,7 +220,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 }}
                 onClick={() => onClickElement?.("username")}
               >
-                @{profile.username || "usuario"}
+                @{profile.handle || profile.username || "usuario"}
               </p>
 
                 {/* Display Name */}
@@ -370,7 +370,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 }}
                 onClick={() => onClickElement?.("username")}
               >
-                @{profile.username || "usuario"}
+                @{profile.handle || profile.username || "usuario"}
               </p>
 
               {/* Display Name */}
