@@ -13,12 +13,22 @@ import type { Tables } from "@/integrations/supabase/types";
 type Profile = Tables<"profiles">;
 type LinkType = Tables<"links">;
 
+const preloadImage = (src: string): Promise<void> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve(); // Don't block on error
+    img.src = src;
+  });
+};
+
 const BioPage = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [links, setLinks] = useState<LinkType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
@@ -53,6 +63,21 @@ const BioPage = () => {
         .order("position", { ascending: true });
 
       setLinks(linksData || []);
+
+      // Preload background image if exists
+      const bgImage = (profileData as any).global_background_image;
+      const templateData = templates.find(t => t.slug === profileData.template_slug) || templates[0];
+      const templateBgImage = templateData.styles.backgroundType === "image" 
+        ? templateData.styles.backgroundImage 
+        : null;
+      
+      const imageToPreload = bgImage || templateBgImage;
+      
+      if (imageToPreload) {
+        setImageLoading(true);
+        await preloadImage(imageToPreload);
+        setImageLoading(false);
+      }
     } catch (error) {
       console.error("Error fetching profile:", error);
       setNotFound(true);
@@ -61,7 +86,7 @@ const BioPage = () => {
     }
   };
 
-  if (loading) {
+  if (loading || imageLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
