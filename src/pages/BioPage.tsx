@@ -88,10 +88,10 @@ const BioPage = () => {
 
   if (loading || imageLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-          <span className="text-gray-400 text-sm">Carregando...</span>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="relative flex items-center justify-center">
+          <div className="absolute w-8 h-8 bg-primary/30 rounded-full animate-ping" />
+          <div className="w-6 h-6 bg-primary rounded-full" />
         </div>
       </div>
     );
