@@ -151,37 +151,40 @@ const BioPage = () => {
         // Banner Layout - centered container for consistent look
         <div className="min-h-screen flex flex-col items-center">
           <div className="w-full max-w-md">
-            {/* Banner Container - unified 8:5 aspect ratio */}
-            <div className={cn(
-              "relative w-full overflow-hidden",
-              hasCurvedBanner ? "aspect-[8/5]" : "aspect-[8/5]"
-            )}>
-              {/* Banner Image - fills entire container */}
-              {profile.banner_url ? (
-                <img
-                  src={profile.banner_url}
-                  alt="Banner"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              ) : (
-                <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
-              )}
-              
-              {/* Curved wave overlay - solid cutout at bottom to prevent banner bleed */}
-              {hasCurvedBanner && (
-                <svg 
-                  viewBox="0 0 320 44" 
-                  className="absolute bottom-[-1px] left-0 w-full h-[44px] pointer-events-none"
-                  preserveAspectRatio="none"
-                >
-                  <path 
-                    d="M0,44 Q160,0 320,44 L320,44 L0,44 Z" 
-                    fill="#ffffff"
+            {/* Banner Container with wrapper for avatar positioning */}
+            <div className="relative w-full">
+              {/* Inner container with overflow-hidden for banner only */}
+              <div className={cn(
+                "relative w-full overflow-hidden",
+                hasCurvedBanner ? "aspect-[8/5]" : "aspect-[8/5]"
+              )}>
+                {/* Banner Image - fills entire container */}
+                {profile.banner_url ? (
+                  <img
+                    src={profile.banner_url}
+                    alt="Banner"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
-                </svg>
-              )}
+                ) : (
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
+                )}
+                
+                {/* Curved wave overlay - solid cutout at bottom to prevent banner bleed */}
+                {hasCurvedBanner && (
+                  <svg 
+                    viewBox="0 0 320 44" 
+                    className="absolute bottom-[-1px] left-0 w-full h-[44px] pointer-events-none"
+                    preserveAspectRatio="none"
+                  >
+                    <path 
+                      d="M0,44 Q160,0 320,44 L320,44 L0,44 Z" 
+                      fill="#ffffff"
+                    />
+                  </svg>
+                )}
+              </div>
               
-              {/* Avatar overlapping banner */}
+              {/* Avatar overlapping banner - OUTSIDE overflow-hidden */}
               <div className={cn(
                 "absolute left-1/2 transform -translate-x-1/2 z-10",
                 hasCurvedBanner ? "bottom-0 translate-y-1/2" : "-bottom-12"
