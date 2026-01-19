@@ -26,6 +26,7 @@ export interface EditorProfile {
   bannerOriginalUrl: string | null;
   bannerCropOffsetY: number;
   username: string;
+  handle: string;
   displayName: string;
   bio: string;
   // Global customization
@@ -66,6 +67,7 @@ export function useEditorState(initialTemplateSlug?: string) {
       bannerOriginalUrl: null,
       bannerCropOffsetY: 0,
       username: "",
+      handle: "",
       displayName: "",
       bio: "",
       globalButtonBgColor: null,
@@ -131,6 +133,7 @@ export function useEditorState(initialTemplateSlug?: string) {
             bannerOriginalUrl: profile?.banner_original_url || null,
             bannerCropOffsetY: Number(profile?.banner_crop_offset_y) || 0,
             username: profile?.username || "",
+            handle: (profile as any)?.handle || profile?.username || "",
             displayName: profile?.display_name || "",
             bio: profile?.bio || "",
             globalButtonBgColor: profile?.global_button_bg_color || null,
@@ -193,6 +196,7 @@ export function useEditorState(initialTemplateSlug?: string) {
           banner_original_url: currentState.profile.bannerOriginalUrl,
           banner_crop_offset_y: currentState.profile.bannerCropOffsetY,
           username: currentState.profile.username,
+          handle: currentState.profile.handle,
           display_name: currentState.profile.displayName,
           bio: currentState.profile.bio,
           global_button_bg_color: currentState.profile.globalButtonBgColor,

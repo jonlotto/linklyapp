@@ -83,6 +83,7 @@ export type Database = {
           global_button_border_radius: string | null
           global_button_style: string | null
           global_button_text_color: string | null
+          handle: string | null
           id: string
           template_slug: string | null
           title_color: string | null
@@ -106,6 +107,7 @@ export type Database = {
           global_button_border_radius?: string | null
           global_button_style?: string | null
           global_button_text_color?: string | null
+          handle?: string | null
           id?: string
           template_slug?: string | null
           title_color?: string | null
@@ -129,6 +131,7 @@ export type Database = {
           global_button_border_radius?: string | null
           global_button_style?: string | null
           global_button_text_color?: string | null
+          handle?: string | null
           id?: string
           template_slug?: string | null
           title_color?: string | null

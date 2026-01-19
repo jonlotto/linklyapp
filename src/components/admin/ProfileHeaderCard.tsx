@@ -21,6 +21,7 @@ interface ProfileHeaderCardProps {
   onSelectPlatform: (platform: SocialPlatform, existingSocial?: EditorLink) => void;
   onDeleteSocial: (linkId: string) => void;
   onUpdateUsername: (username: string) => void;
+  onUpdateHandle?: (handle: string) => void;
 }
 
 export function ProfileHeaderCard({ 
@@ -29,25 +30,37 @@ export function ProfileHeaderCard({
   platforms, 
   onSelectPlatform, 
   onDeleteSocial,
-  onUpdateUsername 
+  onUpdateUsername,
+  onUpdateHandle
 }: ProfileHeaderCardProps) {
   const [copied, setCopied] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(profile.username || "");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [isEditingHandle, setIsEditingHandle] = useState(false);
+  const [usernameValue, setUsernameValue] = useState(profile.username || "");
+  const [handleValue, setHandleValue] = useState((profile as any).handle || profile.username || "");
+  const usernameInputRef = useRef<HTMLInputElement>(null);
+  const handleInputRef = useRef<HTMLInputElement>(null);
   
-  // Sync editValue when profile.username changes
+  // Sync values when profile changes
   useEffect(() => {
-    setEditValue(profile.username || "");
-  }, [profile.username]);
+    setUsernameValue(profile.username || "");
+    setHandleValue((profile as any).handle || profile.username || "");
+  }, [profile.username, (profile as any).handle]);
 
-  // Focus input when editing starts
+  // Focus inputs when editing starts
   useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
+    if (isEditingUsername && usernameInputRef.current) {
+      usernameInputRef.current.focus();
+      usernameInputRef.current.select();
     }
-  }, [isEditing]);
+  }, [isEditingUsername]);
+
+  useEffect(() => {
+    if (isEditingHandle && handleInputRef.current) {
+      handleInputRef.current.focus();
+      handleInputRef.current.select();
+    }
+  }, [isEditingHandle]);
   
   // Create a map of platform id -> existing social link
   const existingSocialsMap = new Map<string, EditorLink>();
@@ -72,22 +85,43 @@ export function ProfileHeaderCard({
   };
 
   const handleSaveUsername = () => {
-    const trimmedValue = editValue.trim();
+    const trimmedValue = usernameValue.trim();
     if (trimmedValue && trimmedValue !== profile.username) {
       onUpdateUsername(trimmedValue);
       toast.success("Username atualizado!");
     } else {
-      setEditValue(profile.username || "");
+      setUsernameValue(profile.username || "");
     }
-    setIsEditing(false);
+    setIsEditingUsername(false);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleSaveHandle = () => {
+    const trimmedValue = handleValue.trim();
+    const currentHandle = (profile as any).handle || profile.username;
+    if (trimmedValue && trimmedValue !== currentHandle) {
+      onUpdateHandle?.(trimmedValue);
+      toast.success("@ atualizado!");
+    } else {
+      setHandleValue(currentHandle || "");
+    }
+    setIsEditingHandle(false);
+  };
+
+  const handleUsernameKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSaveUsername();
     } else if (e.key === 'Escape') {
-      setEditValue(profile.username || "");
-      setIsEditing(false);
+      setUsernameValue(profile.username || "");
+      setIsEditingUsername(false);
+    }
+  };
+
+  const handleHandleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveHandle();
+    } else if (e.key === 'Escape') {
+      setHandleValue((profile as any).handle || profile.username || "");
+      setIsEditingHandle(false);
     }
   };
 
@@ -103,39 +137,67 @@ export function ProfileHeaderCard({
         </Avatar>
       </div>
 
-      {/* Username Display */}
-      <p className="text-muted-foreground text-sm">
-        @{profile.username || "usuario"}
-      </p>
+      {/* Handle Display - Editable */}
+      <div className="flex items-center gap-1">
+        <span className="text-muted-foreground text-sm">@</span>
+        {isEditingHandle ? (
+          <input
+            ref={handleInputRef}
+            type="text"
+            value={handleValue}
+            onChange={(e) => setHandleValue(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+            onBlur={handleSaveHandle}
+            onKeyDown={handleHandleKeyDown}
+            className="bg-transparent border-none outline-none text-sm text-muted-foreground w-24 focus:ring-0"
+            maxLength={30}
+          />
+        ) : (
+          <span 
+            className="text-muted-foreground text-sm cursor-pointer hover:underline"
+            onClick={() => setIsEditingHandle(true)}
+          >
+            {(profile as any).handle || profile.username || "usuario"}
+          </span>
+        )}
+        {!isEditingHandle && (
+          <button
+            onClick={() => setIsEditingHandle(true)}
+            className="p-1 rounded-full hover:bg-muted transition-colors"
+            title="Editar @"
+          >
+            <Pencil className="h-3 w-3 text-muted-foreground" />
+          </button>
+        )}
+      </div>
 
       {/* Bio Link - Editable */}
       <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-muted/50 rounded-full">
         <span className="text-sm text-muted-foreground">biobr.site/</span>
         
-        {isEditing ? (
+        {isEditingUsername ? (
           <input
-            ref={inputRef}
+            ref={usernameInputRef}
             type="text"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+            value={usernameValue}
+            onChange={(e) => setUsernameValue(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
             onBlur={handleSaveUsername}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleUsernameKeyDown}
             className="bg-transparent border-none outline-none text-sm font-medium text-foreground w-28 focus:ring-0"
             maxLength={30}
           />
         ) : (
           <span 
             className="text-sm font-medium text-foreground cursor-pointer hover:underline"
-            onClick={() => setIsEditing(true)}
+            onClick={() => setIsEditingUsername(true)}
           >
             {profile.username || "usuario"}
           </span>
         )}
         
-        {!isEditing && (
+        {!isEditingUsername && (
           <>
             <button
-              onClick={() => setIsEditing(true)}
+              onClick={() => setIsEditingUsername(true)}
               className="p-1.5 rounded-full hover:bg-muted transition-colors"
               title="Editar username"
             >

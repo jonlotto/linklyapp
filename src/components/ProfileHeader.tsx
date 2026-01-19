@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 interface ProfileHeaderProps {
   displayName: string;
   username: string;
+  handle?: string;
   bio?: string;
   avatarUrl?: string;
   titleFont?: string;
@@ -13,7 +14,8 @@ interface ProfileHeaderProps {
 
 const ProfileHeader = ({ 
   displayName, 
-  username, 
+  username,
+  handle, 
   bio, 
   avatarUrl,
   titleFont = "Inter",
@@ -57,7 +59,7 @@ const ProfileHeader = ({
           }}
           className={!titleColor ? "text-muted-foreground" : undefined}
         >
-          @{username}
+          @{handle || username}
         </p>
       </div>
       
