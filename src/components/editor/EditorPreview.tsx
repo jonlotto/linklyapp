@@ -314,20 +314,24 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                 {/* Social Icons */}
                 {socials.length > 0 && (
                   <div className="flex justify-center gap-4 flex-wrap">
-                    {socials.map((social) => (
-                      <button
-                        key={social.id}
-                        className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform cursor-pointer",
-                          template.styles.cardBg,
-                          !profile.titleColor && template.styles.textColor
-                        )}
-                        style={{ color: profile.titleColor || undefined }}
-                        onClick={() => onClickElement?.("link", social.id)}
-                      >
-                        {renderIcon(social.icon, "md") || "🔗"}
-                      </button>
-                    ))}
+                    {socials.map((social) => {
+                      const socialBgColor = profile.globalButtonBgColor || template.styles.primaryColor;
+                      const socialTextColor = profile.globalButtonTextColor || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined);
+                      
+                      return (
+                        <button
+                          key={social.id}
+                          className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform cursor-pointer"
+                          style={{ 
+                            backgroundColor: socialBgColor,
+                            color: socialTextColor
+                          }}
+                          onClick={() => onClickElement?.("link", social.id)}
+                        >
+                          {renderIcon(social.icon, "md") || "🔗"}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -458,20 +462,24 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
 
               {socials.length > 0 && (
                 <div className="flex justify-center gap-4 flex-wrap">
-                  {socials.map((social) => (
-                    <button
-                      key={social.id}
-                      className={cn(
-                        "w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform cursor-pointer",
-                        template.styles.cardBg,
-                        !profile.titleColor && template.styles.textColor
-                      )}
-                      style={{ color: profile.titleColor || undefined }}
-                      onClick={() => onClickElement?.("link", social.id)}
-                    >
-                      {renderIcon(social.icon, "md") || "🔗"}
-                    </button>
-                  ))}
+                  {socials.map((social) => {
+                    const socialBgColor = profile.globalButtonBgColor || template.styles.primaryColor;
+                    const socialTextColor = profile.globalButtonTextColor || (template.styles.buttonText?.includes("white") ? "#ffffff" : undefined);
+                    
+                    return (
+                      <button
+                        key={social.id}
+                        className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform cursor-pointer"
+                        style={{ 
+                          backgroundColor: socialBgColor,
+                          color: socialTextColor
+                        }}
+                        onClick={() => onClickElement?.("link", social.id)}
+                      >
+                        {renderIcon(social.icon, "md") || "🔗"}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
