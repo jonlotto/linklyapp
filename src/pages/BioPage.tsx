@@ -153,7 +153,7 @@ const BioPage = () => {
           <div className="w-full max-w-md">
             {/* Banner Container - unified 8:5 aspect ratio */}
             <div className={cn(
-              "relative w-full",
+              "relative w-full overflow-hidden",
               hasCurvedBanner ? "aspect-[8/5]" : "aspect-[8/5]"
             )}>
               {/* Banner Image - fills entire container */}
@@ -167,16 +167,16 @@ const BioPage = () => {
                 <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/30 to-accent/30" />
               )}
               
-              {/* Curved wave overlay - white cutout at bottom */}
+              {/* Curved wave overlay - solid cutout at bottom to prevent banner bleed */}
               {hasCurvedBanner && (
                 <svg 
-                  viewBox="0 0 320 40" 
-                  className="absolute bottom-0 left-0 w-full h-[40px]"
+                  viewBox="0 0 320 44" 
+                  className="absolute bottom-[-1px] left-0 w-full h-[44px] pointer-events-none"
                   preserveAspectRatio="none"
                 >
                   <path 
-                    d="M0,40 Q160,0 320,40 L320,40 L0,40 Z" 
-                    fill={hasCustomBackground ? "transparent" : "#ffffff"}
+                    d="M0,44 Q160,0 320,44 L320,44 L0,44 Z" 
+                    fill="#ffffff"
                   />
                 </svg>
               )}
