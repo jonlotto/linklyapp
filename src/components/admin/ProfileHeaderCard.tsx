@@ -37,15 +37,15 @@ export function ProfileHeaderCard({
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [isEditingHandle, setIsEditingHandle] = useState(false);
   const [usernameValue, setUsernameValue] = useState(profile.username || "");
-  const [handleValue, setHandleValue] = useState((profile as any).handle || profile.username || "");
+  const [handleValue, setHandleValue] = useState(profile.handle || profile.username || "");
   const usernameInputRef = useRef<HTMLInputElement>(null);
   const handleInputRef = useRef<HTMLInputElement>(null);
   
   // Sync values when profile changes
   useEffect(() => {
     setUsernameValue(profile.username || "");
-    setHandleValue((profile as any).handle || profile.username || "");
-  }, [profile.username, (profile as any).handle]);
+    setHandleValue(profile.handle || profile.username || "");
+  }, [profile.username, profile.handle]);
 
   // Focus inputs when editing starts
   useEffect(() => {
@@ -97,7 +97,7 @@ export function ProfileHeaderCard({
 
   const handleSaveHandle = () => {
     const trimmedValue = handleValue.trim();
-    const currentHandle = (profile as any).handle || profile.username;
+    const currentHandle = profile.handle || profile.username;
     if (trimmedValue && trimmedValue !== currentHandle) {
       onUpdateHandle?.(trimmedValue);
       toast.success("@ atualizado!");
@@ -120,7 +120,7 @@ export function ProfileHeaderCard({
     if (e.key === 'Enter') {
       handleSaveHandle();
     } else if (e.key === 'Escape') {
-      setHandleValue((profile as any).handle || profile.username || "");
+      setHandleValue(profile.handle || profile.username || "");
       setIsEditingHandle(false);
     }
   };
@@ -138,9 +138,9 @@ export function ProfileHeaderCard({
       </div>
 
       {/* Handle Display - Editable */}
-      <div className="flex items-center gap-1">
-        <span className="text-muted-foreground text-sm">@</span>
-        {isEditingHandle ? (
+      {isEditingHandle ? (
+        <div className="flex items-center gap-1 px-3 py-1.5 bg-primary/10 rounded-lg ring-2 ring-primary/50 transition-all">
+          <span className="text-primary text-sm font-medium">@</span>
           <input
             ref={handleInputRef}
             type="text"
@@ -148,18 +148,19 @@ export function ProfileHeaderCard({
             onChange={(e) => setHandleValue(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''))}
             onBlur={handleSaveHandle}
             onKeyDown={handleHandleKeyDown}
-            className="bg-transparent border-none outline-none text-sm text-muted-foreground w-24 focus:ring-0"
+            className="bg-transparent border-none outline-none text-sm font-medium text-foreground w-28 focus:ring-0"
             maxLength={30}
           />
-        ) : (
+        </div>
+      ) : (
+        <div className="flex items-center gap-1">
+          <span className="text-muted-foreground text-sm">@</span>
           <span 
             className="text-muted-foreground text-sm cursor-pointer hover:underline"
             onClick={() => setIsEditingHandle(true)}
           >
-            {(profile as any).handle || profile.username || "usuario"}
+            {profile.handle || profile.username || "usuario"}
           </span>
-        )}
-        {!isEditingHandle && (
           <button
             onClick={() => setIsEditingHandle(true)}
             className="p-1 rounded-full hover:bg-muted transition-colors"
@@ -167,14 +168,13 @@ export function ProfileHeaderCard({
           >
             <Pencil className="h-3 w-3 text-muted-foreground" />
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Bio Link - Editable */}
-      <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-muted/50 rounded-full">
-        <span className="text-sm text-muted-foreground">biobr.site/</span>
-        
-        {isEditingUsername ? (
+      {isEditingUsername ? (
+        <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-primary/10 rounded-full ring-2 ring-primary/50 transition-all">
+          <span className="text-sm font-medium text-primary">biobr.site/</span>
           <input
             ref={usernameInputRef}
             type="text"
@@ -185,38 +185,36 @@ export function ProfileHeaderCard({
             className="bg-transparent border-none outline-none text-sm font-medium text-foreground w-28 focus:ring-0"
             maxLength={30}
           />
-        ) : (
+        </div>
+      ) : (
+        <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-muted/50 rounded-full">
+          <span className="text-sm text-muted-foreground">biobr.site/</span>
           <span 
             className="text-sm font-medium text-foreground cursor-pointer hover:underline"
             onClick={() => setIsEditingUsername(true)}
           >
             {profile.username || "usuario"}
           </span>
-        )}
-        
-        {!isEditingUsername && (
-          <>
-            <button
-              onClick={() => setIsEditingUsername(true)}
-              className="p-1.5 rounded-full hover:bg-muted transition-colors"
-              title="Editar username"
-            >
-              <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
-            </button>
-            <button
-              onClick={handleCopyLink}
-              className="p-1.5 rounded-full hover:bg-muted transition-colors"
-              title="Copiar link"
-            >
-              {copied ? (
-                <Check className="h-4 w-4 text-green-500" />
-              ) : (
-                <Copy className="h-4 w-4 text-muted-foreground" />
-              )}
-            </button>
-          </>
-        )}
-      </div>
+          <button
+            onClick={() => setIsEditingUsername(true)}
+            className="p-1.5 rounded-full hover:bg-muted transition-colors"
+            title="Editar username"
+          >
+            <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+          </button>
+          <button
+            onClick={handleCopyLink}
+            className="p-1.5 rounded-full hover:bg-muted transition-colors"
+            title="Copiar link"
+          >
+            {copied ? (
+              <Check className="h-4 w-4 text-green-500" />
+            ) : (
+              <Copy className="h-4 w-4 text-muted-foreground" />
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Social Platform Icons Row */}
       <TooltipProvider delayDuration={100}>
