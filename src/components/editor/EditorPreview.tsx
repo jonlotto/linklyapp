@@ -166,7 +166,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                     </div>
                   )}
                   
-                  {/* Curved wave overlay - solid cutout at bottom to prevent banner bleed */}
+                  {/* Curved wave overlay - dynamic fill to match background */}
                   {hasCurvedBanner && (
                     <svg 
                       viewBox="0 0 320 44" 
@@ -175,7 +175,7 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
                     >
                       <path 
                         d="M0,44 Q160,0 320,44 L320,44 L0,44 Z" 
-                        fill="#ffffff"
+                        fill={profile.globalBackgroundColor && !profile.globalBackgroundColor.startsWith("linear-gradient") ? profile.globalBackgroundColor : "#ffffff"}
                       />
                     </svg>
                   )}
