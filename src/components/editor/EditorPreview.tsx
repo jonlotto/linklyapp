@@ -205,7 +205,6 @@ export function EditorPreview({ profile, links, onClickElement }: EditorPreviewP
               {/* Content below banner */}
               <div 
                 className={cn("pt-16 pb-6 px-6", !hasCustomBackground && template.styles.contentBg)}
-                style={hasCustomBackground ? backgroundStyle : undefined}
               >
               {/* Username */}
               <p
