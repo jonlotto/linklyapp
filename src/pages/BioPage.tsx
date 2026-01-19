@@ -5,6 +5,7 @@ import ProfileHeader from "@/components/ProfileHeader";
 import LinkCard, { renderIcon } from "@/components/LinkCard";
 import { Link2 } from "lucide-react";
 import { templates } from "@/data/templates";
+import biobrLogo from "@/assets/biobr-logo.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
@@ -296,14 +297,11 @@ const BioPage = () => {
               )}
 
               {/* Footer */}
-              <footer className="mt-12 text-center animate-fade-in">
-                <button
-                  onClick={() => navigate("/auth")}
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors glass rounded-full px-4 py-2"
-                >
-                  <Link2 className="h-4 w-4" />
-                  Crie seu Link na Bio
-                </button>
+              <footer className="mt-8 w-full">
+                <div className="bg-black rounded-lg py-3 px-4 flex items-center justify-center gap-2">
+                  <span className="text-white text-sm">Criado por</span>
+                  <img src={biobrLogo} alt="BioBR" className="h-5" />
+                </div>
               </footer>
               </div>
             </div>
@@ -374,14 +372,11 @@ const BioPage = () => {
           )}
 
           {/* Footer */}
-          <footer className="mt-12 text-center animate-fade-in">
-            <button
-              onClick={() => navigate("/auth")}
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors glass rounded-full px-4 py-2"
-            >
-              <Link2 className="h-4 w-4" />
-              Crie seu Link na Bio
-            </button>
+          <footer className="mt-8 w-full">
+            <div className="bg-black rounded-lg py-3 px-4 flex items-center justify-center gap-2">
+              <span className="text-white text-sm">Criado por</span>
+              <img src={biobrLogo} alt="BioBR" className="h-5" />
+            </div>
           </footer>
         </div>
       )}
