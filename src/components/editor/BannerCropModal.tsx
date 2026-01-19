@@ -7,7 +7,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, Move } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Loader2, Move, ZoomIn, ZoomOut } from "lucide-react";
 
 interface BannerCropModalProps {
   open: boolean;
@@ -31,18 +32,22 @@ export function BannerCropModal({
 }: BannerCropModalProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  const [zoom, setZoom] = useState(1);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const dragStartRef = useRef({ y: 0, offsetY: 0 });
+  const dragStartRef = useRef({ x: 0, y: 0, offsetX: 0, offsetY: 0 });
 
-  // Reset state when modal opens - use initial offset if provided
+  // Reset state when modal opens
   useEffect(() => {
     if (open) {
+      setOffsetX(0);
       setOffsetY(initialOffsetY);
+      setZoom(1);
       setImageLoaded(false);
     }
   }, [open, initialOffsetY]);
@@ -61,30 +66,43 @@ export function BannerCropModal({
     return { frameWidth, frameHeight };
   }, []);
 
-  // Calculate max offset based on image aspect ratio
+  // Calculate max offset based on image aspect ratio and zoom
   const getMaxOffset = useCallback(() => {
-    if (!imageDimensions.width || !imageDimensions.height) return 0;
+    if (!imageDimensions.width || !imageDimensions.height) return { maxOffsetX: 0, maxOffsetY: 0 };
     const { frameWidth, frameHeight } = getFrameDimensions();
     
-    // Image is scaled to fit frame width
-    const scaledImageHeight = (imageDimensions.height / imageDimensions.width) * frameWidth;
-    const maxOffset = Math.max(0, (scaledImageHeight - frameHeight) / 2);
-    return maxOffset;
-  }, [imageDimensions, getFrameDimensions]);
+    // Image is scaled to fit frame width, then multiplied by zoom
+    const scaledImageWidth = frameWidth * zoom;
+    const scaledImageHeight = (imageDimensions.height / imageDimensions.width) * scaledImageWidth;
+    
+    const maxOffsetX = Math.max(0, (scaledImageWidth - frameWidth) / 2);
+    const maxOffsetY = Math.max(0, (scaledImageHeight - frameHeight) / 2);
+    
+    return { maxOffsetX, maxOffsetY };
+  }, [imageDimensions, zoom, getFrameDimensions]);
+
+  // Clamp offsets when zoom changes
+  useEffect(() => {
+    const { maxOffsetX, maxOffsetY } = getMaxOffset();
+    setOffsetX(prev => Math.max(-maxOffsetX, Math.min(maxOffsetX, prev)));
+    setOffsetY(prev => Math.max(-maxOffsetY, Math.min(maxOffsetY, prev)));
+  }, [zoom, getMaxOffset]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
-    dragStartRef.current = { y: e.clientY, offsetY };
-  }, [offsetY]);
+    dragStartRef.current = { x: e.clientX, y: e.clientY, offsetX, offsetY };
+  }, [offsetX, offsetY]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging) return;
     
+    const deltaX = e.clientX - dragStartRef.current.x;
     const deltaY = e.clientY - dragStartRef.current.y;
-    const maxOffset = getMaxOffset();
-    const newOffset = Math.max(-maxOffset, Math.min(maxOffset, dragStartRef.current.offsetY + deltaY));
-    setOffsetY(newOffset);
+    const { maxOffsetX, maxOffsetY } = getMaxOffset();
+    
+    setOffsetX(Math.max(-maxOffsetX, Math.min(maxOffsetX, dragStartRef.current.offsetX + deltaX)));
+    setOffsetY(Math.max(-maxOffsetY, Math.min(maxOffsetY, dragStartRef.current.offsetY + deltaY)));
   }, [isDragging, getMaxOffset]);
 
   const handleMouseUp = useCallback(() => {
@@ -93,16 +111,18 @@ export function BannerCropModal({
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     setIsDragging(true);
-    dragStartRef.current = { y: e.touches[0].clientY, offsetY };
-  }, [offsetY]);
+    dragStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, offsetX, offsetY };
+  }, [offsetX, offsetY]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!isDragging) return;
     
+    const deltaX = e.touches[0].clientX - dragStartRef.current.x;
     const deltaY = e.touches[0].clientY - dragStartRef.current.y;
-    const maxOffset = getMaxOffset();
-    const newOffset = Math.max(-maxOffset, Math.min(maxOffset, dragStartRef.current.offsetY + deltaY));
-    setOffsetY(newOffset);
+    const { maxOffsetX, maxOffsetY } = getMaxOffset();
+    
+    setOffsetX(Math.max(-maxOffsetX, Math.min(maxOffsetX, dragStartRef.current.offsetX + deltaX)));
+    setOffsetY(Math.max(-maxOffsetY, Math.min(maxOffsetY, dragStartRef.current.offsetY + deltaY)));
   }, [isDragging, getMaxOffset]);
 
   const handleTouchEnd = useCallback(() => {
@@ -122,30 +142,37 @@ export function BannerCropModal({
 
     const { frameWidth, frameHeight } = getFrameDimensions();
     
-    // Scale factor: image is scaled to fit frame width
-    const scale = frameWidth / imageDimensions.width;
+    // Scale factor: image is scaled to fit frame width, then zoomed
+    const baseScale = frameWidth / imageDimensions.width;
+    const scale = baseScale * zoom;
+    const scaledImageWidth = imageDimensions.width * scale;
     const scaledImageHeight = imageDimensions.height * scale;
     
-    // Initial center position (without any offset)
-    const centerOffset = (scaledImageHeight - frameHeight) / 2;
+    // Center position (without any offset)
+    const centerX = (scaledImageWidth - frameWidth) / 2;
+    const centerY = (scaledImageHeight - frameHeight) / 2;
     
-    // When offsetY is positive, image moved DOWN, so we see the TOP of the image
-    // visibleTopScaled = how far from the top of the scaled image the visible area starts
-    const visibleTopScaled = centerOffset - offsetY;
+    // Visible area starts at center minus offset
+    const visibleLeftScaled = centerX - offsetX;
+    const visibleTopScaled = centerY - offsetY;
     
     // Convert back to original image coordinates
+    const sourceX = visibleLeftScaled / scale;
     const sourceY = visibleTopScaled / scale;
+    const sourceWidth = frameWidth / scale;
     const sourceHeight = frameHeight / scale;
     
     // Clamp values to stay within image bounds
+    const clampedSourceX = Math.max(0, Math.min(sourceX, imageDimensions.width - sourceWidth));
     const clampedSourceY = Math.max(0, Math.min(sourceY, imageDimensions.height - sourceHeight));
+    const clampedSourceWidth = Math.min(sourceWidth, imageDimensions.width - clampedSourceX);
     const clampedSourceHeight = Math.min(sourceHeight, imageDimensions.height - clampedSourceY);
 
     ctx.drawImage(
       img,
-      0,
+      clampedSourceX,
       clampedSourceY,
-      imageDimensions.width,
+      clampedSourceWidth,
       clampedSourceHeight,
       0,
       0,
@@ -156,7 +183,7 @@ export function BannerCropModal({
     return new Promise((resolve) => {
       canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.9);
     });
-  }, [imageDimensions, offsetY, getFrameDimensions]);
+  }, [imageDimensions, offsetX, offsetY, zoom, getFrameDimensions]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -171,7 +198,8 @@ export function BannerCropModal({
   };
 
   const { frameWidth, frameHeight } = getFrameDimensions();
-  const canDrag = imageLoaded && getMaxOffset() > 0;
+  const { maxOffsetX, maxOffsetY } = getMaxOffset();
+  const canDrag = imageLoaded && (maxOffsetX > 0 || maxOffsetY > 0);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -202,11 +230,13 @@ export function BannerCropModal({
               alt="Preview"
               crossOrigin="anonymous"
               onLoad={handleImageLoad}
-              className="absolute left-0 w-full pointer-events-none"
+              className="absolute pointer-events-none"
               style={{ 
                 top: '50%',
-                transform: `translateY(calc(-50% + ${offsetY}px))`,
-                transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+                left: '50%',
+                width: `${100 * zoom}%`,
+                transform: `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`,
+                transition: isDragging ? 'none' : 'transform 0.1s ease-out, width 0.15s ease-out'
               }}
               draggable={false}
             />
@@ -223,6 +253,23 @@ export function BannerCropModal({
 
           <p className="text-sm text-muted-foreground text-center mt-3">
             {canDrag ? "Arraste para ajustar a posição" : "Imagem ajustada automaticamente"}
+          </p>
+
+          {/* Zoom slider */}
+          <div className="flex items-center gap-3 w-full max-w-xs mt-4">
+            <ZoomOut className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <Slider
+              value={[zoom]}
+              onValueChange={([value]) => setZoom(value)}
+              min={1}
+              max={2}
+              step={0.05}
+              className="flex-1"
+            />
+            <ZoomIn className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            Zoom: {Math.round(zoom * 100)}%
           </p>
         </div>
 
