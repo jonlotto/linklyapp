@@ -1,9 +1,10 @@
-import { Link2, LayoutGrid, Palette, LogOut, ExternalLink, Users } from "lucide-react";
+import { LayoutGrid, Palette, LogOut, ExternalLink, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
+import biobrLogo from "@/assets/biobr-logo.png";
 
 interface AdminSidebarProps {
   activeSection: "links" | "design";
@@ -30,24 +31,21 @@ export function AdminSidebar({ activeSection, username, onNavigate }: AdminSideb
   };
 
   return (
-    <aside className="w-64 border-r border-border bg-card flex flex-col h-screen flex-shrink-0">
+    <aside className="w-64 border-r border-white/10 bg-black flex flex-col h-screen flex-shrink-0">
       {/* Logo */}
-      <div className="p-6 border-b border-border">
+      <div className="p-6 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-glow">
-            <Link2 className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="font-display font-bold text-lg">Link na Bio</span>
+          <img src={biobrLogo} alt="BioBR" className="h-8" />
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
         <Button
-          variant={activeSection === "links" ? "secondary" : "ghost"}
+          variant="ghost"
           className={cn(
-            "w-full justify-start rounded-xl h-11",
-            activeSection === "links" && "bg-secondary"
+            "w-full justify-start rounded-xl h-11 text-white/80 hover:text-white hover:bg-white/10",
+            activeSection === "links" && "bg-white/10 text-white"
           )}
           onClick={() => handleNavClick("links")}
         >
@@ -56,10 +54,10 @@ export function AdminSidebar({ activeSection, username, onNavigate }: AdminSideb
         </Button>
 
         <Button
-          variant={activeSection === "design" ? "secondary" : "ghost"}
+          variant="ghost"
           className={cn(
-            "w-full justify-start rounded-xl h-11",
-            activeSection === "design" && "bg-secondary"
+            "w-full justify-start rounded-xl h-11 text-white/80 hover:text-white hover:bg-white/10",
+            activeSection === "design" && "bg-white/10 text-white"
           )}
           onClick={() => handleNavClick("design")}
         >
@@ -70,7 +68,7 @@ export function AdminSidebar({ activeSection, username, onNavigate }: AdminSideb
         {isAdmin && (
           <Button
             variant="ghost"
-            className="w-full justify-start rounded-xl h-11"
+            className="w-full justify-start rounded-xl h-11 text-white/80 hover:text-white hover:bg-white/10"
             onClick={() => navigate("/admin/users")}
           >
             <Users className="h-5 w-5 mr-3" />
@@ -80,10 +78,10 @@ export function AdminSidebar({ activeSection, username, onNavigate }: AdminSideb
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border space-y-2">
+      <div className="p-4 border-t border-white/10 space-y-2">
         <Button
-          variant="outline"
-          className="w-full justify-start rounded-xl h-11"
+          variant="ghost"
+          className="w-full justify-start rounded-xl h-11 text-white/80 hover:text-white hover:bg-white/10 border border-white/20"
           onClick={() => username && window.open(`/${username}`, "_blank")}
           disabled={!username}
         >
@@ -92,7 +90,7 @@ export function AdminSidebar({ activeSection, username, onNavigate }: AdminSideb
         </Button>
         <Button
           variant="ghost"
-          className="w-full justify-start rounded-xl h-11 text-muted-foreground hover:text-foreground"
+          className="w-full justify-start rounded-xl h-11 text-white/60 hover:text-white hover:bg-white/10"
           onClick={handleSignOut}
         >
           <LogOut className="h-5 w-5 mr-3" />
