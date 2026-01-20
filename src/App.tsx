@@ -5,11 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RoleGuard } from "@/components/RoleGuard";
-import Index from "./pages/Index";
+import SubdomainHandler from "./components/SubdomainHandler";
 import Auth from "./pages/Auth";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminUsers from "./pages/AdminUsers";
-import BioPage from "./pages/BioPage";
+import UsernameRedirect from "./components/UsernameRedirect";
 import Editor from "./pages/Editor";
 import NotFound from "./pages/NotFound";
 
@@ -23,7 +23,10 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            {/* Root: detects subdomain or shows landing page */}
+            <Route path="/" element={<SubdomainHandler />} />
+            
+            {/* Protected/App routes */}
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<AdminLayout />} />
             <Route path="/editor" element={<Editor />} />
@@ -36,8 +39,11 @@ const App = () => (
                 </RoleGuard>
               }
             />
-            <Route path="/:username" element={<BioPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            
+            {/* Username path: redirects to subdomain in production, shows page in dev */}
+            <Route path="/:username" element={<UsernameRedirect />} />
+            
+            {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
