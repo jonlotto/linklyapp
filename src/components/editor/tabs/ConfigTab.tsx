@@ -7,7 +7,7 @@ import { Save, ExternalLink, Copy, Check } from "lucide-react";
 import { EditorProfile } from "@/hooks/useEditorState";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-
+import { buildSubdomainUrl } from "@/utils/subdomain";
 interface ConfigTabProps {
   profile: EditorProfile;
   onUpdate: (updates: Partial<EditorProfile>) => void;
@@ -20,7 +20,7 @@ export function ConfigTab({ profile, onUpdate, onSave, isDirty, isSaving }: Conf
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   
-  const pageUrl = `https://biobr.site/${profile.username}`;
+  const pageUrl = buildSubdomainUrl(profile.username || "");
 
   const handleCopyUrl = async () => {
     try {
@@ -42,7 +42,7 @@ export function ConfigTab({ profile, onUpdate, onSave, isDirty, isSaving }: Conf
 
   const handleOpenPage = () => {
     if (profile.username) {
-      window.open(`/${profile.username}`, "_blank");
+      window.open(buildSubdomainUrl(profile.username), "_blank");
     }
   };
 

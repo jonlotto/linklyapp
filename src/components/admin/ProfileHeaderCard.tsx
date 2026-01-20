@@ -4,7 +4,7 @@ import { EditorProfile, EditorLink } from "@/hooks/useEditorState";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { X, Copy, Check, Pencil } from "lucide-react";
 import { toast } from "sonner";
-
+import { buildSubdomainUrl } from "@/utils/subdomain";
 interface SocialPlatform {
   id: string;
   name: string;
@@ -81,7 +81,7 @@ export function ProfileHeaderCard({
 
   const handleCopyLink = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const link = `https://biobr.site/${profile.username}`;
+    const link = buildSubdomainUrl(profile.username || "");
     navigator.clipboard.writeText(link);
     setCopied(true);
     toast.success("Link copiado!");
@@ -182,8 +182,7 @@ export function ProfileHeaderCard({
 
       {/* Bio Link - Editable */}
       {isEditingUsername ? (
-        <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-primary/10 rounded-full ring-2 ring-primary/50 transition-all">
-          <span className="text-sm font-medium text-primary">biobr.site/</span>
+        <div className="flex items-center gap-1 mt-3 px-4 py-2 bg-primary/10 rounded-full ring-2 ring-primary/50 transition-all">
           <input
             ref={usernameInputRef}
             type="text"
@@ -191,19 +190,20 @@ export function ProfileHeaderCard({
             onChange={(e) => setUsernameValue(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
             onBlur={handleSaveUsername}
             onKeyDown={handleUsernameKeyDown}
-            className="bg-transparent border-none outline-none text-sm font-medium text-foreground w-28 focus:ring-0"
+            className="bg-transparent border-none outline-none text-sm font-medium text-foreground w-28 focus:ring-0 text-right"
             maxLength={30}
           />
+          <span className="text-sm font-medium text-primary">.biobr.site</span>
         </div>
       ) : (
-        <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-muted/50 rounded-full">
-          <span className="text-sm text-muted-foreground">biobr.site/</span>
+        <div className="flex items-center gap-1 mt-3 px-4 py-2 bg-muted/50 rounded-full">
           <span 
             className="text-sm font-medium text-foreground cursor-pointer hover:underline"
             onClick={() => setIsEditingUsername(true)}
           >
             {profile.username || "usuario"}
           </span>
+          <span className="text-sm text-muted-foreground">.biobr.site</span>
           <button
             onClick={() => setIsEditingUsername(true)}
             className="p-1.5 rounded-full hover:bg-muted transition-colors"
