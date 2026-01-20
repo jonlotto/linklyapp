@@ -8,6 +8,7 @@ import { templates } from "@/data/templates";
 import biobrLogo from "@/assets/biobr-logo.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { extractSubdomain } from "@/utils/subdomain";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
@@ -23,8 +24,13 @@ const preloadImage = (src: string): Promise<void> => {
 };
 
 const BioPage = () => {
-  const { username } = useParams<{ username: string }>();
+  const { username: pathUsername } = useParams<{ username: string }>();
   const navigate = useNavigate();
+  
+  // Priority: subdomain > path parameter
+  const subdomain = extractSubdomain();
+  const username = subdomain || pathUsername;
+  
   const [profile, setProfile] = useState<Profile | null>(null);
   const [links, setLinks] = useState<LinkType[]>([]);
   const [loading, setLoading] = useState(true);
