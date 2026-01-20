@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import biobrLogo from "@/assets/biobr-logo.png";
+import { buildSubdomainUrl } from "@/utils/subdomain";
 
 interface AdminSidebarProps {
   activeSection: "links" | "design";
@@ -82,7 +83,7 @@ export function AdminSidebar({ activeSection, username, onNavigate }: AdminSideb
         <Button
           variant="ghost"
           className="w-full justify-start rounded-xl h-11 text-white/80 hover:text-white hover:bg-white/10 border border-white/20"
-          onClick={() => username && window.open(`/${username}`, "_blank")}
+          onClick={() => username && window.open(buildSubdomainUrl(username), "_blank")}
           disabled={!username}
         >
           <ExternalLink className="h-5 w-5 mr-3" />
