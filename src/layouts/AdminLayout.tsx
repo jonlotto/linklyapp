@@ -3,6 +3,7 @@ import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useEditorState, EditorLink } from "@/hooks/useEditorState";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { ProfileHeaderCard } from "@/components/admin/ProfileHeaderCard";
 import { AdminLinksList } from "@/components/admin/AdminLinksList";
@@ -17,7 +18,8 @@ import { TextSection } from "@/components/design/sections/TextSection";
 import { ButtonsSection } from "@/components/design/sections/ButtonsSection";
 import { FooterSection } from "@/components/design/sections/FooterSection";
 import { Button } from "@/components/ui/button";
-import { Plus, Save, Loader2, Check, Cloud } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Plus, Save, Loader2, Check, Cloud, Menu } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/InstagramIcon";
 import { TikTokIcon } from "@/components/icons/TikTokIcon";
 import { YouTubeIcon } from "@/components/icons/YouTubeIcon";
@@ -25,6 +27,8 @@ import { TwitterIcon } from "@/components/icons/TwitterIcon";
 import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
 import { EmailIcon } from "@/components/icons/EmailIcon";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import biobrLogo from "@/assets/biobr-logo.png";
+import { cn } from "@/lib/utils";
 
 export interface SocialPlatform {
   id: string;
@@ -53,10 +57,12 @@ export default function AdminLayout() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
   
   // Determine initial view based on URL
   const initialView: AdminView = location.pathname === "/design" ? "design" : "links";
   const [activeView, setActiveView] = useState<AdminView>(initialView);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const {
     profile,
@@ -191,15 +197,57 @@ export default function AdminLayout() {
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
-      {/* Main Navigation Sidebar */}
-      <AdminSidebar 
-        activeSection={activeView} 
-        username={profile.username}
-        onNavigate={handleViewChange}
-      />
+      {/* Mobile Header */}
+      {isMobile && (
+        <header className="fixed top-0 left-0 right-0 z-50 h-14 bg-black border-b border-white/10 flex items-center justify-between px-4">
+          <div className="flex items-center gap-3">
+            <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-64 bg-black border-white/10">
+                <AdminSidebar 
+                  activeSection={activeView} 
+                  username={profile.username}
+                  onNavigate={(view) => {
+                    handleViewChange(view);
+                    setSidebarOpen(false);
+                  }}
+                />
+              </SheetContent>
+            </Sheet>
+            <img src={biobrLogo} alt="BioBR" className="h-6" />
+          </div>
+          {isDirty && (
+            <Button
+              onClick={save}
+              disabled={isSaving}
+              size="sm"
+              className="rounded-xl"
+            >
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+            </Button>
+          )}
+        </header>
+      )}
 
-      {/* Design Sections Sidebar - only show on design view */}
-      {activeView === "design" && (
+      {/* Desktop Main Navigation Sidebar */}
+      {!isMobile && (
+        <AdminSidebar 
+          activeSection={activeView} 
+          username={profile.username}
+          onNavigate={handleViewChange}
+        />
+      )}
+
+      {/* Design Sections Sidebar - only show on design view (desktop only) */}
+      {activeView === "design" && !isMobile && (
         <div className="w-56 border-r border-border flex-shrink-0">
           <DesignSidebar 
             activeSection={activeSection} 
@@ -210,7 +258,7 @@ export default function AdminLayout() {
 
       {/* Main Content */}
       {activeView === "links" ? (
-        <main key="links" className="flex-1 overflow-auto animate-fade-in">
+        <main key="links" className={cn("flex-1 overflow-auto animate-fade-in", isMobile && "pt-14")}>
           <div className="max-w-2xl mx-auto py-8 px-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -279,7 +327,7 @@ export default function AdminLayout() {
         <main 
           key="design"
           ref={containerRef}
-          className="flex-1 overflow-y-auto scroll-smooth animate-fade-in"
+          className={cn("flex-1 overflow-y-auto scroll-smooth animate-fade-in", isMobile && "pt-14")}
         >
           {/* Save Status Bar */}
           <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border px-6 py-3">

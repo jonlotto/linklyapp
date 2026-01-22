@@ -32,7 +32,7 @@ export function AdminSidebar({ activeSection, username, onNavigate }: AdminSideb
   };
 
   return (
-    <aside className="w-64 border-r border-white/10 bg-black flex flex-col h-screen flex-shrink-0">
+    <aside className="w-full h-full lg:w-64 border-r border-white/10 bg-black flex flex-col lg:h-screen flex-shrink-0">
       {/* Logo */}
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center gap-3">
