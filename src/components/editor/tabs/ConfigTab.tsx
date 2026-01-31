@@ -8,6 +8,8 @@ import { EditorProfile } from "@/hooks/useEditorState";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { buildSubdomainUrl } from "@/utils/subdomain";
+import { NotificationPermission } from "@/components/NotificationPermission";
+
 interface ConfigTabProps {
   profile: EditorProfile;
   onUpdate: (updates: Partial<EditorProfile>) => void;
@@ -84,7 +86,7 @@ export function ConfigTab({ profile, onUpdate, onSave, isDirty, isSaving }: Conf
                   onClick={handleCopyUrl}
                 >
                   {copied ? (
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-primary" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}
@@ -100,6 +102,19 @@ export function ConfigTab({ profile, onUpdate, onSave, isDirty, isSaving }: Conf
               </div>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Notifications */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notificações</CardTitle>
+          <CardDescription>
+            Gerencie suas preferências de notificação.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <NotificationPermission variant="card" />
         </CardContent>
       </Card>
 
