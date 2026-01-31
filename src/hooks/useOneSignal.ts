@@ -5,17 +5,38 @@ const ONESIGNAL_APP_ID = "1b21eaac-881b-439c-b372-4253c00d71c7";
 
 let isInitialized = false;
 
+// Check if running as installed PWA
+function isPWAInstalled(): boolean {
+  if (typeof window === "undefined") return false;
+  
+  // Check display-mode media query (works on most browsers)
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+  
+  // Check iOS Safari specific property
+  const isIOSStandalone = (navigator as any).standalone === true;
+  
+  // Check if launched from home screen on Android
+  const isAndroidTWA = document.referrer.includes("android-app://");
+  
+  return isStandalone || isIOSStandalone || isAndroidTWA;
+}
+
 export function useOneSignal() {
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPWA, setIsPWA] = useState(false);
 
   // Initialize OneSignal
   useEffect(() => {
     const initOneSignal = async () => {
       // Only run on client-side
       if (typeof window === "undefined") return;
+      
+      // Check if running as PWA
+      const pwaMode = isPWAInstalled();
+      setIsPWA(pwaMode);
       
       // Check if notifications are supported
       const supported = "Notification" in window && "serviceWorker" in navigator;
@@ -49,6 +70,13 @@ export function useOneSignal() {
         // Check if user is subscribed
         const subscribed = await OneSignal.User.PushSubscription.optedIn;
         setIsSubscribed(subscribed || false);
+
+        // AUTO-SUBSCRIBE: If running as PWA and permission already granted, auto opt-in
+        if (pwaMode && currentPermission === "granted" && !subscribed) {
+          console.log("[OneSignal] PWA detected with permission granted - auto subscribing");
+          await OneSignal.User.PushSubscription.optIn();
+          setIsSubscribed(true);
+        }
 
         // Listen for subscription changes
         OneSignal.User.PushSubscription.addEventListener("change", (event) => {
@@ -120,6 +148,7 @@ export function useOneSignal() {
     isSupported,
     isLoading,
     isInitialized,
+    isPWA,
     requestPermission,
     unsubscribe,
     toggleNotifications,
