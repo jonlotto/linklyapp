@@ -1,54 +1,91 @@
 
-# Plano: Adicionar seção de Configurações com Notificações
+# Plano: Corrigir atualização do PWA e erro do OneSignal
 
-## Objetivo
-Adicionar uma nova seção "Configurações" no menu lateral da página de Design com opções de notificações push.
+## Problemas Identificados
 
-## Alterações
+1. **OneSignal restrito ao domínio**: O SDK só funciona em `https://biobr.site`, não no preview
+2. **Cache do Service Worker**: O PWA está mostrando versão antiga mesmo com `autoUpdate`
 
-### 1. Criar componente SettingsSection
-**Arquivo:** `src/components/design/sections/SettingsSection.tsx`
+## Solução
 
-Novo componente seguindo o padrão das outras seções (ButtonsSection, HeaderSection, etc.):
-- Título "Configurações" com descrição
-- Card de notificações usando o componente `NotificationPermission` já existente
-- Estilo visual consistente com as outras seções
+### 1. Melhorar tratamento de erro do OneSignal
+**Arquivo:** `src/hooks/useOneSignal.ts`
 
-### 2. Atualizar DesignSidebar
-**Arquivo:** `src/components/design/DesignSidebar.tsx`
+Capturar o erro de domínio inválido e definir estados corretos:
+- Quando erro "Can only be used on", marcar `isSupported = false` com mensagem amigável
+- Evitar que o componente quebre ou mostre estado incorreto
 
-- Adicionar nova entrada no array `SECTIONS`:
-  - `id: "settings"`
-  - `label: "Configurações"` 
-  - `icon: Settings` (do lucide-react)
+### 2. Forçar atualização do Service Worker
+**Arquivo:** `vite.config.ts`
 
-### 3. Atualizar página Design
-**Arquivo:** `src/pages/Design.tsx`
-
-- Importar o novo `SettingsSection`
-- Adicionar nova `<section id="settings">` após a seção de botões
-
-## Estrutura Visual
-```text
-Menu Lateral          |  Área Principal
-----------------------|------------------
-Header                |  [seções existentes]
-Tema                  |  
-Fundo                 |  
-Texto                 |  
-Botões                |  
-Configurações (NOVO)  |  [card de notificações]
+Alterar configuração do Workbox para forçar atualização imediata:
+```typescript
+workbox: {
+  // Forçar novo SW a tomar controle imediatamente
+  skipWaiting: true,
+  clientsClaim: true,
+  // ... resto das configurações
+}
 ```
+
+### 3. Adicionar componente de atualização manual
+**Arquivo:** `src/components/PWAUpdatePrompt.tsx` (novo)
+
+Criar componente que detecta quando há nova versão e oferece botão para atualizar:
+- Usa hook `useRegisterSW` do vite-plugin-pwa
+- Mostra toast quando há atualização disponível
+- Permite o usuário forçar reload
+
+### 4. Integrar prompt de atualização
+**Arquivo:** `src/App.tsx`
+
+Adicionar o `PWAUpdatePrompt` no App para funcionar globalmente
 
 ## Detalhes Técnicos
 
-**SettingsSection.tsx:**
+**useOneSignal.ts - Tratamento de erro:**
 ```typescript
-- Importa NotificationPermission do componente existente
-- Usa variant="card" para exibir o toggle de notificações
-- Segue o mesmo padrão de layout das outras seções
+catch (error: any) {
+  // Verificar se é erro de domínio
+  if (error?.message?.includes("Can only be used on")) {
+    console.log("[OneSignal] Domain restriction - running on:", window.location.hostname);
+    // Em desenvolvimento/preview, marcar como não suportado gracefully
+    setIsSupported(false);
+  } else {
+    console.error("OneSignal initialization error:", error);
+  }
+}
 ```
 
-**Integração com scroll spy:**
-- A seção terá `id="settings"` e classe `scroll-mt-20`
-- O scroll spy já funciona automaticamente com o array SECTION_IDS
+**PWAUpdatePrompt.tsx:**
+```typescript
+import { useRegisterSW } from 'virtual:pwa-register/react';
+import { toast } from "sonner";
+
+export function PWAUpdatePrompt() {
+  const {
+    needRefresh: [needRefresh],
+    updateServiceWorker,
+  } = useRegisterSW();
+
+  useEffect(() => {
+    if (needRefresh) {
+      toast("Nova versão disponível!", {
+        action: {
+          label: "Atualizar",
+          onClick: () => updateServiceWorker(true),
+        },
+        duration: Infinity,
+      });
+    }
+  }, [needRefresh]);
+
+  return null;
+}
+```
+
+## Resultado Esperado
+- PWA atualizará automaticamente ou mostrará prompt
+- Seção "Configurações" aparecerá após atualização
+- Notificações funcionarão apenas no domínio de produção (biobr.site)
+- Preview mostrará mensagem amigável em vez de erro
