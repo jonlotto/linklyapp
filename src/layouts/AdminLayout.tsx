@@ -17,6 +17,7 @@ import { WallpaperSection } from "@/components/design/sections/WallpaperSection"
 import { TextSection } from "@/components/design/sections/TextSection";
 import { ButtonsSection } from "@/components/design/sections/ButtonsSection";
 import { FooterSection } from "@/components/design/sections/FooterSection";
+import { SettingsSection } from "@/components/design/sections/SettingsSection";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Plus, Save, Loader2, Check, Cloud, Menu } from "lucide-react";
@@ -51,7 +52,7 @@ export const SOCIAL_PLATFORMS: SocialPlatform[] = [
 
 const SECTION_IDS = SECTIONS.map((s) => s.id);
 
-export type AdminView = "links" | "design";
+export type AdminView = "links" | "design" | "settings";
 
 export default function AdminLayout() {
   const { user, loading: authLoading } = useAuth();
@@ -60,8 +61,12 @@ export default function AdminLayout() {
   const isMobile = useIsMobile();
   
   // Determine initial view based on URL
-  const initialView: AdminView = location.pathname === "/design" ? "design" : "links";
-  const [activeView, setActiveView] = useState<AdminView>(initialView);
+  const getInitialView = (): AdminView => {
+    if (location.pathname === "/design") return "design";
+    if (location.pathname === "/settings") return "settings";
+    return "links";
+  };
+  const [activeView, setActiveView] = useState<AdminView>(getInitialView());
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const {
@@ -94,8 +99,8 @@ export default function AdminLayout() {
   const handleViewChange = (view: AdminView) => {
     setActiveView(view);
     // Update URL without reload
-    const newPath = view === "design" ? "/design" : "/admin";
-    window.history.replaceState(null, "", newPath);
+    const paths = { links: "/admin", design: "/design", settings: "/settings" };
+    window.history.replaceState(null, "", paths[view]);
   };
 
   // Auth check
@@ -323,7 +328,7 @@ export default function AdminLayout() {
             )}
           </div>
         </main>
-      ) : (
+      ) : activeView === "design" ? (
         <main 
           key="design"
           ref={containerRef}
@@ -374,6 +379,15 @@ export default function AdminLayout() {
             <section id="footer" className="scroll-mt-20 pb-8">
               <FooterSection profile={profile} onUpdate={updateProfile} />
             </section>
+          </div>
+        </main>
+      ) : (
+        <main 
+          key="settings"
+          className={cn("flex-1 overflow-y-auto animate-fade-in", isMobile && "pt-14")}
+        >
+          <div className="max-w-xl mx-auto py-8 px-6">
+            <SettingsSection />
           </div>
         </main>
       )}

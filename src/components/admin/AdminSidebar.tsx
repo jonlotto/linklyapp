@@ -1,4 +1,4 @@
-import { LayoutGrid, Palette, LogOut, ExternalLink, Users } from "lucide-react";
+import { LayoutGrid, Palette, LogOut, ExternalLink, Users, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -8,9 +8,9 @@ import biobrLogo from "@/assets/biobr-logo.png";
 import { buildSubdomainUrl } from "@/utils/subdomain";
 
 interface AdminSidebarProps {
-  activeSection: "links" | "design";
+  activeSection: "links" | "design" | "settings";
   username?: string;
-  onNavigate?: (view: "links" | "design") => void;
+  onNavigate?: (view: "links" | "design" | "settings") => void;
 }
 
 export function AdminSidebar({ activeSection, username, onNavigate }: AdminSidebarProps) {
@@ -23,11 +23,12 @@ export function AdminSidebar({ activeSection, username, onNavigate }: AdminSideb
     navigate("/");
   };
 
-  const handleNavClick = (view: "links" | "design") => {
+const handleNavClick = (view: "links" | "design" | "settings") => {
     if (onNavigate) {
       onNavigate(view);
     } else {
-      navigate(view === "links" ? "/admin" : "/design");
+      const paths = { links: "/admin", design: "/design", settings: "/settings" };
+      navigate(paths[view]);
     }
   };
 
@@ -64,6 +65,18 @@ export function AdminSidebar({ activeSection, username, onNavigate }: AdminSideb
         >
           <Palette className="h-5 w-5 mr-3" />
           Design
+        </Button>
+
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full justify-start rounded-xl h-11 text-white/80 hover:text-white hover:bg-white/10",
+            activeSection === "settings" && "bg-white/10 text-white"
+          )}
+          onClick={() => handleNavClick("settings")}
+        >
+          <Settings className="h-5 w-5 mr-3" />
+          Configurações
         </Button>
 
         {isAdmin && (
