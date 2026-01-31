@@ -87,8 +87,37 @@ export function useOneSignal() {
           setIsSubscribed(event.current.optedIn || false);
         });
 
-      } catch (error) {
-        console.error("OneSignal initialization error:", error);
+      } catch (error: any) {
+        // Check if SDK was already initialized (HMR or multiple renders)
+        if (error?.message?.includes("already initialized")) {
+          console.log("[OneSignal] SDK was already initialized, syncing state...");
+          isInitialized = true;
+          
+          // Sync current state
+          const currentPermission = Notification.permission;
+          setPermission(currentPermission);
+          
+          try {
+            const subscribed = await OneSignal.User.PushSubscription.optedIn;
+            setIsSubscribed(subscribed || false);
+            
+            // Auto-subscribe in PWA if permission already granted
+            if (pwaMode && currentPermission === "granted" && !subscribed) {
+              await OneSignal.User.PushSubscription.optIn();
+              setIsSubscribed(true);
+            }
+          } catch (e) {
+            console.log("[OneSignal] Could not sync subscription state");
+          }
+        } 
+        // Check if domain restriction error (only works on production domain)
+        else if (error?.message?.includes("Can only be used on")) {
+          console.log("[OneSignal] Domain restriction - running on:", window.location.hostname);
+          console.log("[OneSignal] Push notifications only work on the production domain");
+          setIsSupported(false);
+        } else {
+          console.error("OneSignal initialization error:", error);
+        }
       } finally {
         setIsLoading(false);
       }

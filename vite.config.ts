@@ -48,6 +48,9 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,svg,woff2}"],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
+        // Force new SW to take control immediately
+        skipWaiting: true,
+        clientsClaim: true,
         // Exclude OneSignal service worker from being handled by Workbox
         navigateFallbackDenylist: [/^\/OneSignalSDKWorker\.js$/],
         runtimeCaching: [
