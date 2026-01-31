@@ -22,8 +22,17 @@ export function NotificationPermission({
   } = useOneSignal();
   const { toast } = useToast();
 
-  if (!isSupported) {
-    return null;
+  // Debug log
+  console.log("[NotificationPermission] isSupported:", isSupported, "isLoading:", isLoading, "permission:", permission);
+
+  if (!isSupported && !isLoading) {
+    return (
+      <div className={`flex items-center justify-between p-4 rounded-lg bg-muted ${className}`}>
+        <p className="text-sm text-muted-foreground">
+          Notificações não são suportadas neste navegador
+        </p>
+      </div>
+    );
   }
 
   const handleRequestPermission = async () => {

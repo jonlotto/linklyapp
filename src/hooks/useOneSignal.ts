@@ -37,18 +37,22 @@ export function useOneSignal() {
       // Check if running as PWA
       const pwaMode = isPWAInstalled();
       setIsPWA(pwaMode);
+      console.log("[OneSignal] PWA mode:", pwaMode);
       
       // Check if notifications are supported
       const supported = "Notification" in window && "serviceWorker" in navigator;
       setIsSupported(supported);
+      console.log("[OneSignal] Notifications supported:", supported);
       
       if (!supported) {
+        console.log("[OneSignal] Notifications not supported, skipping init");
         setIsLoading(false);
         return;
       }
 
       // Prevent double initialization
       if (isInitialized) {
+        console.log("[OneSignal] Already initialized");
         setIsLoading(false);
         return;
       }
