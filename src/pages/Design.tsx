@@ -11,6 +11,7 @@ import { ThemeSection } from "@/components/design/sections/ThemeSection";
 import { WallpaperSection } from "@/components/design/sections/WallpaperSection";
 import { TextSection } from "@/components/design/sections/TextSection";
 import { ButtonsSection } from "@/components/design/sections/ButtonsSection";
+import { SettingsSection } from "@/components/design/sections/SettingsSection";
 import { Loader2, Check, Cloud } from "lucide-react";
 
 const SECTION_IDS = SECTIONS.map((s) => s.id);
@@ -117,8 +118,12 @@ export default function Design() {
             <TextSection profile={profile} onUpdate={updateProfile} />
           </section>
 
-          <section id="buttons" className="scroll-mt-20 pb-8">
+          <section id="buttons" className="scroll-mt-20">
             <ButtonsSection profile={profile} onUpdate={updateProfile} />
+          </section>
+
+          <section id="settings" className="scroll-mt-20 pb-8">
+            <SettingsSection />
           </section>
         </div>
       </main>

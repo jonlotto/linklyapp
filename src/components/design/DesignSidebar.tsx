@@ -4,7 +4,8 @@ import {
   Palette, 
   Layers, 
   Type, 
-  RectangleHorizontal
+  RectangleHorizontal,
+  Settings
 } from "lucide-react";
 
 interface DesignSection {
@@ -19,6 +20,7 @@ const SECTIONS: DesignSection[] = [
   { id: "wallpaper", label: "Fundo", icon: Layers },
   { id: "text", label: "Texto", icon: Type },
   { id: "buttons", label: "Botões", icon: RectangleHorizontal },
+  { id: "settings", label: "Configurações", icon: Settings },
 ];
 
 interface DesignSidebarProps {
