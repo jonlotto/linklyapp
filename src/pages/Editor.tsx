@@ -8,6 +8,7 @@ import { EditorPreview } from "@/components/editor/EditorPreview";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { templates } from "@/data/templates";
+import { NotificationWelcomeModal } from "@/components/NotificationWelcomeModal";
 
 export default function Editor() {
   const navigate = useNavigate();
@@ -141,6 +142,9 @@ export default function Editor() {
           }
         />
       </main>
+
+      {/* Notification Permission Modal - shows on first login */}
+      <NotificationWelcomeModal userId={user?.id} />
     </div>
   );
 }
