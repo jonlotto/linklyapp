@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RoleGuard } from "@/components/RoleGuard";
+import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 import SubdomainHandler from "./components/SubdomainHandler";
 import Auth from "./pages/Auth";
 import AdminLayout from "./layouts/AdminLayout";
@@ -21,6 +22,7 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner />
+        <PWAUpdatePrompt />
         <BrowserRouter>
           <Routes>
             {/* Root: detects subdomain or shows landing page */}
