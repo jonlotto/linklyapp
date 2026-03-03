@@ -1,31 +1,32 @@
 
 
-# Plano: QR Code com moldura de cantos (scan frame)
+# Plano: Adicionar estilo "Transparente" ao QR Code
 
 ## O que sera feito
 
-Atualizar o modal de QR Code para exibir o QR Code com uma moldura decorativa de cantos (corner brackets), similar ao estilo da imagem de referencia - um visual de "scanner" com cantos destacados ao redor do QR Code, fundo escuro.
+Adicionar um 4o estilo de QR Code ao modal com fundo transparente e cor branca, similar a imagem de referencia enviada anteriormente.
 
 ## Mudancas
 
 ### Arquivo: `src/components/admin/QrCodeModal.tsx`
 
-- Substituir o container branco simples do QR Code por um design com **corner brackets decorativos** usando CSS (pseudo-elementos ou bordas parciais)
-- Manter fundo escuro ao redor, com o QR Code em branco no centro
-- Os 4 cantos terao linhas grossas formando "L" invertidos, criando o efeito de moldura de scanner
-- O QR Code continuara funcional para download e leitura
+1. **Novo estilo no array `STYLES`**: Adicionar `"transparent"` com label "Transparente" e descricao "Fundo transparente, QR branco"
+
+2. **Logica de cores**:
+   - `fgColor`: branco (`#ffffff`) quando estilo for `transparent`
+   - `bgColor`: transparente (`transparent` ou `rgba(0,0,0,0)`) quando estilo for `transparent`
+   - `cornerColor`: branco para manter os cantos visiveis
+
+3. **Container do QR Code**:
+   - Quando o estilo for `transparent`, remover o fundo branco (`bg-white`) do container interno e usar fundo escuro/transparente
+   - O canvas tera fundo transparente, entao o QR branco sera visivel contra o fundo escuro do modal
+
+4. **Download**:
+   - O PNG baixado tera fundo transparente (o canvas ja suporta isso nativamente com `bgColor` transparente)
 
 ### Detalhes tecnicos
 
-A moldura sera feita com 4 elementos `div` posicionados nos cantos usando `absolute positioning`, cada um com bordas parciais (ex: `border-top + border-left` para o canto superior esquerdo). Isso cria o efeito visual sem interferir no QR Code canvas.
-
-```text
-+--                    --+
-|                        |
-|      [QR CODE]         |
-|                        |
-+--                    --+
-```
-
-Nenhuma dependencia nova sera necessaria.
+- `QRCodeCanvas` suporta `bgColor` com valores como `"transparent"` ou `"rgba(0,0,0,0)"`
+- O container interno (`div` com `bg-white`) sera condicional: `bg-white` para outros estilos, `bg-transparent` para o estilo transparente
+- O logo BioBR nao sera exibido neste estilo (ficaria ilegivel em branco sobre transparente)
 
