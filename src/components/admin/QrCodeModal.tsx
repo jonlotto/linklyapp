@@ -12,17 +12,15 @@ import {
 } from "@/components/ui/dialog";
 import { buildSubdomainUrl } from "@/utils/subdomain";
 import { toast } from "sonner";
-import customLogo from "@/assets/ft005-logo.png";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 
-type QrStyle = "classic" | "logo" | "branded" | "transparent";
+type QrStyle = "classic" | "transparent";
 
 const STYLES: { key: QrStyle; label: string; description: string }[] = [
   { key: "classic", label: "Clássico", description: "Preto e branco" },
-  { key: "logo", label: "Com Logo", description: "Logo no centro" },
-  { key: "branded", label: "Temático", description: "Cores da marca" },
   { key: "transparent", label: "Transparente", description: "QR branco, sem fundo" },
 ];
 
@@ -35,7 +33,7 @@ interface QrCodeModalProps {
 export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
-  const [style, setStyle] = useState<QrStyle>("logo");
+  const [style, setStyle] = useState<QrStyle>("classic");
   const [mode, setMode] = useState<"bio" | "custom">("bio");
   const [customUrl, setCustomUrl] = useState("");
   const [confirmedCustomUrl, setConfirmedCustomUrl] = useState("");
@@ -111,9 +109,7 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
     setMode("custom");
     setCustomUrl(url);
     setConfirmedCustomUrl(url);
-    if (["classic", "logo", "branded", "transparent"].includes(savedStyle)) {
-      setStyle(savedStyle as QrStyle);
-    }
+    setStyle(savedStyle === "transparent" ? "transparent" : "classic");
   };
 
   const handleDownload = () => {
@@ -135,10 +131,8 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
   };
 
   const isTransparent = style === "transparent";
-  const fgColor = isTransparent ? "#ffffff" : style === "branded" ? "#ff2264" : "#000000";
+  const fgColor = isTransparent ? "#ffffff" : "#000000";
   const bgColor = isTransparent ? "rgba(0,0,0,0)" : "#ffffff";
-  const showLogo = !isTransparent && (style === "logo" || style === "branded");
-  const cornerColor = style === "branded" ? "#ff2264" : "#ffffff";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -216,10 +210,10 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
 
           {/* QR Code with frame */}
           <div className="relative p-6">
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-[3px] border-l-[3px] rounded-tl-sm" style={{ borderColor: cornerColor }} />
-            <div className="absolute top-0 right-0 w-8 h-8 border-t-[3px] border-r-[3px] rounded-tr-sm" style={{ borderColor: cornerColor }} />
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[3px] border-l-[3px] rounded-bl-sm" style={{ borderColor: cornerColor }} />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3px] border-r-[3px] rounded-br-sm" style={{ borderColor: cornerColor }} />
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-[3px] border-l-[3px] rounded-tl-sm border-white" />
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-[3px] border-r-[3px] rounded-tr-sm border-white" />
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[3px] border-l-[3px] rounded-bl-sm border-white" />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3px] border-r-[3px] rounded-br-sm border-white" />
 
             <div ref={canvasRef} className={`p-4 rounded-lg ${isTransparent ? "bg-black/40" : "bg-white"}`}>
               <QRCodeCanvas
@@ -228,16 +222,6 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
                 level="H"
                 fgColor={fgColor}
                 bgColor={bgColor}
-                imageSettings={
-                  showLogo
-                    ? {
-                        src: customLogo,
-                        height: 50,
-                        width: 50,
-                        excavate: true,
-                      }
-                    : undefined
-                }
               />
             </div>
           </div>
