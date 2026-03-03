@@ -1,30 +1,23 @@
 
 
-# Plano: QR Code para links personalizados
+# Plano: Adicionar logo personalizada no centro do QR Code
 
 ## O que sera feito
 
-Adicionar a possibilidade de gerar QR Codes a partir de qualquer link digitado pelo usuario, alem do QR Code da bio page que ja existe.
+Substituir/adicionar a imagem enviada (logo azul "V") como opcao de logo no centro do QR Code, usada nos estilos "Com Logo" e "Tematico".
 
 ## Mudancas
 
-### Arquivo: `src/components/admin/QrCodeModal.tsx`
+### 1. Copiar a imagem para o projeto
+- Copiar `user-uploads://FT005.png` para `src/assets/ft005-logo.png`
 
-1. **Novo campo de input** no topo do modal para digitar/colar um link personalizado
-2. **Toggle entre modos**: "Minha pagina" (usa o link da bio) e "Link personalizado" (usa o link digitado)
-3. Quando o modo for "Link personalizado":
-   - Exibir um input de texto para o usuario colar/digitar a URL
-   - O QR Code sera gerado a partir dessa URL em vez do link da bio
-   - O texto abaixo do QR mostrara a URL digitada
-4. Todos os 4 estilos (Classico, Com Logo, Tematico, Transparente) continuam funcionando normalmente
-5. O botao "Copiar link" copiara o link que esta sendo usado (bio ou personalizado)
-6. O nome do arquivo no download incluira "custom" quando for link personalizado
+### 2. Arquivo: `src/components/admin/QrCodeModal.tsx`
+- Importar a nova imagem: `import customLogo from "@/assets/ft005-logo.png"`
+- Atualizar o `imageSettings` do `QRCodeCanvas` para usar `customLogo` em vez de `bioBrLogo` nos estilos que exibem logo ("logo" e "branded")
+- Manter toda a logica existente (excavate, tamanho 40x40, etc.)
 
 ### Detalhes tecnicos
-
-- Adicionar estado `mode` (`"bio" | "custom"`) e `customUrl` (string) ao componente
-- Usar tabs ou botoes de toggle para alternar entre os modos
-- Validar que a URL digitada comeca com `http://` ou `https://` antes de gerar o QR
-- O valor passado para `QRCodeCanvas` sera condicional: `mode === "bio" ? bioUrl : customUrl`
+- A prop `imageSettings.src` do `QRCodeCanvas` aceita qualquer caminho de imagem importado
+- O `excavate: true` ja esta configurado, garantindo que o logo nao sobreponha os padroes do QR
 - Nenhuma dependencia nova necessaria
 
