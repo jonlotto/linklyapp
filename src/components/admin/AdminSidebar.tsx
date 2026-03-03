@@ -1,4 +1,5 @@
-import { LayoutGrid, Palette, LogOut, ExternalLink, Users, Settings } from "lucide-react";
+import { useState } from "react";
+import { LayoutGrid, Palette, LogOut, ExternalLink, Users, Settings, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import biobrLogo from "@/assets/biobr-logo.png";
 import { buildSubdomainUrl } from "@/utils/subdomain";
+import { QrCodeModal } from "./QrCodeModal";
 
 interface AdminSidebarProps {
   activeSection: "links" | "design" | "settings";
@@ -17,6 +19,7 @@ export function AdminSidebar({ activeSection, username, onNavigate }: AdminSideb
   const navigate = useNavigate();
   const { signOut } = useAuth();
   const { isAdmin } = useUserRole();
+  const [qrOpen, setQrOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -79,6 +82,16 @@ const handleNavClick = (view: "links" | "design" | "settings") => {
           Configurações
         </Button>
 
+        <Button
+          variant="ghost"
+          className="w-full justify-start rounded-xl h-11 text-white/80 hover:text-white hover:bg-white/10"
+          onClick={() => setQrOpen(true)}
+          disabled={!username}
+        >
+          <QrCode className="h-5 w-5 mr-3" />
+          QR Code
+        </Button>
+
         {isAdmin && (
           <Button
             variant="ghost"
@@ -91,6 +104,7 @@ const handleNavClick = (view: "links" | "design" | "settings") => {
         )}
       </nav>
 
+      <QrCodeModal open={qrOpen} onOpenChange={setQrOpen} username={username} />
       {/* Footer */}
       <div className="p-4 border-t border-white/10 space-y-2">
         <Button
