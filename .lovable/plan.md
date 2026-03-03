@@ -1,32 +1,30 @@
 
 
-# Plano: Adicionar estilo "Transparente" ao QR Code
+# Plano: QR Code para links personalizados
 
 ## O que sera feito
 
-Adicionar um 4o estilo de QR Code ao modal com fundo transparente e cor branca, similar a imagem de referencia enviada anteriormente.
+Adicionar a possibilidade de gerar QR Codes a partir de qualquer link digitado pelo usuario, alem do QR Code da bio page que ja existe.
 
 ## Mudancas
 
 ### Arquivo: `src/components/admin/QrCodeModal.tsx`
 
-1. **Novo estilo no array `STYLES`**: Adicionar `"transparent"` com label "Transparente" e descricao "Fundo transparente, QR branco"
-
-2. **Logica de cores**:
-   - `fgColor`: branco (`#ffffff`) quando estilo for `transparent`
-   - `bgColor`: transparente (`transparent` ou `rgba(0,0,0,0)`) quando estilo for `transparent`
-   - `cornerColor`: branco para manter os cantos visiveis
-
-3. **Container do QR Code**:
-   - Quando o estilo for `transparent`, remover o fundo branco (`bg-white`) do container interno e usar fundo escuro/transparente
-   - O canvas tera fundo transparente, entao o QR branco sera visivel contra o fundo escuro do modal
-
-4. **Download**:
-   - O PNG baixado tera fundo transparente (o canvas ja suporta isso nativamente com `bgColor` transparente)
+1. **Novo campo de input** no topo do modal para digitar/colar um link personalizado
+2. **Toggle entre modos**: "Minha pagina" (usa o link da bio) e "Link personalizado" (usa o link digitado)
+3. Quando o modo for "Link personalizado":
+   - Exibir um input de texto para o usuario colar/digitar a URL
+   - O QR Code sera gerado a partir dessa URL em vez do link da bio
+   - O texto abaixo do QR mostrara a URL digitada
+4. Todos os 4 estilos (Classico, Com Logo, Tematico, Transparente) continuam funcionando normalmente
+5. O botao "Copiar link" copiara o link que esta sendo usado (bio ou personalizado)
+6. O nome do arquivo no download incluira "custom" quando for link personalizado
 
 ### Detalhes tecnicos
 
-- `QRCodeCanvas` suporta `bgColor` com valores como `"transparent"` ou `"rgba(0,0,0,0)"`
-- O container interno (`div` com `bg-white`) sera condicional: `bg-white` para outros estilos, `bg-transparent` para o estilo transparente
-- O logo BioBR nao sera exibido neste estilo (ficaria ilegivel em branco sobre transparente)
+- Adicionar estado `mode` (`"bio" | "custom"`) e `customUrl` (string) ao componente
+- Usar tabs ou botoes de toggle para alternar entre os modos
+- Validar que a URL digitada comeca com `http://` ou `https://` antes de gerar o QR
+- O valor passado para `QRCodeCanvas` sera condicional: `mode === "bio" ? bioUrl : customUrl`
+- Nenhuma dependencia nova necessaria
 
