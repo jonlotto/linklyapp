@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { buildSubdomainUrl } from "@/utils/subdomain";
 import { toast } from "sonner";
-import bioBrLogo from "@/assets/biobr-logo.png";
+import customLogo from "@/assets/ft005-logo.png";
 
 type QrStyle = "classic" | "logo" | "branded" | "transparent";
 
@@ -165,7 +165,7 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
                 imageSettings={
                   showLogo
                     ? {
-                        src: bioBrLogo,
+                        src: customLogo,
                         height: 40,
                         width: 40,
                         excavate: true,
