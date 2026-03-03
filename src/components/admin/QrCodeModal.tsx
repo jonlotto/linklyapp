@@ -13,12 +13,13 @@ import { buildSubdomainUrl } from "@/utils/subdomain";
 import { toast } from "sonner";
 import bioBrLogo from "@/assets/biobr-logo.png";
 
-type QrStyle = "classic" | "logo" | "branded";
+type QrStyle = "classic" | "logo" | "branded" | "transparent";
 
 const STYLES: { key: QrStyle; label: string; description: string }[] = [
   { key: "classic", label: "Clássico", description: "Preto e branco" },
   { key: "logo", label: "Com Logo", description: "Logo BioBR no centro" },
   { key: "branded", label: "Temático", description: "Cores da marca" },
+  { key: "transparent", label: "Transparente", description: "QR branco, sem fundo" },
 ];
 
 interface QrCodeModalProps {
@@ -51,9 +52,10 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const fgColor = style === "branded" ? "#ff2264" : "#000000";
-  const bgColor = "#ffffff";
-  const showLogo = style === "logo" || style === "branded";
+  const isTransparent = style === "transparent";
+  const fgColor = isTransparent ? "#ffffff" : style === "branded" ? "#ff2264" : "#000000";
+  const bgColor = isTransparent ? "rgba(0,0,0,0)" : "#ffffff";
+  const showLogo = !isTransparent && (style === "logo" || style === "branded");
   const cornerColor = style === "branded" ? "#ff2264" : "#ffffff";
 
   return (
@@ -93,7 +95,7 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
             <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[3px] border-l-[3px] rounded-bl-sm" style={{ borderColor: cornerColor }} />
             <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3px] border-r-[3px] rounded-br-sm" style={{ borderColor: cornerColor }} />
 
-            <div ref={canvasRef} className="bg-white p-4 rounded-lg">
+            <div ref={canvasRef} className={`p-4 rounded-lg ${isTransparent ? "bg-black/40" : "bg-white"}`}>
               <QRCodeCanvas
                 value={url}
                 size={200}
