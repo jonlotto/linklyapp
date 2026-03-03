@@ -1,91 +1,34 @@
 
-# Plano: Corrigir atualização do PWA e erro do OneSignal
+# Solução: Limpar Cache do Cloudflare
 
-## Problemas Identificados
+## Diagnóstico Confirmado
 
-1. **OneSignal restrito ao domínio**: O SDK só funciona em `https://biobr.site`, não no preview
-2. **Cache do Service Worker**: O PWA está mostrando versão antiga mesmo com `autoUpdate`
+O código do botão "Configurações" está **correto e presente** no arquivo `AdminSidebar.tsx` (linhas 70-80). O problema é 100% de **cache do Cloudflare**.
 
-## Solução
+## Ação Necessária (Manual)
 
-### 1. Melhorar tratamento de erro do OneSignal
-**Arquivo:** `src/hooks/useOneSignal.ts`
+Você precisa fazer isso no painel do Cloudflare:
 
-Capturar o erro de domínio inválido e definir estados corretos:
-- Quando erro "Can only be used on", marcar `isSupported = false` com mensagem amigável
-- Evitar que o componente quebre ou mostre estado incorreto
+### Opção 1: Purge Cache (Recomendado)
+1. Acesse o **Cloudflare Dashboard**
+2. Selecione o domínio **biobr.site**
+3. Vá em **Caching > Configuration**
+4. Clique em **"Purge Everything"**
+5. Aguarde 2-3 minutos
+6. Teste novamente acessando `biobr.site/admin`
 
-### 2. Forçar atualização do Service Worker
-**Arquivo:** `vite.config.ts`
+### Opção 2: Atualizar o Worker
+Se você tem um Cloudflare Worker fazendo proxy, pode ser necessário:
+1. Ir em **Workers & Pages**
+2. Selecionar o worker `biobr-subdomain-proxy`
+3. Clicar em **"Save and Deploy"** novamente (mesmo sem mudanças)
 
-Alterar configuração do Workbox para forçar atualização imediata:
-```typescript
-workbox: {
-  // Forçar novo SW a tomar controle imediatamente
-  skipWaiting: true,
-  clientsClaim: true,
-  // ... resto das configurações
-}
-```
+Isso força o Worker a buscar a versão mais recente da origem.
 
-### 3. Adicionar componente de atualização manual
-**Arquivo:** `src/components/PWAUpdatePrompt.tsx` (novo)
+## Por que isso acontece?
 
-Criar componente que detecta quando há nova versão e oferece botão para atualizar:
-- Usa hook `useRegisterSW` do vite-plugin-pwa
-- Mostra toast quando há atualização disponível
-- Permite o usuário forçar reload
+O Cloudflare cacheia os arquivos JavaScript/CSS do build. Quando você faz deploy no Lovable, os arquivos são atualizados em `linklyapp.lovable.app`, mas o cache do Cloudflare em `biobr.site` continua servindo a versão antiga até que seja invalidado.
 
-### 4. Integrar prompt de atualização
-**Arquivo:** `src/App.tsx`
+## Prevenção Futura
 
-Adicionar o `PWAUpdatePrompt` no App para funcionar globalmente
-
-## Detalhes Técnicos
-
-**useOneSignal.ts - Tratamento de erro:**
-```typescript
-catch (error: any) {
-  // Verificar se é erro de domínio
-  if (error?.message?.includes("Can only be used on")) {
-    console.log("[OneSignal] Domain restriction - running on:", window.location.hostname);
-    // Em desenvolvimento/preview, marcar como não suportado gracefully
-    setIsSupported(false);
-  } else {
-    console.error("OneSignal initialization error:", error);
-  }
-}
-```
-
-**PWAUpdatePrompt.tsx:**
-```typescript
-import { useRegisterSW } from 'virtual:pwa-register/react';
-import { toast } from "sonner";
-
-export function PWAUpdatePrompt() {
-  const {
-    needRefresh: [needRefresh],
-    updateServiceWorker,
-  } = useRegisterSW();
-
-  useEffect(() => {
-    if (needRefresh) {
-      toast("Nova versão disponível!", {
-        action: {
-          label: "Atualizar",
-          onClick: () => updateServiceWorker(true),
-        },
-        duration: Infinity,
-      });
-    }
-  }, [needRefresh]);
-
-  return null;
-}
-```
-
-## Resultado Esperado
-- PWA atualizará automaticamente ou mostrará prompt
-- Seção "Configurações" aparecerá após atualização
-- Notificações funcionarão apenas no domínio de produção (biobr.site)
-- Preview mostrará mensagem amigável em vez de erro
+A configuração de hash nos nomes dos arquivos (já presente no Vite) deveria resolver isso automaticamente, mas o Worker pode estar cacheando o HTML que referencia os arquivos antigos. Considere adicionar headers `Cache-Control: no-cache` para o arquivo `index.html` no Worker.
