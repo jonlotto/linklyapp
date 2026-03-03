@@ -1,28 +1,31 @@
 
-# Plano: Botão de QR Code no Sidebar
 
-## O que será feito
+# Plano: QR Code com moldura de cantos (scan frame)
 
-Adicionar um botão "QR Code" no sidebar do painel admin que abre um modal/dialog para gerar e baixar um QR Code da bio page do usuário.
+## O que sera feito
 
-## Mudanças
+Atualizar o modal de QR Code para exibir o QR Code com uma moldura decorativa de cantos (corner brackets), similar ao estilo da imagem de referencia - um visual de "scanner" com cantos destacados ao redor do QR Code, fundo escuro.
 
-### 1. Criar componente `QrCodeModal.tsx`
-- Modal com dialog que gera um QR Code da URL da página do usuário (usando `buildSubdomainUrl(username)`)
-- Usar uma biblioteca de geração de QR Code client-side (canvas-based, sem dependência de API externa)
-- Botão para baixar o QR Code como imagem PNG
-- Opção de copiar o link da página
+## Mudancas
 
-### 2. Atualizar `AdminSidebar.tsx`
-- Adicionar botão "QR Code" com o ícone `QrCode` do lucide-react na seção de navegação
-- Ao clicar, abre o modal de QR Code (estado local no sidebar)
+### Arquivo: `src/components/admin/QrCodeModal.tsx`
 
-### 3. Dependência
-- Instalar `qrcode.react` para renderizar QR Codes como SVG/Canvas no React
+- Substituir o container branco simples do QR Code por um design com **corner brackets decorativos** usando CSS (pseudo-elementos ou bordas parciais)
+- Manter fundo escuro ao redor, com o QR Code em branco no centro
+- Os 4 cantos terao linhas grossas formando "L" invertidos, criando o efeito de moldura de scanner
+- O QR Code continuara funcional para download e leitura
 
-## Detalhes técnicos
+### Detalhes tecnicos
 
-- O QR Code será gerado localmente no browser usando `qrcode.react`, sem necessidade de API ou backend
-- A URL codificada será a mesma usada no botão "Ver minha página" (`buildSubdomainUrl(username)`)
-- O botão ficará na seção de navegação do sidebar, após "Configurações" e antes de "Usuários" (admin)
-- O download será feito convertendo o canvas/SVG para PNG via `toDataURL`
+A moldura sera feita com 4 elementos `div` posicionados nos cantos usando `absolute positioning`, cada um com bordas parciais (ex: `border-top + border-left` para o canto superior esquerdo). Isso cria o efeito visual sem interferir no QR Code canvas.
+
+```text
++--                    --+
+|                        |
+|      [QR CODE]         |
+|                        |
++--                    --+
+```
+
+Nenhuma dependencia nova sera necessaria.
+
