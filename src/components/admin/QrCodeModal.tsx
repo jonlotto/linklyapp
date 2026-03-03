@@ -166,8 +166,8 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
                   showLogo
                     ? {
                         src: customLogo,
-                        height: 40,
-                        width: 40,
+                        height: 50,
+                        width: 50,
                         excavate: true,
                       }
                     : undefined
