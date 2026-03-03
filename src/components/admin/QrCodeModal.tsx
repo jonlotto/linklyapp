@@ -53,8 +53,15 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-6 py-4">
-          <div ref={canvasRef} className="bg-white p-4 rounded-xl">
-            <QRCodeCanvas value={url} size={200} level="H" />
+          <div className="relative p-6">
+            {/* Corner brackets */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-[3px] border-l-[3px] border-white rounded-tl-sm" />
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-[3px] border-r-[3px] border-white rounded-tr-sm" />
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[3px] border-l-[3px] border-white rounded-bl-sm" />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3px] border-r-[3px] border-white rounded-br-sm" />
+            <div ref={canvasRef} className="bg-white p-4 rounded-lg">
+              <QRCodeCanvas value={url} size={200} level="H" />
+            </div>
           </div>
 
           <p className="text-sm text-white/50 text-center break-all">{url}</p>
