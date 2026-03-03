@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
-import { Download, Copy, Check } from "lucide-react";
+import { Download, Copy, Check, Link } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -32,21 +33,25 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
   const canvasRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [style, setStyle] = useState<QrStyle>("logo");
-  const url = username ? buildSubdomainUrl(username) : "";
+  const [mode, setMode] = useState<"bio" | "custom">("bio");
+  const [customUrl, setCustomUrl] = useState("");
+  const bioUrl = username ? buildSubdomainUrl(username) : "";
+  const isValidCustom = /^https?:\/\/.+/.test(customUrl.trim());
+  const activeUrl = mode === "bio" ? bioUrl : (isValidCustom ? customUrl.trim() : "");
 
   const handleDownload = () => {
     const canvas = canvasRef.current?.querySelector("canvas");
     if (!canvas) return;
     const link = document.createElement("a");
-    link.download = `${username}-qrcode.png`;
+    link.download = `${mode === "bio" ? username : "custom"}-qrcode.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
     toast.success("QR Code baixado!");
   };
 
   const handleCopy = async () => {
-    if (!url) return;
-    await navigator.clipboard.writeText(url);
+    if (!activeUrl) return;
+    await navigator.clipboard.writeText(activeUrl);
     setCopied(true);
     toast.success("Link copiado!");
     setTimeout(() => setCopied(false), 2000);
@@ -69,6 +74,41 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-5 py-4">
+          {/* Mode toggle */}
+          <div className="flex gap-2 w-full">
+            <button
+              onClick={() => setMode("bio")}
+              className={`flex-1 rounded-lg border px-3 py-2 text-center transition-all text-sm ${
+                mode === "bio"
+                  ? "border-[#ff2264] bg-[#ff2264]/10 text-white"
+                  : "border-white/10 text-white/50 hover:border-white/30 hover:text-white/80"
+              }`}
+            >
+              Minha página
+            </button>
+            <button
+              onClick={() => setMode("custom")}
+              className={`flex-1 rounded-lg border px-3 py-2 text-center transition-all text-sm ${
+                mode === "custom"
+                  ? "border-[#ff2264] bg-[#ff2264]/10 text-white"
+                  : "border-white/10 text-white/50 hover:border-white/30 hover:text-white/80"
+              }`}
+            >
+              <Link className="inline h-3.5 w-3.5 mr-1.5 -mt-0.5" />
+              Link personalizado
+            </button>
+          </div>
+
+          {/* Custom URL input */}
+          {mode === "custom" && (
+            <Input
+              placeholder="https://exemplo.com"
+              value={customUrl}
+              onChange={(e) => setCustomUrl(e.target.value)}
+              className="bg-white/5 border-white/10 text-white placeholder:text-white/30"
+            />
+          )}
+
           {/* Style selector */}
           <div className="flex gap-2 w-full">
             {STYLES.map((s) => (
@@ -97,7 +137,7 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
 
             <div ref={canvasRef} className={`p-4 rounded-lg ${isTransparent ? "bg-black/40" : "bg-white"}`}>
               <QRCodeCanvas
-                value={url}
+                value={activeUrl || "https://placeholder"}
                 size={200}
                 level="H"
                 fgColor={fgColor}
@@ -116,7 +156,7 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
             </div>
           </div>
 
-          <p className="text-sm text-white/50 text-center break-all">{url}</p>
+          <p className="text-sm text-white/50 text-center break-all">{activeUrl}</p>
 
           <div className="flex gap-3 w-full">
             <Button
