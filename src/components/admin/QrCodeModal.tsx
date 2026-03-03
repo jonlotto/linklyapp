@@ -35,9 +35,19 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
   const [style, setStyle] = useState<QrStyle>("logo");
   const [mode, setMode] = useState<"bio" | "custom">("bio");
   const [customUrl, setCustomUrl] = useState("");
+  const [confirmedCustomUrl, setConfirmedCustomUrl] = useState("");
   const bioUrl = username ? buildSubdomainUrl(username) : "";
   const isValidCustom = /^https?:\/\/.+/.test(customUrl.trim());
-  const activeUrl = mode === "bio" ? bioUrl : (isValidCustom ? customUrl.trim() : "");
+  const activeUrl = mode === "bio" ? bioUrl : confirmedCustomUrl;
+
+  const handleGenerateCustom = () => {
+    if (!isValidCustom) {
+      toast.error("Insira um link válido (ex: https://exemplo.com)");
+      return;
+    }
+    setConfirmedCustomUrl(customUrl.trim());
+    toast.success("QR Code gerado!");
+  };
 
   const handleDownload = () => {
     const canvas = canvasRef.current?.querySelector("canvas");
@@ -101,12 +111,22 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
 
           {/* Custom URL input */}
           {mode === "custom" && (
-            <Input
-              placeholder="https://exemplo.com"
-              value={customUrl}
-              onChange={(e) => setCustomUrl(e.target.value)}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/30"
-            />
+            <div className="flex gap-2 w-full">
+              <Input
+                placeholder="https://exemplo.com"
+                value={customUrl}
+                onChange={(e) => setCustomUrl(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleGenerateCustom()}
+                className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+              />
+              <Button
+                onClick={handleGenerateCustom}
+                disabled={!isValidCustom}
+                className="shrink-0"
+              >
+                Gerar
+              </Button>
+            </div>
           )}
 
           {/* Style selector */}
