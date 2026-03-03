@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
-import { Download, Copy, Check, Link } from "lucide-react";
+import { Download, Copy, Check, Link, Trash2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,12 +13,15 @@ import {
 import { buildSubdomainUrl } from "@/utils/subdomain";
 import { toast } from "sonner";
 import customLogo from "@/assets/ft005-logo.png";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
 
 type QrStyle = "classic" | "logo" | "branded" | "transparent";
 
 const STYLES: { key: QrStyle; label: string; description: string }[] = [
   { key: "classic", label: "Clássico", description: "Preto e branco" },
-  { key: "logo", label: "Com Logo", description: "Logo BioBR no centro" },
+  { key: "logo", label: "Com Logo", description: "Logo no centro" },
   { key: "branded", label: "Temático", description: "Cores da marca" },
   { key: "transparent", label: "Transparente", description: "QR branco, sem fundo" },
 ];
@@ -37,16 +40,80 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
   const [customUrl, setCustomUrl] = useState("");
   const [confirmedCustomUrl, setConfirmedCustomUrl] = useState("");
   const bioUrl = username ? buildSubdomainUrl(username) : "";
-  const isValidCustom = /^https?:\/\/.+/.test(customUrl.trim());
   const activeUrl = mode === "bio" ? bioUrl : confirmedCustomUrl;
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  const handleGenerateCustom = () => {
-    if (!isValidCustom) {
-      toast.error("Insira um link válido (ex: https://exemplo.com)");
+  const { data: savedQrCodes = [] } = useQuery({
+    queryKey: ["qr_codes", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await supabase
+        .from("qr_codes")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id && open,
+  });
+
+  const normalizeUrl = (url: string) => {
+    let trimmed = url.trim();
+    if (!trimmed) return "";
+    if (!/^https?:\/\//i.test(trimmed)) {
+      trimmed = `https://${trimmed}`;
+    }
+    return trimmed;
+  };
+
+  const isValidCustom = normalizeUrl(customUrl).length > 8;
+
+  const handleGenerateCustom = async () => {
+    const finalUrl = normalizeUrl(customUrl);
+    if (!finalUrl || finalUrl.length <= 8) {
+      toast.error("Insira um link válido (ex: exemplo.com)");
       return;
     }
-    setConfirmedCustomUrl(customUrl.trim());
-    toast.success("QR Code gerado!");
+    setConfirmedCustomUrl(finalUrl);
+    setCustomUrl(finalUrl);
+
+    if (user?.id) {
+      const { error } = await supabase.from("qr_codes").insert({
+        user_id: user.id,
+        url: finalUrl,
+        label: new URL(finalUrl).hostname,
+        style,
+      });
+      if (error) {
+        toast.error("Erro ao salvar QR Code");
+        return;
+      }
+      queryClient.invalidateQueries({ queryKey: ["qr_codes"] });
+      toast.success("QR Code gerado e salvo!");
+    } else {
+      toast.success("QR Code gerado!");
+    }
+  };
+
+  const handleDeleteQr = async (id: string) => {
+    const { error } = await supabase.from("qr_codes").delete().eq("id", id);
+    if (error) {
+      toast.error("Erro ao deletar");
+      return;
+    }
+    queryClient.invalidateQueries({ queryKey: ["qr_codes"] });
+    toast.success("QR Code removido!");
+  };
+
+  const handleSelectSaved = (url: string, savedStyle: string) => {
+    setMode("custom");
+    setCustomUrl(url);
+    setConfirmedCustomUrl(url);
+    if (["classic", "logo", "branded", "transparent"].includes(savedStyle)) {
+      setStyle(savedStyle as QrStyle);
+    }
   };
 
   const handleDownload = () => {
@@ -75,7 +142,7 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-black border-white/10 text-white">
+      <DialogContent className="sm:max-w-md bg-black border-white/10 text-white max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>QR Code</DialogTitle>
           <DialogDescription className="text-white/60">
@@ -113,7 +180,7 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
           {mode === "custom" && (
             <div className="flex gap-2 w-full">
               <Input
-                placeholder="https://exemplo.com"
+                placeholder="exemplo.com"
                 value={customUrl}
                 onChange={(e) => setCustomUrl(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleGenerateCustom()}
@@ -149,7 +216,6 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
 
           {/* QR Code with frame */}
           <div className="relative p-6">
-            {/* Corner brackets */}
             <div className="absolute top-0 left-0 w-8 h-8 border-t-[3px] border-l-[3px] rounded-tl-sm" style={{ borderColor: cornerColor }} />
             <div className="absolute top-0 right-0 w-8 h-8 border-t-[3px] border-r-[3px] rounded-tr-sm" style={{ borderColor: cornerColor }} />
             <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[3px] border-l-[3px] rounded-bl-sm" style={{ borderColor: cornerColor }} />
@@ -195,6 +261,35 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
               Baixar PNG
             </Button>
           </div>
+
+          {/* Saved QR Codes */}
+          {savedQrCodes.length > 0 && (
+            <div className="w-full border-t border-white/10 pt-4 mt-2">
+              <h4 className="text-sm font-medium text-white/70 mb-3">QR Codes salvos</h4>
+              <div className="flex flex-col gap-2">
+                {savedQrCodes.map((qr) => (
+                  <div
+                    key={qr.id}
+                    className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 hover:border-white/20 transition-all"
+                  >
+                    <button
+                      onClick={() => handleSelectSaved(qr.url, qr.style || "logo")}
+                      className="flex-1 text-left flex items-center gap-2 min-w-0"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5 shrink-0 text-white/40" />
+                      <span className="text-sm text-white/80 truncate">{qr.label || qr.url}</span>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteQr(qr.id)}
+                      className="text-white/30 hover:text-red-400 transition-colors shrink-0"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
