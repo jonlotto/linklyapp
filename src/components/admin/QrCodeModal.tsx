@@ -1,7 +1,6 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { Download, Copy, Check } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,6 +11,15 @@ import {
 } from "@/components/ui/dialog";
 import { buildSubdomainUrl } from "@/utils/subdomain";
 import { toast } from "sonner";
+import bioBrLogo from "@/assets/biobr-logo.png";
+
+type QrStyle = "classic" | "logo" | "branded";
+
+const STYLES: { key: QrStyle; label: string; description: string }[] = [
+  { key: "classic", label: "Clássico", description: "Preto e branco" },
+  { key: "logo", label: "Com Logo", description: "Logo BioBR no centro" },
+  { key: "branded", label: "Temático", description: "Cores da marca" },
+];
 
 interface QrCodeModalProps {
   open: boolean;
@@ -22,6 +30,7 @@ interface QrCodeModalProps {
 export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
+  const [style, setStyle] = useState<QrStyle>("logo");
   const url = username ? buildSubdomainUrl(username) : "";
 
   const handleDownload = () => {
@@ -42,25 +51,66 @@ export function QrCodeModal({ open, onOpenChange, username }: QrCodeModalProps) 
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const fgColor = style === "branded" ? "#ff2264" : "#000000";
+  const bgColor = "#ffffff";
+  const showLogo = style === "logo" || style === "branded";
+  const cornerColor = style === "branded" ? "#ff2264" : "#ffffff";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-black border-white/10 text-white">
         <DialogHeader>
           <DialogTitle>QR Code</DialogTitle>
           <DialogDescription className="text-white/60">
-            Escaneie para acessar sua página
+            Escolha o estilo e escaneie para acessar sua página
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col items-center gap-6 py-4">
+        <div className="flex flex-col items-center gap-5 py-4">
+          {/* Style selector */}
+          <div className="flex gap-2 w-full">
+            {STYLES.map((s) => (
+              <button
+                key={s.key}
+                onClick={() => setStyle(s.key)}
+                className={`flex-1 rounded-lg border px-3 py-2 text-center transition-all text-xs ${
+                  style === s.key
+                    ? "border-[#ff2264] bg-[#ff2264]/10 text-white"
+                    : "border-white/10 text-white/50 hover:border-white/30 hover:text-white/80"
+                }`}
+              >
+                <span className="block font-medium">{s.label}</span>
+                <span className="block text-[10px] opacity-60">{s.description}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* QR Code with frame */}
           <div className="relative p-6">
             {/* Corner brackets */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-[3px] border-l-[3px] border-white rounded-tl-sm" />
-            <div className="absolute top-0 right-0 w-8 h-8 border-t-[3px] border-r-[3px] border-white rounded-tr-sm" />
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[3px] border-l-[3px] border-white rounded-bl-sm" />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3px] border-r-[3px] border-white rounded-br-sm" />
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-[3px] border-l-[3px] rounded-tl-sm" style={{ borderColor: cornerColor }} />
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-[3px] border-r-[3px] rounded-tr-sm" style={{ borderColor: cornerColor }} />
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[3px] border-l-[3px] rounded-bl-sm" style={{ borderColor: cornerColor }} />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3px] border-r-[3px] rounded-br-sm" style={{ borderColor: cornerColor }} />
+
             <div ref={canvasRef} className="bg-white p-4 rounded-lg">
-              <QRCodeCanvas value={url} size={200} level="H" />
+              <QRCodeCanvas
+                value={url}
+                size={200}
+                level="H"
+                fgColor={fgColor}
+                bgColor={bgColor}
+                imageSettings={
+                  showLogo
+                    ? {
+                        src: bioBrLogo,
+                        height: 40,
+                        width: 40,
+                        excavate: true,
+                      }
+                    : undefined
+                }
+              />
             </div>
           </div>
 
